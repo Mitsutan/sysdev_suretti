@@ -4,7 +4,9 @@ import 'dart:developer';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
 
-final MsdFilter msdFilterData = MsdFilter(76, data: [
+
+class StartBeacon {
+  final MsdFilter _msdFilterData = MsdFilter(76, data: [
   0x02,
   0x15,
   0x66,
@@ -44,26 +46,27 @@ final MsdFilter msdFilterData = MsdFilter(76, data: [
   1
 ]);
 
-Future<void> _startBeaconFunc(int major, int minor) async {
-  // flutterBeacon start broadcast
-  log((await flutterBeacon.isBroadcasting()).toString(),
-      name: 'flutterBeacon.isBroadcasting()');
-  try {
-    await flutterBeacon.startBroadcast(BeaconBroadcast(
-      proximityUUID: const String.fromEnvironment("IBEACON_UUID"),
-      major: major,
-      minor: minor,
-      identifier: 'dev.mitsutan.sysdev_suretti_flutter',
-    ));
-  } catch (e) {
-    log('Start broadcast error', name: 'flutterBeacon', error: e);
-  }
-  
-  // FBP start scan
-  try {
-    await FlutterBluePlus.startScan(
-        withMsd: [msdFilterData], androidUsesFineLocation: true);
-  } catch (e) {
-    log('Start Beacon Err', name: 'startBeaconFunc', error: e);
+  Future<void> startBeaconFunc(int major, int minor) async {
+    // flutterBeacon start broadcast
+    log((await flutterBeacon.isBroadcasting()).toString(),
+        name: 'flutterBeacon.isBroadcasting()');
+    try {
+      await flutterBeacon.startBroadcast(BeaconBroadcast(
+        proximityUUID: const String.fromEnvironment("IBEACON_UUID"),
+        major: major,
+        minor: minor,
+        identifier: 'dev.mitsutan.sysdev_suretti_flutter',
+      ));
+    } catch (e) {
+      log('Start broadcast error', name: 'flutterBeacon', error: e);
+    }
+
+    // FBP start scan
+    try {
+      await FlutterBluePlus.startScan(
+          withMsd: [_msdFilterData], androidUsesFineLocation: true);
+    } catch (e) {
+      log('Start Beacon Err', name: 'startBeaconFunc', error: e);
+    }
   }
 }
