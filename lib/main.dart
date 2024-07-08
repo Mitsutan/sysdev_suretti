@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+   Supabase.initialize(
+    url: 'https://vjhuodzsglhylvomzysa.supabase.co', // ここにSupabaseプロジェクトのURLを入力
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqaHVvZHpzZ2xoeWx2b216eXNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA0MDI2MzQsImV4cCI6MjAzNTk3ODYzNH0.BfStERksC0fhY8Vpu9979nBdZbOMIku16Pop-a-xgts', // ここにSupabaseプロジェクトのanonキーを入力
+  );
   runApp(const MyApp());
 }
 
