@@ -25,19 +25,23 @@ Future<void> main() async {
 enum Pages {
   page1(
     title: 'page1',
+    icon: Icons.home,
     page: TestPage1(),
   ),
   page2(
     title: 'page2',
+    icon: Icons.home_repair_service_sharp,
     page: TestPage2(),
   );
 
   const Pages({
     required this.title,
+    required this.icon,
     required this.page,
   });
 
   final String title;
+  final IconData icon;
   final Widget page;
 }
 
@@ -91,7 +95,7 @@ class Navigation extends HookWidget {
           currentIndex: Pages.values.indexOf(currentTab.value),
           items: Pages.values
               .map((page) => BottomNavigationBarItem(
-                    icon: const Icon(Icons.home),
+                    icon: Icon(page.icon),
                     label: page.title,
                   ))
               .toList(),
