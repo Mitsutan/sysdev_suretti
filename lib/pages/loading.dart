@@ -3,14 +3,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/navigator.dart';
 import 'package:sysdev_suretti/signup_page.dart';
 
-class SplashPage extends StatefulWidget {
-  const SplashPage({super.key});
+class Loading extends StatefulWidget {
+  const Loading({super.key});
 
   @override
-  SplashPageState createState() => SplashPageState();
+  LoadingState createState() => LoadingState();
 }
 
-class SplashPageState extends State<SplashPage> {
+class LoadingState extends State<Loading> {
   @override
   void initState() {
     super.initState();
