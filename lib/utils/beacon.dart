@@ -1,10 +1,33 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BeaconFunc {
+final beaconProvider = ChangeNotifierProvider((ref) => BeaconFunc());
+
+class BeaconFunc extends ChangeNotifier {
+  BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
+  List<ScanResult> _scanResults = [];
+
+  int major = 1;
+  int minor = 1;
+
+  BluetoothAdapterState get adapterState => _adapterState;
+  List<ScanResult> get scanResults => _scanResults;
+
+  void updateAdapterState(BluetoothAdapterState newState) {
+    _adapterState = newState;
+    notifyListeners();
+  }
+
+  void updateScanResults(List<ScanResult> newResults) {
+    _scanResults = newResults;
+    notifyListeners();
+  }
+
   final MsdFilter _msdFilterData = MsdFilter(76, data: [
     0x02,
     0x15,
@@ -67,6 +90,13 @@ class BeaconFunc {
     } catch (e) {
       log('Start scan Err', name: 'beacon', error: e);
     }
+
+    // FBP scanResults listen
+    FlutterBluePlus.scanResults.listen((results) {
+      updateScanResults(results);
+    }, onError: (e) {
+      log('Scan error', name: 'FlutterBluePlus', error: e);
+    });
   }
 
   Future<void> stopBeacon() async {
@@ -85,6 +115,8 @@ class BeaconFunc {
     } catch (e) {
       log('Stop scan Err', name: 'beacon', error: e);
     }
+
+    notifyListeners();
   }
 
   Future<bool> isBroadcasting() async {
