@@ -28,14 +28,28 @@ class _TesthomeState extends State<Testhome> {
     super.initState();
     // flutterBeacon.initializeAndCheckScanning;
 
-    FlutterBluePlus.adapterState.listen((state) {
+    // FlutterBluePlus.adapterState.listen((state) {
+    //   _adapterState = state;
+    //   if (mounted) {
+    //     setState(() {});
+    //   }
+    // });
+    beacon.getAdapterState().listen((state) {
       _adapterState = state;
       if (mounted) {
         setState(() {});
       }
     });
 
-    FlutterBluePlus.scanResults.listen((results) {
+    // FlutterBluePlus.scanResults.listen((results) {
+    //   _scanResults = results;
+    //   if (mounted) {
+    //     setState(() {});
+    //   }
+    // }, onError: (e) {
+    //   log('Scan error', name: 'FlutterBluePlus', error: e);
+    // });
+    beacon.getScanResults().listen((results) {
       _scanResults = results;
       if (mounted) {
         setState(() {});

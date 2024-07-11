@@ -95,7 +95,11 @@ class BeaconFunc {
     return FlutterBluePlus.isScanningNow;
   }
 
-  // List<ScanResult> getScanResults() {
-    
-  // }
+  Stream<BluetoothAdapterState> getAdapterState() {
+    return FlutterBluePlus.adapterState;
+  }
+
+  Stream<List<ScanResult>> getScanResults() {
+    return FlutterBluePlus.scanResults;
+  }
 }
