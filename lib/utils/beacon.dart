@@ -95,16 +95,7 @@ class BeaconFunc {
     return FlutterBluePlus.isScanningNow;
   }
 
-  List<ScanResult> getScanResults() {
-    List<ScanResult> scanResults = [];
-    late StreamSubscription<List<ScanResult>> scanResultsSubscription;
-
-    scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) {
-      scanResults = results;
-    }, onError: (e) {
-      log('Scan error', name: 'FlutterBluePlus', error: e);
-    });
-
-    return scanResults;
-  }
+  // List<ScanResult> getScanResults() {
+    
+  // }
 }
