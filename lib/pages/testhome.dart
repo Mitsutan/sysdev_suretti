@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -16,10 +15,8 @@ class Testhome extends StatefulWidget {
 
 class _TesthomeState extends State<Testhome> {
   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
-  late StreamSubscription<BluetoothAdapterState> _adapterStateStateSubscription;
 
   List<ScanResult> _scanResults = [];
-  late StreamSubscription<List<ScanResult>> _scanResultsSubscription;
 
   int _major = 1;
   int _minor = 1;
@@ -31,15 +28,14 @@ class _TesthomeState extends State<Testhome> {
     super.initState();
     // flutterBeacon.initializeAndCheckScanning;
 
-    _adapterStateStateSubscription =
-        FlutterBluePlus.adapterState.listen((state) {
+    FlutterBluePlus.adapterState.listen((state) {
       _adapterState = state;
       if (mounted) {
         setState(() {});
       }
     });
 
-    _scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) {
+    FlutterBluePlus.scanResults.listen((results) {
       _scanResults = results;
       if (mounted) {
         setState(() {});
