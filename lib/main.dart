@@ -1,11 +1,15 @@
+// import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'signup_page.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:sysdev_suretti/pages/loading.dart';
+
+
 
 final Logger _logger = Logger('MyAppLogger');
-
+// エントリーポイント
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -36,6 +40,9 @@ Future<void> main() async {
     anonKey: supabaseAnonKey,
   );
 
+  // ログレベルの設定
+  FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
+
   runApp(const MyApp());
 }
 
@@ -47,9 +54,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
       ),
-      home: const SignUpPage(),
+      home: const Loading(),
     );
   }
 }
+
