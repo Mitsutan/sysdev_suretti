@@ -15,6 +15,16 @@ class Testhome extends ConsumerWidget {
     final beacon = ref.watch(beaconProvider);
     final userData = ref.watch(userDataProvider);
 
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      final AuthChangeEvent event = data.event;
+      if (event == AuthChangeEvent.signedOut) {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) {
+          return const Loading();
+        }), (route) => false);
+      }
+    });
+
     // log(beacon.adapterState.toString(), name: 'BluetoothAdapterState');
     // beacon.getAdapterState().listen((state) {
     //   beacon.updateAdapterState(state);
@@ -23,20 +33,18 @@ class Testhome extends ConsumerWidget {
     // final user = Supabase.instance.client.auth.currentUser;
 
     // usersテーブルからuser.auth_idをキーにしてユーザー情報を取得
-
-    Future<List<Map<String, dynamic>>> getUserData() async {
-      final userData = await Supabase.instance.client
+    Future<void> getUserData() async {
+      final user = await Supabase.instance.client
           .from('users')
           .select()
           .eq('auth_id', Supabase.instance.client.auth.currentUser!.id);
-      return userData;
+      log(user.toString());
+      userData.updateNickname(user.first['nickname']);
     }
 
-    // Future<List<Map<String, dynamic>>> userData = getUserData();
-    getUserData().asStream().listen((event) {
-      log(event.toString());
-      userData.updateNickname(event[0]['nickname']);
-    });
+    if (userData.nickname == 'unknown') {
+      getUserData();
+    }
 
     return Scaffold(
       appBar: AppBar(
