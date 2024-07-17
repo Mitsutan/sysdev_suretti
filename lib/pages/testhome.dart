@@ -67,7 +67,7 @@ class Testhome extends ConsumerWidget {
             TextButton(
                 onPressed: () {
                   Supabase.instance.client.auth.signOut();
-                  Navigator.of(context).pushAndRemoveUntil(
+                  Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) {
                     return const Loading();
                   }), (route) => false);
