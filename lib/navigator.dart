@@ -37,6 +37,7 @@ enum Pages {
 final _navigatorKeys = <Pages, GlobalKey<NavigatorState>>{
   Pages.page1: GlobalKey<NavigatorState>(),
   Pages.page2: GlobalKey<NavigatorState>(),
+  Pages.page3: GlobalKey<NavigatorState>(),
 };
 
 // ナビゲーターウィジェット
