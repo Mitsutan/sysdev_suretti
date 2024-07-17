@@ -9,10 +9,16 @@ import 'package:sysdev_suretti/pages/loading.dart';
 // エントリーポイント
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutterの初期化を確認
+  // ishikawa
   await Supabase.initialize(
     url: 'https://vjhuodzsglhylvomzysa.supabase.co', // ここにSupabaseプロジェクトのURLを入力
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqaHVvZHpzZ2xoeWx2b216eXNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA0MDI2MzQsImV4cCI6MjAzNTk3ODYzNH0.BfStERksC0fhY8Vpu9979nBdZbOMIku16Pop-a-xgts', // ここにSupabaseプロジェクトのanonキーを入力
   );
+  // mitsutan
+  // await Supabase.initialize(
+  //   url: 'https://jeluoazapxqjksdfvftm.supabase.co', // ここにSupabaseプロジェクトのURLを入力
+  //   anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplbHVvYXphcHhxamtzZGZ2ZnRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTkxOTI0MTAsImV4cCI6MjAzNDc2ODQxMH0.T2OLrQzZrv3hvs2khmLdlFb72XE-m7QOJdqNhVmIges', // ここにSupabaseプロジェクトのanonキーを入力
+  // );
 
   // ログレベルの設定
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
