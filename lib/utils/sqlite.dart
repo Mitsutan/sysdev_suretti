@@ -35,6 +35,12 @@ class Sqlite {
     );
   }
 
+  /// データベース削除
+  Future<void> deleteDatabase() async {
+    final db = await _database;
+    await db.delete('scanned_user');
+  }
+
   /// スキャンしたユーザーデータを登録する
   ///
   /// @param ScanedUser scandUser
