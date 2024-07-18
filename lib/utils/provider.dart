@@ -9,8 +9,16 @@ class UserData extends ChangeNotifier {
 
   String get nickname => _nickname;
 
+  bool _isGotUserData = false;
+
+  bool get isGotUserData => _isGotUserData;
+
   void updateNickname(String newNickname) {
     _nickname = newNickname;
     notifyListeners();
+  }
+
+  void updateIsGotUserData(bool isGotUserData) {
+    _isGotUserData = isGotUserData;
   }
 }

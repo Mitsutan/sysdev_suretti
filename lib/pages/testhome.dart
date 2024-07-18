@@ -19,15 +19,15 @@ class Testhome extends ConsumerWidget {
 
     final Sqlite sqlite = Sqlite();
 
-    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      final AuthChangeEvent event = data.event;
-      if (event == AuthChangeEvent.signedOut) {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) {
-          return const Loading();
-        }), (route) => false);
-      }
-    });
+    // Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+    //   final AuthChangeEvent event = data.event;
+    //   if (event == AuthChangeEvent.signedOut) {
+    //     Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+    //         MaterialPageRoute(builder: (context) {
+    //       return const Loading();
+    //     }), (route) => false);
+    //   }
+    // });
 
     // log(beacon.adapterState.toString(), name: 'BluetoothAdapterState');
     // beacon.getAdapterState().listen((state) {
@@ -47,11 +47,18 @@ class Testhome extends ConsumerWidget {
       String userId = user.first['user_id'].toRadixString(16).padLeft(8, '0');
       beacon.major = int.parse(userId.substring(0, 4), radix: 16);
       beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
+
+      userData.updateIsGotUserData(true);
     }
 
-    if (userData.nickname == 'unknown') {
+    if (!userData.isGotUserData) {
       getUserData();
-    }
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
 
     return Scaffold(
       appBar: AppBar(
@@ -67,6 +74,7 @@ class Testhome extends ConsumerWidget {
             TextButton(
                 onPressed: () {
                   Supabase.instance.client.auth.signOut();
+                  userData.updateIsGotUserData(false);
                   Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) {
                     return const Loading();
@@ -145,5 +153,6 @@ class Testhome extends ConsumerWidget {
               child: const Text("SCAN"),
             ),
     );
+  }
   }
 }
