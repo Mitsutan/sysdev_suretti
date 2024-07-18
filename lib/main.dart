@@ -1,7 +1,8 @@
-// import 'dart:developer';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/pages/loading.dart';
 
@@ -29,8 +30,23 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  Future<void> requestPermission() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.bluetoothAdvertise,
+      Permission.bluetoothScan,
+      // Permission.bluetoothConnect,
+      Permission.locationWhenInUse,
+      Permission.locationAlways,
+      // Permission.bluetooth
+    ].request();
+    log(statuses.toString(), name: 'PermissionStatus');
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    requestPermission();
+    
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
