@@ -17,7 +17,7 @@ class Testhome extends ConsumerWidget {
     final beacon = ref.watch(beaconProvider);
     final userData = ref.watch(userDataProvider);
 
-    final Sqlite sqlite = Sqlite();
+    final Sqlite sqlite = Sqlite(Supabase.instance.client.auth.currentUser!.id);
 
     // Supabase.instance.client.auth.onAuthStateChange.listen((data) {
     //   final AuthChangeEvent event = data.event;
@@ -93,7 +93,7 @@ class Testhome extends ConsumerWidget {
             // ),
             ElevatedButton(
                 onPressed: () {
-                  sqlite.deleteDatabase();
+                  sqlite.deleteDatabase(Supabase.instance.client.auth.currentUser!.id);
                 },
                 child: const Text('delete table')),
             const Text('Scanned devices:'),
