@@ -18,6 +18,9 @@
     <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="28" /> -->
 
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- internet -->
+    <uses-permission android:name="android.permission.INTERNET" />
     
     <application
         android:label="sysdev_suretti"
