@@ -5,19 +5,19 @@ import 'package:sysdev_suretti/models/scanned_user.dart';
 class Sqlite {
   late final Future<Database> _database;
 
-  Sqlite() {
-    _database = _open();
+  Sqlite(String authId) {
+    _database = _open(authId);
   }
 
   /// SQLiteデータベースを開く
   ///
   /// @return Future<Database>
-  Future<Database> _open() async {
+  Future<Database> _open(String id) async {
     const sql = {
       '2': ['']
     };
     return openDatabase(
-      join(await getDatabasesPath(), 'suretti.db'),
+      join(await getDatabasesPath(), '$id-suretti.db'),
       version: 1,
       onCreate: (db, version) {
         return db.execute(
@@ -36,9 +36,10 @@ class Sqlite {
   }
 
   /// データベース削除
-  Future<void> deleteDatabase() async {
-    final db = await _database;
-    await db.delete('scanned_user');
+  Future<void> deleteDatabase(String id) async {
+    // final db = await _database;
+    // await db.delete('scanned_user');
+    databaseFactory.deleteDatabase(join(await getDatabasesPath(), '$id-suretti.db'),);
   }
 
   /// スキャンしたユーザーデータを登録する
