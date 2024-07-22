@@ -9,12 +9,13 @@ CREATE TABLE users (
     icon TEXT NOT NULL DEFAULT 'img/user/default.png',
     -- location GEOMETRY(Point, 4326) NOT NULL,
     -- auth_id UUID REFERENCES auth.users (id) ON DELETE CASCADE,
-    auth_id UUID NOT NULL,
+    auth_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE
     -- error_count INTEGER NOT NULL DEFAULT 0,
     -- last_error_timestamp TIMESTAMP,
     -- notification_frequency INTEGER NOT NULL,
     -- FOREIGN KEY (auth_id) REFERENCES auth.users(id)
 );
+
 
 -- Messages Table
 CREATE TABLE messages (

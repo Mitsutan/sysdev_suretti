@@ -16,9 +16,12 @@ dependencies:
   flutter_blue_plus: ^1.32.8
   flutter_beacon: ^0.5.1
   flutter_hooks: ^0.20.5
+  flutter_native_splash: ^2.4.1
   sqflite: ^2.3.3+1
   path: ^1.9.0
   google_maps_flutter: ^2.0.6
+  flutter_riverpod: ^2.5.1
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:

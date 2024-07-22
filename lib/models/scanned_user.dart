@@ -8,13 +8,13 @@
 /// 
 /// [scannedAt] スキャンした日時
 class ScannedUser {
-  final int id;
+  final int? id;
   final int userId;
   final bool isGotPost;
   final DateTime scannedAt;
 
   ScannedUser({
-    required this.id,
+    this.id,
     required this.userId,
     required this.isGotPost,
     required this.scannedAt,
