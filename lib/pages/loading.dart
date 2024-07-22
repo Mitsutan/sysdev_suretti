@@ -4,6 +4,8 @@ import 'package:sysdev_suretti/navigator.dart';
 import 'package:sysdev_suretti/pages/signup.dart';
 import 'package:sysdev_suretti/signup_page.dart';
 
+// import 'package:sysdev_suretti/sign_up.dart';
+
 class Loading extends StatefulWidget {
   const Loading({super.key});
 
@@ -28,8 +30,10 @@ class LoadingState extends State<Loading> {
       if (session == null) {
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) {
+
           return const SignupPage();
           // return const Navigation();
+
         }), (route) => false);
       } else {
         Navigator.of(context).pushAndRemoveUntil(

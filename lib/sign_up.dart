@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -12,12 +15,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SignUpPage(),
+      home: const SignUpPage(),
     );
   }
 }
 
 class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
+
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
@@ -28,7 +33,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final _nicknameController = TextEditingController();
   String? _errorMessage;
 
-  void _register() {
+  Future<void> _register() async {
     setState(() {
       // エラーメッセージのリセット
       _errorMessage = null;
@@ -45,9 +50,52 @@ class _SignUpPageState extends State<SignUpPage> {
         _errorMessage = 'パスワードは8桁以上32桁以内で入力してください';
         return;
       }
-
-      // その他のバリデーションや登録処理をここに追加
     });
+
+    try {
+      // Supabaseを使用してユーザーを新規登録
+      final response = await Supabase.instance.client.auth.signUp(
+        email: _emailController.text,
+        password: _passwordController.text,
+        data: {'username': _nicknameController.text},
+      );
+
+      // if (response.session == null || response.user == null) {
+      if (response.user == null) {
+        setState(() {
+          // _errorMessage ='登録に失敗しました';
+          _errorMessage = '登録に失敗しました: ${response.session} :::::::::: ${response.user}';
+        });
+        return;
+      }
+
+      setState(() {
+        _errorMessage = null;
+      });
+
+      // 登録成功時の処理
+      // ユーザーIDを取得して、usersテーブルに挿入
+      final userId = response.user?.id;
+      if (userId != null) {
+        final insertResponse = await Supabase.instance.client
+            .from('users')
+            .insert({
+              'auth_id': userId,
+              'nickname': _nicknameController.text,
+            })
+            .select();
+        // エラーは例外として処理
+        if (insertResponse.isEmpty) {
+          throw Exception('User insertion failed');
+        } else {
+          // 登録成功時の処理
+        }
+      }
+    } catch (error) {
+      setState(() {
+        _errorMessage = error.toString();
+      });
+    }
   }
 
   @override
@@ -56,7 +104,7 @@ class _SignUpPageState extends State<SignUpPage> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         centerTitle: true,
-        title: Text('新規登録'),
+        title: const Text('新規登録'),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -65,53 +113,50 @@ class _SignUpPageState extends State<SignUpPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(height: 50),
-              Text(
+              const SizedBox(height: 50),
+              const Text(
                 'メールアドレス',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               TextField(
                 controller: _emailController,
-                decoration: InputDecoration(
-                  // labelText: 'メールアドレス',
+                decoration: const InputDecoration(
                   hintText: '例)abc@example.com',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 16.0),
-              Text(
+              const SizedBox(height: 16.0),
+              const Text(
                 'パスワード',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               TextField(
                 controller: _passwordController,
-                decoration: InputDecoration(
-                  // labelText: 'パスワード',
+                decoration: const InputDecoration(
                   hintText: '8桁以上32桁以内',
                   border: OutlineInputBorder(),
                 ),
                 obscureText: true,
               ),
-              SizedBox(height: 16.0),
-              Text(
+              const SizedBox(height: 16.0),
+              const Text(
                 'ニックネーム',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               TextField(
                 controller: _nicknameController,
-                decoration: InputDecoration(
-                  // labelText: 'ニックネーム',
+                decoration: const InputDecoration(
                   hintText: '例)すれちがいおにいさん',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               Center(
                 child: TextButton(
                   onPressed: () {
                     // ログイン画面へ遷移する処理をここに追加
                   },
-                  child: Text(
+                  child: const Text(
                     'ログイン画面へ',
                     style: TextStyle(color: Colors.blue),
                   ),
@@ -119,21 +164,21 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               if (_errorMessage != null) ...[
                 Center(
-                 child:Text(
-                  _errorMessage!,
-                  style: TextStyle(color: Colors.red),
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
-              ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
               ],
               Center(
                 child: ElevatedButton(
-                  onPressed: _register,
-                  child: Text('登録する'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue, // primary を backgroundColor に変更
-                    padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
                   ),
+                  onPressed: _register,
+                  child: const Text('登録する'),
                 ),
               ),
             ],

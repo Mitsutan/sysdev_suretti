@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'testpage3.dart';
+import 'package:sysdev_suretti/login.dart';
+import 'package:sysdev_suretti/sign_up.dart';
+import 'package:sysdev_suretti/map.dart';
+
 
 class TestPage1 extends StatefulWidget {
   const TestPage1({super.key});
@@ -52,6 +56,30 @@ class _TestPage1State extends State<TestPage1> {
                   }));
                 },
                 child: const Text('Go to Page 3')),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return LoginPage(); // LoginPageに遷移
+                  }));
+                },
+                child: const Text('Go to Login')),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return SignUpPage(); // SignUpPageに遷移
+                  }));
+                },
+                child: const Text('Go to Sign Up')),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return MapPage(); // MapPageに遷移
+                  }));
+                },
+                child: const Text('Go to Map')), // 新しいボタンを追加
           ],
         ),
       ),
