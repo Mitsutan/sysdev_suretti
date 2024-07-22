@@ -5,7 +5,6 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:sysdev_suretti/pages/loading.dart';
 
 // エントリーポイント
@@ -65,6 +64,11 @@ class MyApp extends StatelessWidget {
       // Permission.bluetooth
     ].request();
     log(statuses.toString(), name: 'PermissionStatus');
+
+    // 位置情報の許可が得られていない場合は、再度許可を求める
+    if (statuses[Permission.locationAlways] != PermissionStatus.granted) {
+      requestPermission();
+    }
   }
 
   @override
