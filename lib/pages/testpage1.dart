@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:sysdev_suretti/pages/login.dart';
 import 'testpage3.dart';
-import 'package:sysdev_suretti/login.dart';
-import 'package:sysdev_suretti/sign_up.dart';
+import 'package:sysdev_suretti/pages/sign_up.dart';
 import 'package:sysdev_suretti/map.dart';
 
 
@@ -60,7 +60,7 @@ class _TestPage1State extends State<TestPage1> {
                 onPressed: () {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
-                    return LoginPage(); // LoginPageに遷移
+                    return const LoginPage(); // LoginPageに遷移
                   }));
                 },
                 child: const Text('Go to Login')),
@@ -68,7 +68,7 @@ class _TestPage1State extends State<TestPage1> {
                 onPressed: () {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
-                    return SignUpPage(); // SignUpPageに遷移
+                    return const SignupPage(); // SignUpPageに遷移
                   }));
                 },
                 child: const Text('Go to Sign Up')),
@@ -76,7 +76,7 @@ class _TestPage1State extends State<TestPage1> {
                 onPressed: () {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
-                    return MapPage(); // MapPageに遷移
+                    return const MapPage(); // MapPageに遷移
                   }));
                 },
                 child: const Text('Go to Map')), // 新しいボタンを追加
