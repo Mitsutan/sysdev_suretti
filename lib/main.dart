@@ -34,15 +34,15 @@ Future<void> main() async {
     return;
   }
 
-  await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
-  );
-  // mitsutan
   // await Supabase.initialize(
-  //   url: 'https://jeluoazapxqjksdfvftm.supabase.co', // ここにSupabaseプロジェクトのURLを入力
-  //   anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplbHVvYXphcHhxamtzZGZ2ZnRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTkxOTI0MTAsImV4cCI6MjAzNDc2ODQxMH0.T2OLrQzZrv3hvs2khmLdlFb72XE-m7QOJdqNhVmIges', // ここにSupabaseプロジェクトのanonキーを入力
+  //   url: supabaseUrl,
+  //   anonKey: supabaseAnonKey,
   // );
+  // mitsutan
+  await Supabase.initialize(
+    url: 'https://jeluoazapxqjksdfvftm.supabase.co', // ここにSupabaseプロジェクトのURLを入力
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplbHVvYXphcHhxamtzZGZ2ZnRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTkxOTI0MTAsImV4cCI6MjAzNDc2ODQxMH0.T2OLrQzZrv3hvs2khmLdlFb72XE-m7QOJdqNhVmIges', // ここにSupabaseプロジェクトのanonキーを入力
+  );
 
   // ログレベルの設定
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
@@ -66,9 +66,9 @@ class MyApp extends StatelessWidget {
     log(statuses.toString(), name: 'PermissionStatus');
 
     // 位置情報の許可が得られていない場合は、再度許可を求める
-    if (statuses[Permission.locationAlways] != PermissionStatus.granted) {
-      requestPermission();
-    }
+    // if (statuses[Permission.locationAlways] != PermissionStatus.granted) {
+    //   requestPermission();
+    // }
   }
 
   @override
