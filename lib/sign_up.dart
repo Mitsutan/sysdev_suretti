@@ -60,7 +60,8 @@ class _SignUpPageState extends State<SignUpPage> {
         data: {'username': _nicknameController.text},
       );
 
-      if (response.session == null || response.user == null) {
+      // if (response.session == null || response.user == null) {
+      if (response.user == null) {
         setState(() {
           // _errorMessage ='登録に失敗しました';
           _errorMessage = '登録に失敗しました: ${response.session} :::::::::: ${response.user}';

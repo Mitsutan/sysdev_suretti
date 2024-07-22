@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
   runApp(LoginApp());
@@ -18,6 +19,8 @@ class LoginApp extends StatelessWidget {
 }
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -27,26 +30,43 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   String? _errorMessage;
 
-  void _login() {
+  Future<void> _login() async {
     setState(() {
-      // エラーメッセージのリセット
       _errorMessage = null;
-
-      // 入力値のチェック
-      if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-        _errorMessage = 'メールアドレスとパスワードを入力してください';
-        return;
-      }
-
-      if (_passwordController.text.length < 8 || _passwordController.text.length > 32) {
-        _errorMessage = 'パスワードは8桁以上32桁以内で入力してください';
-        return;
-      }
-
-      // ログイン処理をここに追加する
-
-      // ログイン成功時の処理をここに追加する
     });
+
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+      _errorMessage = 'メールアドレスとパスワードを入力してください';
+    });
+    return;
+  }
+
+    if (password.length < 8 || password.length > 32) {
+      setState(() {
+        _errorMessage = 'パスワードは8桁以上32桁以内で入力してください';
+      });
+      return;
+    }
+
+    // Supabaseを使用したログイン処理
+    final response = await Supabase.instance.client.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
+
+    if (response.session == null) {
+      setState(() {
+        _errorMessage = 'ログインに失敗しました';
+      });
+      return;
+    }
+
+    // ログイン成功時の処理
+    Navigator.pushReplacementNamed(context, '/map');
   }
 
   @override
@@ -94,11 +114,11 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 16.0),
               if (_errorMessage != null) ...[
                 Center(
-                child: Text(
-                  _errorMessage!,
-                  style: TextStyle(color: Colors.red),
+                  child: Text(
+                    _errorMessage!,
+                    style: TextStyle(color: Colors.red),
+                  ),
                 ),
-              ),
                 SizedBox(height: 16.0),
               ],
               Center(
