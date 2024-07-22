@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:sysdev_suretti/pages/login.dart';
 import 'testpage3.dart';
-import 'package:sysdev_suretti/login.dart';
-import 'package:sysdev_suretti/sign_up.dart';
+import 'package:sysdev_suretti/pages/sign_up.dart';
 import 'package:sysdev_suretti/map.dart';
 
 
@@ -68,7 +68,7 @@ class _TestPage1State extends State<TestPage1> {
                 onPressed: () {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
-                    return SignUpPage(); // SignUpPageに遷移
+                    return SignupPage(); // SignUpPageに遷移
                   }));
                 },
                 child: const Text('Go to Sign Up')),
