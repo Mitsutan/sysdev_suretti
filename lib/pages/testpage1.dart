@@ -60,7 +60,7 @@ class _TestPage1State extends State<TestPage1> {
                 onPressed: () {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
-                    return LoginPage(); // LoginPageに遷移
+                    return const LoginPage(); // LoginPageに遷移
                   }));
                 },
                 child: const Text('Go to Login')),
@@ -68,7 +68,7 @@ class _TestPage1State extends State<TestPage1> {
                 onPressed: () {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
-                    return SignupPage(); // SignUpPageに遷移
+                    return const SignupPage(); // SignUpPageに遷移
                   }));
                 },
                 child: const Text('Go to Sign Up')),
@@ -76,7 +76,7 @@ class _TestPage1State extends State<TestPage1> {
                 onPressed: () {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
-                    return MapPage(); // MapPageに遷移
+                    return const MapPage(); // MapPageに遷移
                   }));
                 },
                 child: const Text('Go to Map')), // 新しいボタンを追加
