@@ -40,8 +40,8 @@ Future<void> main() async {
   // );
   // mitsutan
   await Supabase.initialize(
-    url: 'https://jeluoazapxqjksdfvftm.supabase.co', // ここにSupabaseプロジェクトのURLを入力
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplbHVvYXphcHhxamtzZGZ2ZnRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTkxOTI0MTAsImV4cCI6MjAzNDc2ODQxMH0.T2OLrQzZrv3hvs2khmLdlFb72XE-m7QOJdqNhVmIges', // ここにSupabaseプロジェクトのanonキーを入力
+    url: const String.fromEnvironment("SUPABASE_URL"), // ここにSupabaseプロジェクトのURLを入力
+    anonKey: const String.fromEnvironment("SUPABASE_ANON_KEY"), // ここにSupabaseプロジェクトのanonキーを入力
   );
 
   // ログレベルの設定
