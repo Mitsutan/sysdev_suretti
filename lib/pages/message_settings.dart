@@ -1,19 +1,6 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-enum OptionLabel {
-  option1('宿泊地'),
-  option2('観光地'),
-  option3('飲食店'),
-
-  optionError('error');
-
-  const OptionLabel(this.label);
-  final String label;
-}
+import 'package:flutter/widgets.dart';
+import 'package:sysdev_suretti/pages/message_post_confirmation.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -25,55 +12,60 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const Test(title: 'Flutter Demo Home Page'),
+      home: const MessageSettings(),
     );
   }
 }
 
-class Test extends StatefulWidget {
-  const Test({super.key, required this.title});
-  final String title;
+class MessageSettings extends StatefulWidget {
+  const MessageSettings({super.key});
 
   @override
-  State<Test> createState() => _MyAppState();
+  State<MessageSettings> createState() => _MessageSettings();
 }
 
-class _MyAppState extends State<Test> {
-  OptionLabel? selectedOption1;
-  OptionLabel? selectedOption2;
+class _MessageSettings extends State<MessageSettings> {
+  String category = '宿泊地';
+  String recommend = '';
+  String address = '';
+  String message = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
         ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              DropdownMenu<OptionLabel>(
+              SizedBox(
                 width: 400,
-                requestFocusOnTap: true,
-                enableSearch: true,
-                enableFilter: true,
-                label: const Text('カテゴリー'),
-                onSelected: (OptionLabel? option) {
-                  setState(() {
-                    selectedOption1 = option;
-                  });
-                },
-                dropdownMenuEntries: OptionLabel.values
-                    .map<DropdownMenuEntry<OptionLabel>>((OptionLabel option) {
-                  return DropdownMenuEntry<OptionLabel>(
-                    value: option,
-                    label: option.label,
-                    style: MenuItemButton.styleFrom(
-                      foregroundColor: Colors.deepPurple,
+                child: DropdownButtonFormField<String>(
+                  hint: const Text('カテゴリーを選択してください'),
+                  itemHeight: 64,
+                  value: category,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      category = newValue!;
+                    });
+                  },
+                  items: <String>['宿泊地', '観光地', '飲食店']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(
+                    labelText: 'カテゴリー',
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0), // 枠線の角の丸みを設定
                     ),
-                  );
-                }).toList(),
+                  ),
+                ),
               ),
               const SizedBox(
                 height: 24,
@@ -82,8 +74,14 @@ class _MyAppState extends State<Test> {
                 width: 400,
                 child: TextFormField(
                   cursorColor: const Color.fromRGBO(131, 124, 124, 1),
+                  onChanged: (value) {
+                    setState(() {
+                      recommend = value;
+                    });
+                  },
                   decoration: InputDecoration(
                     labelText: 'おすすめの場所',
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0), // 枠線の角の丸みを設定
                     ),
@@ -91,14 +89,20 @@ class _MyAppState extends State<Test> {
                 ),
               ),
               const SizedBox(
-                height: 12,
+                height: 24,
               ),
               SizedBox(
                 width: 400,
                 child: TextFormField(
                   cursorColor: const Color.fromRGBO(131, 124, 124, 1),
+                  onChanged: (value) {
+                    setState(() {
+                      address = value;
+                    });
+                  },
                   decoration: InputDecoration(
                     labelText: '住所',
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0), // 枠線の角の丸みを設定
                     ),
@@ -106,7 +110,7 @@ class _MyAppState extends State<Test> {
                 ),
               ),
               const SizedBox(
-                height: 12,
+                height: 24,
               ),
               SizedBox(
                 width: 400,
@@ -115,8 +119,14 @@ class _MyAppState extends State<Test> {
                   minLines: 2,
                   maxLines: 5,
                   cursorColor: const Color.fromRGBO(131, 124, 124, 1),
+                  onChanged: (value) {
+                    setState(() {
+                      message = value;
+                    });
+                  },
                   decoration: InputDecoration(
                     labelText: 'メッセージ',
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0), // 枠線の角の丸みを設定
                     ),
@@ -124,14 +134,23 @@ class _MyAppState extends State<Test> {
                 ),
               ),
               const SizedBox(
-                height: 12,
+                height: 24,
               ),
               ElevatedButton(
                 onPressed: () {
                   // フォームが送信されたときの処理を記述
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => MessagePostConfirmation(
+                            category, recommend, address, message)),
+                  );
                 },
+                style: ElevatedButton.styleFrom(
+                  side: const BorderSide(color: Color(0xFF1A73E8)),
+                  minimumSize: const Size(100, 40),
+                ),
                 child: const Text('送信'),
-              )
+              ),
             ],
           ),
         ));
