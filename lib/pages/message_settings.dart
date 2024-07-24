@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:sysdev_suretti/pages/message_post_confirmation.dart';
 
 class MyApp extends StatelessWidget {
