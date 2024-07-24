@@ -19,6 +19,8 @@ jobs:
        with:
         flutter-version: '3.22.1'
         cache: true
+        cache-key: flutter
+        cache-path: ${{ runner.tool_cache }}/flutter
      - name: Install packages
        run: flutter pub get
      - name: Linter
