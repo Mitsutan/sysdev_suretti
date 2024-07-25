@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/models/scanned_user.dart';
 import 'package:sysdev_suretti/pages/loading.dart';
 import 'package:sysdev_suretti/utils/beacon.dart';
+import 'package:sysdev_suretti/utils/lifecycle.dart';
 import 'package:sysdev_suretti/utils/provider.dart';
 import 'package:sysdev_suretti/utils/sqlite.dart';
 
@@ -18,6 +19,15 @@ class Testhome extends ConsumerWidget {
     final userData = ref.watch(userDataProvider);
 
     final Sqlite sqlite = Sqlite(Supabase.instance.client.auth.currentUser!.id);
+
+    ref.listen<AppLifecycleState>(appLifecycleProvider, (previous, next) {
+      if (next == AppLifecycleState.resumed) {
+        if (!beacon.isScanning()) {
+          beacon.stopBeacon();
+          beacon.startBeacon(beacon.major, beacon.minor);
+        }
+      }
+    });
 
     // Supabase.instance.client.auth.onAuthStateChange.listen((data) {
     //   final AuthChangeEvent event = data.event;
