@@ -10,7 +10,6 @@ import 'package:sysdev_suretti/pages/loading.dart';
 
 // エントリーポイント
 Future<void> main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -44,13 +43,14 @@ Future<void> main() async {
   // );
   // mitsutan
   await Supabase.initialize(
-    url: const String.fromEnvironment("SUPABASE_URL"), // ここにSupabaseプロジェクトのURLを入力
-    anonKey: const String.fromEnvironment("SUPABASE_ANON_KEY"), // ここにSupabaseプロジェクトのanonキーを入力
+    url: const String.fromEnvironment(
+        "SUPABASE_URL"), // ここにSupabaseプロジェクトのURLを入力
+    anonKey: const String.fromEnvironment(
+        "SUPABASE_ANON_KEY"), // ここにSupabaseプロジェクトのanonキーを入力
   );
 
   // ログレベルの設定
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
-
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -77,9 +77,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     requestPermission();
-    
+
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
