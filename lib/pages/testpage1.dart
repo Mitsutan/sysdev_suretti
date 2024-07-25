@@ -4,7 +4,7 @@ import 'testpage3.dart';
 import 'package:sysdev_suretti/login.dart';
 import 'package:sysdev_suretti/sign_up.dart';
 import 'package:sysdev_suretti/map.dart';
-
+import 'package:sysdev_suretti/newmessage.dart'; // newmessage.dartをインポート
 
 class TestPage1 extends StatefulWidget {
   const TestPage1({super.key});
@@ -80,6 +80,14 @@ class _TestPage1State extends State<TestPage1> {
                   }));
                 },
                 child: const Text('Go to Map')), // 新しいボタンを追加
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return NewMessagePage(); // NewMessagePageに遷移
+                  }));
+                },
+                child: const Text('Go to New Message')), // 新しいボタンを追加
           ],
         ),
       ),
