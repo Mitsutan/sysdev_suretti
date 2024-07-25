@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:developer';
 import 'package:flutter/material.dart';
@@ -11,6 +12,9 @@ import 'package:sysdev_suretti/pages/loading.dart';
 Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 
   // ログの設定
   void log(String level, String message) {
