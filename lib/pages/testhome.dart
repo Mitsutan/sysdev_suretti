@@ -48,17 +48,26 @@ class Testhome extends ConsumerWidget {
 
     // usersテーブルからuser.auth_idをキーにしてユーザー情報を取得
     Future<void> getUserData() async {
-      final user = await Supabase.instance.client
-          .from('users')
-          .select()
-          .eq('auth_id', Supabase.instance.client.auth.currentUser!.id);
-      log(user.toString());
-      userData.updateNickname(user.first['nickname']);
-      String userId = user.first['user_id'].toRadixString(16).padLeft(8, '0');
-      beacon.major = int.parse(userId.substring(0, 4), radix: 16);
-      beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
+      final supabase = Supabase.instance.client;
+      if (supabase.auth.currentUser == null) {
+        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) {
+          return const Loading();
+        }), (route) => false);
+      } else {
+        final id = supabase.auth.currentUser!.id;
+        final user = await supabase
+            .from('users')
+            .select()
+            .eq('auth_id', id);
+        log(user.toString());
+        userData.updateNickname(user.first['nickname']);
+        String userId = user.first['user_id'].toRadixString(16).padLeft(8, '0');
+        beacon.major = int.parse(userId.substring(0, 4), radix: 16);
+        beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
 
-      userData.updateIsGotUserData(true);
+        userData.updateIsGotUserData(true);
+      }
     }
 
     if (!userData.isGotUserData) {
