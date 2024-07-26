@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:sysdev_suretti/utils/enum_pages.dart';
+import 'package:sysdev_suretti/utils/page_notifier.dart';
 
 class TestPage2 extends StatefulWidget {
   const TestPage2({super.key});
@@ -12,7 +15,13 @@ class TestPage2 extends StatefulWidget {
 
 class _TestPage2State extends State<TestPage2> {
   Future<int>? totalPriceFuture;
+  late PageNotifier pageNotifier;
 
+  @override
+  void initState() {
+    pageNotifier = PageNotifier();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +32,10 @@ class _TestPage2State extends State<TestPage2> {
       ),
       body: Container(
         alignment: Alignment.center,
-        child: const Column(
+        child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Card(
+            const Card(
               elevation: 5,
               margin: EdgeInsets.all(10),
               child: Column(
@@ -44,6 +53,12 @@ class _TestPage2State extends State<TestPage2> {
                 ],
               ),
             ),
+            ElevatedButton(
+                onPressed: () {
+                  pageNotifier.updateCount(
+                      Pages.page4, pageNotifier.getCount(Pages.page4) + 1);
+                },
+                child: const Text('add')),
           ],
         ),
       ),
