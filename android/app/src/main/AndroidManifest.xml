@@ -18,10 +18,11 @@
     <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="28" /> -->
 
 
-
     <!-- 位置情報を取得するパーミッション -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <!-- internet -->
+    <uses-permission android:name="android.permission.INTERNET" />
     
     <application
         android:allowBackup="true"
@@ -49,6 +50,14 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with YOUR_SCHEME://YOUR_HOST -->
+                <data
+                android:scheme="suretti"
+                android:host="open-app" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
