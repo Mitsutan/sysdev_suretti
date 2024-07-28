@@ -118,55 +118,59 @@ class Testhome extends ConsumerWidget {
                   child: const Text('delete table')),
               const Text('Scanned devices:'),
               if (Platform.isIOS) ...[
-                  ListView.builder(
-                    itemCount: beacon.scanResultsiOS.length,
-                    itemBuilder: (context, index) {
-                      final result = beacon.scanResultsiOS[index];
-                      return ListTile(
-                        title: Text(result.identifier),
-                        subtitle: Text('${result.major.toString()}${result.minor.toString()}'),
-                      );
-                    },
-                  )
-                ],
-              Expanded(
-                child: ListView.builder(
-                  itemCount: beacon.scanResults.length,
+                Expanded(
+                    child: ListView.builder(
+                  itemCount: beacon.scanResultsiOS.length,
                   itemBuilder: (context, index) {
-                    final result = beacon.scanResults[index];
-                    final major1 = result
-                        .advertisementData.manufacturerData.values.first
-                        .elementAt(18)
-                        .toRadixString(16);
-                    final major2 = result
-                        .advertisementData.manufacturerData.values.first
-                        .elementAt(19)
-                        .toRadixString(16);
-                    final minor1 = result
-                        .advertisementData.manufacturerData.values.first
-                        .elementAt(20)
-                        .toRadixString(16);
-                    final minor2 = result
-                        .advertisementData.manufacturerData.values.first
-                        .elementAt(21)
-                        .toRadixString(16);
-                    log('major: $major1$major2, minor: $minor1$minor2');
-                    sqlite.insertScanedUser(ScannedUser(
-                        userId: int.parse('$major1$major2$minor1$minor2',
-                            radix: 16),
-                        scannedAt: DateTime.now(),
-                        isGotPost: false));
-                    log(result.advertisementData.manufacturerData.values
-                        .toString());
+                    final result = beacon.scanResultsiOS[index];
                     return ListTile(
-                      title: Text(result.device.remoteId.toString()),
+                      title: Text(result.identifier),
                       subtitle: Text(
-                          result.advertisementData.manufacturerData.toString()),
-                      trailing: Text('${result.rssi}'),
+                          '${result.major.toString()}${result.minor.toString()}'),
                     );
                   },
+                )),
+              ],
+              if (Platform.isAndroid) ...[
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: beacon.scanResults.length,
+                    itemBuilder: (context, index) {
+                      final result = beacon.scanResults[index];
+                      final major1 = result
+                          .advertisementData.manufacturerData.values.first
+                          .elementAt(18)
+                          .toRadixString(16);
+                      final major2 = result
+                          .advertisementData.manufacturerData.values.first
+                          .elementAt(19)
+                          .toRadixString(16);
+                      final minor1 = result
+                          .advertisementData.manufacturerData.values.first
+                          .elementAt(20)
+                          .toRadixString(16);
+                      final minor2 = result
+                          .advertisementData.manufacturerData.values.first
+                          .elementAt(21)
+                          .toRadixString(16);
+                      log('major: $major1$major2, minor: $minor1$minor2');
+                      sqlite.insertScanedUser(ScannedUser(
+                          userId: int.parse('$major1$major2$minor1$minor2',
+                              radix: 16),
+                          scannedAt: DateTime.now(),
+                          isGotPost: false));
+                      log(result.advertisementData.manufacturerData.values
+                          .toString());
+                      return ListTile(
+                        title: Text(result.device.remoteId.toString()),
+                        subtitle: Text(result.advertisementData.manufacturerData
+                            .toString()),
+                        trailing: Text('${result.rssi}'),
+                      );
+                    },
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),
