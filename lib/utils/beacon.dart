@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -11,12 +12,14 @@ final beaconProvider = ChangeNotifierProvider((ref) => BeaconFunc());
 class BeaconFunc extends ChangeNotifier {
   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
   List<ScanResult> _scanResults = [];
+  List<Region> _scanResultsiOS = [];
 
   int major = 1;
   int minor = 1;
 
   BluetoothAdapterState get adapterState => _adapterState;
   List<ScanResult> get scanResults => _scanResults;
+  List<Region> get scanResultsiOS => _scanResultsiOS;
 
   void updateAdapterState(BluetoothAdapterState newState) {
     _adapterState = newState;
@@ -25,6 +28,11 @@ class BeaconFunc extends ChangeNotifier {
 
   void updateScanResults(List<ScanResult> newResults) {
     _scanResults = newResults;
+    notifyListeners();
+  }
+
+  void updateScanResultsiOS(Region newResults) {
+    _scanResultsiOS.add(newResults);
     notifyListeners();
   }
 
@@ -84,19 +92,35 @@ class BeaconFunc extends ChangeNotifier {
     }
 
     // FBP start scan
+    final regions = <Region>[];
     try {
-      await FlutterBluePlus.startScan(
-          withMsd: [_msdFilterData], androidUsesFineLocation: true);
+      if (Platform.isIOS) {
+        regions.add(Region(
+            identifier: 'dev.mitsutan.sysdev_suretti',
+            proximityUUID: const String.fromEnvironment("IBEACON_UUID")));
+      } else {
+        await FlutterBluePlus.startScan(
+            withMsd: [_msdFilterData], androidUsesFineLocation: true);
+      }
     } catch (e) {
       log('Start scan Err', name: 'beacon', error: e);
     }
 
-    // FBP scanResults listen
-    FlutterBluePlus.scanResults.listen((results) {
-      updateScanResults(results);
-    }, onError: (e) {
-      log('Scan error', name: 'FlutterBluePlus', error: e);
-    });
+    if (Platform.isIOS) {
+      flutterBeacon.monitoring(regions).listen((MonitoringResult result) {
+        log(result.toString(), name: 'flutterBeacon.monitoring()');
+        updateScanResultsiOS(result.region);
+      }, onError: (e) {
+        log('Monitoring error', name: 'flutterBeacon', error: e);
+      });
+    } else {
+      // FBP scanResults listen
+      FlutterBluePlus.scanResults.listen((results) {
+        updateScanResults(results);
+      }, onError: (e) {
+        log('Scan error', name: 'FlutterBluePlus', error: e);
+      });
+    }
   }
 
   Future<void> stopBeacon() async {

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -116,6 +117,18 @@ class Testhome extends ConsumerWidget {
                   },
                   child: const Text('delete table')),
               const Text('Scanned devices:'),
+              if (Platform.isIOS) ...[
+                  ListView.builder(
+                    itemCount: beacon.scanResultsiOS.length,
+                    itemBuilder: (context, index) {
+                      final result = beacon.scanResultsiOS[index];
+                      return ListTile(
+                        title: Text(result.identifier),
+                        subtitle: Text('${result.major.toString()}${result.minor.toString()}'),
+                      );
+                    },
+                  )
+                ],
               Expanded(
                 child: ListView.builder(
                   itemCount: beacon.scanResults.length,
