@@ -21,6 +21,7 @@ class Testhome extends ConsumerWidget {
     final Sqlite sqlite = Sqlite(Supabase.instance.client.auth.currentUser!.id);
 
     ref.listen<AppLifecycleState>(appLifecycleProvider, (previous, next) {
+      log(next.toString(), name: 'AppLifecycleState');
       if (next == AppLifecycleState.resumed) {
         if (!beacon.isScanning()) {
           beacon.stopBeacon();
