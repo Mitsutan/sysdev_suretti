@@ -62,7 +62,7 @@ class Testhome extends ConsumerWidget {
             .eq('auth_id', id);
         log(user.toString());
         userData.updateNickname(user.first['nickname']);
-        String userId = user.first['user_id'].toRadixString(16).padLeft(8, '0');
+        String userId = int.parse(user.first['user_id']).toRadixString(16).padLeft(8, '0');
         beacon.major = int.parse(userId.substring(0, 4), radix: 16);
         beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
 
