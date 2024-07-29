@@ -57,13 +57,11 @@ class Testhome extends ConsumerWidget {
         }), (route) => false);
       } else {
         final id = supabase.auth.currentUser!.id;
-        final user = await supabase
-            .from('users')
-            .select()
-            .eq('auth_id', id);
+        final user = await supabase.from('users').select().eq('auth_id', id);
         log(user.toString());
         userData.updateNickname(user.first['nickname']);
-        String userId = int.parse(user.first['user_id']).toRadixString(16).padLeft(8, '0');
+        String userId =
+            int.parse(user.first['user_id']).toRadixString(16).padLeft(8, '0');
         beacon.major = int.parse(userId.substring(0, 4), radix: 16);
         beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
 
@@ -156,7 +154,10 @@ class Testhome extends ConsumerWidget {
                     log(result.advertisementData.manufacturerData.values
                         .toString());
                     return ListTile(
-                      title: Text(result.device.remoteId.toString()),
+                      // title: Text(result.device.remoteId.toString()),
+                      title: Text(
+                          int.parse('$major1$major2$minor1$minor2', radix: 16)
+                              .toString()),
                       subtitle: Text(
                           result.advertisementData.manufacturerData.toString()),
                       trailing: Text('${result.rssi}'),
