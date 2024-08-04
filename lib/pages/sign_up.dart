@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sysdev_suretti/pages/confirm_email.dart';
 import 'package:sysdev_suretti/pages/login.dart';
 
 // import 'login_page.dart';
@@ -56,7 +57,7 @@ class _SignupPageState extends State<SignupPage> {
       }
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) {
-        return const LoginPage();
+        return const ConfirmEmailPage();
       }), (route) => false);
       log('登録完了', name: 'RegisterPage');
     } on AuthException catch (error) {
