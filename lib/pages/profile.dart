@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,6 +17,34 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   Future<int>? totalPriceFuture;
+
+  Future<XFile?> _getImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    return pickedFile;
+  }
+
+  void changeavatar() async {
+    final image = await _getImage();
+    if (image == null) {
+      return;
+    }
+
+    final filenameUUID = const Uuid().v4();
+
+    final supabase = Supabase.instance.client;
+    try {
+      await supabase.storage
+          .from('avatar')
+          .upload('users/$filenameUUID', File(image.path));
+      await supabase.from('users').update({'icon': 'avatar/users/$filenameUUID'}).eq(
+          'auth_id', supabase.auth.currentUser!.id);
+    } catch (e) {
+      log("avatar upload error", error: e);
+    }
+
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +77,8 @@ class _ProfilePageState extends State<ProfilePage> {
               children: <Widget>[
                 Image.network(
                     "https://jeluoazapxqjksdfvftm.supabase.co/storage/v1/object/public/${userdata.first['icon']}"),
+                ElevatedButton(
+                    onPressed: changeavatar, child: const Text('アイコン変更')),
               ],
             ),
           ),
