@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sysdev_suretti/utils/csb.dart';
 import 'package:uuid/uuid.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -43,9 +44,15 @@ class _ProfilePageState extends State<ProfilePage> {
               'auth_id', supabase.auth.currentUser!.id);
     } catch (e) {
       log("avatar upload error", error: e);
+      if (mounted) {
+        Csb.showSnackBar(context, 'プロフィール画像の変更に失敗しました', CsbType.error);
+      }
     }
 
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+      Csb.showSnackBar(context, 'プロフィール画像を変更しました', CsbType.nomal);
+    }
   }
 
   @override
