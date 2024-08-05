@@ -37,8 +37,10 @@ class _ProfilePageState extends State<ProfilePage> {
       await supabase.storage
           .from('avatar')
           .upload('users/$filenameUUID', File(image.path));
-      await supabase.from('users').update({'icon': 'avatar/users/$filenameUUID'}).eq(
-          'auth_id', supabase.auth.currentUser!.id);
+      await supabase
+          .from('users')
+          .update({'icon': 'avatar/users/$filenameUUID'}).eq(
+              'auth_id', supabase.auth.currentUser!.id);
     } catch (e) {
       log("avatar upload error", error: e);
     }
@@ -49,12 +51,23 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final supabase = Supabase.instance.client;
+    final metadata = supabase.auth.currentUser!.userMetadata;
+
+    if (metadata == null) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     Future<List<Map<String, dynamic>>> getUserData() async {
       final userdata = await supabase
           .from('users')
           .select()
           .eq('auth_id', supabase.auth.currentUser!.id);
+
+      userdata.add(metadata);
       return userdata;
     }
 
@@ -62,7 +75,11 @@ class _ProfilePageState extends State<ProfilePage> {
       future: getUserData(),
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
         final userdata = snapshot.data;
         return Scaffold(
@@ -75,10 +92,49 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image.network(
-                    "https://jeluoazapxqjksdfvftm.supabase.co/storage/v1/object/public/${userdata.first['icon']}"),
-                ElevatedButton(
-                    onPressed: changeavatar, child: const Text('アイコン変更')),
+                Expanded(
+                    child: ListView(
+                  children: [
+                    ListTile(
+                      leading: Stack(
+                        children: [
+                          CircleAvatar(
+                            foregroundImage: NetworkImage(
+                                "https://jeluoazapxqjksdfvftm.supabase.co/storage/v1/object/public/${userdata.first['icon']}"),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            left: 0,
+                            child: IconButton(
+                              onPressed: changeavatar,
+                              icon: const Icon(Icons.camera_alt_outlined),
+                            ),
+                          ),
+                        ],
+                      ),
+                      title: Text(userdata.first['nickname']),
+                      trailing: IconButton(
+                        onPressed: () {
+                          // ここに編集画面への遷移処理を書く
+                          log('編集');
+                        },
+                        icon: const Icon(Icons.edit),
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text('メールアドレス'),
+                      subtitle: Text(userdata[1]['email']),
+                      trailing: IconButton(
+                        onPressed: () {
+                          // ここに編集画面への遷移処理を書く
+                          log('編集');
+                        },
+                        icon: const Icon(Icons.edit),
+                      ),
+                    ),
+                  ],
+                ))
               ],
             ),
           ),
