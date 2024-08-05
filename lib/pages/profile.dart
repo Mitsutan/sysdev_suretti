@@ -123,6 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     ListTile(
+                      leading: const Icon(Icons.email),
                       title: const Text('メールアドレス'),
                       subtitle: Text(userdata[1]['email']),
                       trailing: IconButton(
@@ -133,6 +134,16 @@ class _ProfilePageState extends State<ProfilePage> {
                         icon: const Icon(Icons.edit),
                       ),
                     ),
+                    ListTile(
+                      leading: const Icon(Icons.lock),
+                      title: const Text('パスワード変更'),
+                      trailing: IconButton(
+                          onPressed: () {
+                            // ここに編集画面への遷移処理を書く
+                            log('編集');
+                          },
+                          icon: const Icon(Icons.edit)),
+                    )
                   ],
                 ))
               ],
