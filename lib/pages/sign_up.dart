@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sysdev_suretti/pages/confirm_email.dart';
 import 'package:sysdev_suretti/pages/login.dart';
 
 // import 'login_page.dart';
@@ -54,10 +55,9 @@ class _SignupPageState extends State<SignupPage> {
       if (!mounted) {
         return;
       }
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) {
-        return const LoginPage();
-      }), (route) => false);
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+        return ConfirmEmailPage(email: email,);
+      }));
       log('登録完了', name: 'RegisterPage');
     } on AuthException catch (error) {
       log(error.message, name: 'RegisterPage', error: error);
@@ -100,10 +100,9 @@ class _SignupPageState extends State<SignupPage> {
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(
-                  label: Text('メールアドレス'),
-                  hintText: '例)abc@example.com',
-                  border: OutlineInputBorder()
-                ),
+                    label: Text('メールアドレス'),
+                    hintText: '例)abc@example.com',
+                    border: OutlineInputBorder()),
                 validator: (val) {
                   if (val == null || val.isEmpty) {
                     return '必須';
@@ -117,10 +116,9 @@ class _SignupPageState extends State<SignupPage> {
                 controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(
-                  label: Text('パスワード'),
-                  hintText: '8桁以上32桁以内',
-                  border: OutlineInputBorder()
-                ),
+                    label: Text('パスワード'),
+                    hintText: '8桁以上32桁以内',
+                    border: OutlineInputBorder()),
                 validator: (val) {
                   if (val == null || val.isEmpty) {
                     return '必須';
@@ -135,10 +133,9 @@ class _SignupPageState extends State<SignupPage> {
               TextFormField(
                 controller: _usernameController,
                 decoration: const InputDecoration(
-                  label: Text('ユーザー名'),
-                  hintText: '例)すれちがいおにいさん',
-                  border: OutlineInputBorder()
-                ),
+                    label: Text('ユーザー名'),
+                    hintText: '例)すれちがいおにいさん',
+                    border: OutlineInputBorder()),
                 validator: (val) {
                   if (val == null || val.isEmpty) {
                     return '必須';
