@@ -56,7 +56,7 @@ class _TestPage2State extends State<TestPage2> {
             ElevatedButton(
                 onPressed: () {
                   pageNotifier.updateCount(
-                      Pages.page4, pageNotifier.getCount(Pages.page4) + 1);
+                      Pages.notice, pageNotifier.getCount(Pages.notice) + 1);
                 },
                 child: const Text('add')),
           ],

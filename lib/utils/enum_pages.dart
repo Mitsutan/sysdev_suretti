@@ -4,27 +4,27 @@ import 'package:sysdev_suretti/pages/testpage1.dart';
 import 'package:sysdev_suretti/pages/testpage2.dart';
 
 enum Pages {
-  page1(
+  home(
     title: 'ホーム',
     icon: Icons.home,
     page: Testhome(),
   ),
-  page2(
+  search(
     title: '検索',
     icon: Icons.search,
     page: TestPage1(),
   ),
-  page3(
+  post(
     title: '投稿',
     icon: Icons.add_comment,
     page: TestPage2(),
   ),
-  page4(
+  notice(
     title: '通知',
     icon: Icons.notifications,
     page: TestPage2(),
   ),
-  page5(
+  profile(
     title: 'アカウント',
     icon: Icons.account_circle,
     page: TestPage2(),

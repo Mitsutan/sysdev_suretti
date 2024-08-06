@@ -5,11 +5,11 @@ import 'package:sysdev_suretti/utils/enum_pages.dart';
 
 class PageNotifier extends ChangeNotifier {
   final Map<Pages, int> _pageCounts = {
-    Pages.page1: 0,
-    Pages.page2: 0,
-    Pages.page3: 0,
-    Pages.page4: 0,
-    Pages.page5: 0,
+    Pages.home: 0,
+    Pages.search: 0,
+    Pages.post: 0,
+    Pages.notice: 0,
+    Pages.profile: 0,
   };
 
   void updateCount(Pages page, int count) {

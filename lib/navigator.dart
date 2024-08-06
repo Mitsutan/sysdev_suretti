@@ -8,11 +8,11 @@ import 'package:sysdev_suretti/utils/page_notifier.dart';
 
 
 final _navigatorKeys = <Pages, GlobalKey<NavigatorState>>{
-  Pages.page1: GlobalKey<NavigatorState>(),
-  Pages.page2: GlobalKey<NavigatorState>(),
-  Pages.page3: GlobalKey<NavigatorState>(),
-  Pages.page4: GlobalKey<NavigatorState>(),
-  Pages.page5: GlobalKey<NavigatorState>(),
+  Pages.home: GlobalKey<NavigatorState>(),
+  Pages.search: GlobalKey<NavigatorState>(),
+  Pages.post: GlobalKey<NavigatorState>(),
+  Pages.notice: GlobalKey<NavigatorState>(),
+  Pages.profile: GlobalKey<NavigatorState>(),
 };
 
 // ナビゲーターウィジェット
@@ -21,7 +21,7 @@ class Navigation extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentTab = useState(Pages.page1);
+    final currentTab = useState(Pages.home);
     final pageNotifier = useMemoized(() => PageNotifier(), []);
 
     // pageNotifier.updateCount(Pages.page4, pageNotifier.getCount(Pages.page4) + 1);
