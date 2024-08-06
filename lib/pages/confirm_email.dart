@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/navigator.dart';
 import 'package:sysdev_suretti/pages/login.dart';
+import 'package:sysdev_suretti/utils/csb.dart';
 
 class ConfirmEmailPage extends StatefulWidget {
   const ConfirmEmailPage({super.key, required this.email});
@@ -25,12 +26,9 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> {
     } catch (e) {
       log("exception: resend", error: e);
     }
-    SnackBar snackBar = const SnackBar(
-      content: Text("メールを再送信しました"),
-    );
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Csb.showSnackBar(context, '確認メールを再送信しました', CsbType.nomal);
     }
   }
 
