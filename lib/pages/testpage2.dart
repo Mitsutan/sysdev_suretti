@@ -32,10 +32,10 @@ class _TestPage2State extends State<TestPage2> {
       ),
       body: Container(
         alignment: Alignment.center,
-        child: Column(
+        child: const Column(
           // mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Card(
+            Card(
               elevation: 5,
               margin: EdgeInsets.all(10),
               child: Column(
@@ -53,12 +53,12 @@ class _TestPage2State extends State<TestPage2> {
                 ],
               ),
             ),
-            ElevatedButton(
-                onPressed: () {
-                  pageNotifier.updateCount(
-                      Pages.notice, pageNotifier.getCount(Pages.notice) + 1);
-                },
-                child: const Text('add')),
+            // ElevatedButton(
+            //     onPressed: () {
+            //       // pageNotifier.updateCount(
+            //       //     Pages.notice, pageNotifier.getCount(Pages.notice) + 1);
+            //     },
+            //     child: const Text('add')),
           ],
         ),
       ),
