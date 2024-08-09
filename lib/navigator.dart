@@ -1,6 +1,8 @@
-// タブメニューに表示するページ情報
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:sysdev_suretti/stream_mock.dart';
 import 'package:sysdev_suretti/utils/enum_pages.dart';
 import 'package:sysdev_suretti/utils/page_notifier.dart';
 
@@ -23,8 +25,21 @@ class Navigation extends HookWidget {
   Widget build(BuildContext context) {
     final currentTab = useState(Pages.home);
     final pageNotifier = useMemoized(() => PageNotifier(), []);
+    final secondsStream = useMemoized(() => SecondsStream(), []);
 
-    // pageNotifier.updateCount(Pages.page4, pageNotifier.getCount(Pages.page4) + 1);
+    useEffect(() {
+      return () {
+        secondsStream.dispose();
+      };
+    }, [secondsStream]);
+
+    try {
+      secondsStream.stream.listen((seconds) {
+        pageNotifier.updateCount(Pages.notice, seconds);
+      });
+    } catch (e) {
+      log("stream", error: e);
+    }
 
     return Scaffold(
         body: Stack(
@@ -47,10 +62,16 @@ class Navigation extends HookWidget {
           currentIndex: Pages.values.indexOf(currentTab.value),
           items: Pages.values
               .map((page) => BottomNavigationBarItem(
-                    icon: Badge(
-                      label: Text('${pageNotifier.getCount(page)}'),
-                      isLabelVisible: pageNotifier.getCount(page) == 0 ? false : true,
-                      child: Icon(page.icon),
+                    icon: ValueListenableBuilder<int>(
+                      valueListenable: pageNotifier.getCountNotifier(page),
+                      builder: (context, count, child) {
+                        // return Text(count.toString());
+                        return Badge(
+                          label: Text(count.toString()),
+                          isLabelVisible: count == 0 ? false : true,
+                          child: Icon(page.icon),
+                        );
+                      },
                     ),
                     label: page.title,
                   ))
