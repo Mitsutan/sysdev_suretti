@@ -1,7 +1,8 @@
 // タブメニューに表示するページ情報
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:sysdev_suretti/pages/testhome.dart';
+import 'package:sysdev_suretti/pages/home.dart';
+// import 'package:sysdev_suretti/pages/testhome.dart';
 
 import 'pages/testpage1.dart';
 import 'pages/testpage2.dart';
@@ -10,7 +11,7 @@ enum Pages {
   page1(
     title: 'ホーム',
     icon: Icons.home,
-    page: Testhome(),
+    page: HomeApp(),
   ),
   page2(
     title: 'page1',
