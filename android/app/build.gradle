@@ -1,12 +1,11 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id "com.google.gms.google-services"
     id "dev.flutter.flutter-gradle-plugin"
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 
 import java.util.Properties
 import java.io.File
@@ -37,10 +36,10 @@ def getApiKey() {
         properties.load(new FileInputStream(envFile))
         return properties.getProperty("GOOGLE_MAPS_API_KEY")
     }
+    return null
 }
 
 android {
-    namespace = "dev.mitsutan.sysdev_suretti"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -69,3 +68,5 @@ android {
 flutter {
     source = "../.."
 }
+
+apply plugin: 'com.google.gms.google-services'

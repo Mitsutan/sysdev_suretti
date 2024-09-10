@@ -68,12 +68,12 @@
         <!-- <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAbiv9ex9Tk5TYroTUYNRu_2tU217XQfDM"/> -->
-        <!-- <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="${{GOOGLE_MAPS_API_KEY}}"/> -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_api_key"/>
+            android:value="${{GOOGLE_MAPS_API_KEY}}"/>
+        <!-- <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_api_key"/> -->
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
