@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/navigator.dart';
-import 'package:sysdev_suretti/pages/signup.dart';
-import 'package:sysdev_suretti/signup_page.dart';
+import 'package:sysdev_suretti/pages/sign_up.dart';
 
 // import 'package:sysdev_suretti/sign_up.dart';
 
