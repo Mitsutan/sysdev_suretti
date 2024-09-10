@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sysdev_suretti/pages/message_settings.dart';
 import 'package:sysdev_suretti/pages/testhome.dart';
 import 'package:sysdev_suretti/pages/testpage1.dart';
 import 'package:sysdev_suretti/pages/testpage2.dart';
@@ -17,7 +18,7 @@ enum Pages {
   post(
     title: '投稿',
     icon: Icons.add_comment,
-    page: TestPage2(),
+    page: MessageSettingsPage(),
   ),
   notice(
     title: '通知',
