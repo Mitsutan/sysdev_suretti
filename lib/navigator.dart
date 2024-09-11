@@ -11,7 +11,7 @@ enum Pages {
   page1(
     title: 'ホーム',
     icon: Icons.home,
-    page: HomeApp(),
+    page: HomePage(),
   ),
   page2(
     title: 'page1',

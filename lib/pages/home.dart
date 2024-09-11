@@ -4,20 +4,20 @@ import 'package:flutter/material.dart';
 //   runApp(const HomeApp());
 // }
 
-class HomeApp extends StatelessWidget {
-  const HomeApp({super.key});
+// class HomeApp extends StatelessWidget {
+//   const HomeApp({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ホーム',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomePage(),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'ホーム',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: const HomePage(),
+//     );
+//   }
+// }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('ホーム'),
         centerTitle: true,
         actions: [
@@ -121,40 +121,40 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 6.0,
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.home),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {},
-            ),
-            const SizedBox(width: 40), // 中央のボタンのスペース
-            IconButton(
-              icon: const Icon(Icons.notifications),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.person),
-              onPressed: () {},
-            ),
-          ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: '投稿',
-        backgroundColor: Colors.blue,
-        child: const Icon(Icons.add),
-      ),
+      // bottomNavigationBar: BottomAppBar(
+      //   shape: const CircularNotchedRectangle(),
+      //   notchMargin: 6.0,
+      //   child: Row(
+      //     mainAxisSize: MainAxisSize.max,
+      //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+      //     children: <Widget>[
+      //       IconButton(
+      //         icon: const Icon(Icons.home),
+      //         onPressed: () {},
+      //       ),
+      //       IconButton(
+      //         icon: const Icon(Icons.search),
+      //         onPressed: () {},
+      //       ),
+      //       const SizedBox(width: 40), // 中央のボタンのスペース
+      //       IconButton(
+      //         icon: const Icon(Icons.notifications),
+      //         onPressed: () {},
+      //       ),
+      //       IconButton(
+      //         icon: const Icon(Icons.person),
+      //         onPressed: () {},
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {},
+      //   tooltip: '投稿',
+      //   backgroundColor: Colors.blue,
+      //   child: const Icon(Icons.add),
+      // ),
     );
   }
 }
