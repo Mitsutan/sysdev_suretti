@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:sysdev_suretti/utils/enum_pages.dart';
 import 'package:sysdev_suretti/utils/page_notifier.dart';
 
 class TestPage2 extends StatefulWidget {
