@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:sysdev_suretti/pages/home.dart';
+import 'package:sysdev_suretti/pages/setting.dart';
 // import 'package:sysdev_suretti/pages/testhome.dart';
 
 import 'pages/testpage1.dart';
@@ -22,7 +23,12 @@ enum Pages {
     title: 'page2',
     icon: Icons.home_work_outlined,
     page: TestPage2(),
-  );
+  ),
+  page4(
+    title: '設定',
+    icon: Icons.settings,
+    page: SettingsPage(),
+  ),;
 
   const Pages({
     required this.title,
@@ -39,6 +45,7 @@ final _navigatorKeys = <Pages, GlobalKey<NavigatorState>>{
   Pages.page1: GlobalKey<NavigatorState>(),
   Pages.page2: GlobalKey<NavigatorState>(),
   Pages.page3: GlobalKey<NavigatorState>(),
+  Pages.page4: GlobalKey<NavigatorState>(),
 };
 
 // ナビゲーターウィジェット
