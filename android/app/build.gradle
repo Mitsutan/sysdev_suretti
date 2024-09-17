@@ -23,6 +23,8 @@ if (flutterVersionName == null) {
     flutterVersionName = "1.0"
 }
 
+def MAPS_API_KEY = project.hasProperty('MAPS_API_KEY') ? project.MAPS_API_KEY : ""
+
 android {
     namespace = "dev.mitsutan.sysdev_suretti"
     compileSdk = flutter.compileSdkVersion
@@ -43,6 +45,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+        resValue "string", "maps_api_key", MAPS_API_KEY
     }
 
     buildTypes {

@@ -4,17 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/pages/confirm_email.dart';
 import 'package:sysdev_suretti/pages/login.dart';
-
-// import 'login_page.dart';
+import 'map.dart'; // map.dartをインポート
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
-
-  // static Route<void> route({bool isRegistering = false}) {
-  //   return MaterialPageRoute(
-  //     builder: (context) => const SignupPage(),
-  //   );
-  // }
 
   @override
   State<SignupPage> createState() => _SignupPageState();
@@ -140,10 +133,6 @@ class _SignupPageState extends State<SignupPage> {
                   if (val == null || val.isEmpty) {
                     return '必須';
                   }
-                  // final isValid = RegExp(r'^[A-Za-z0-9_]{3,24}$').hasMatch(val);
-                  // if (!isValid) {
-                  //   return '3~24文字のアルファベットか文字で入力してください';
-                  // }
                   return null;
                 },
               ),
@@ -172,12 +161,23 @@ class _SignupPageState extends State<SignupPage> {
               Center(
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _signUp,
-                  // style: ElevatedButton.styleFrom(
-                  //   backgroundColor: Theme.of(context).colorScheme.primary,
-                  // ),
                   child: const Text('登録'),
                 ),
               ),
+              const SizedBox(width: 16, height: 16),
+
+              // 地図ページへの遷移ボタン(本番では削除する機能)
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                      return const MapPage();
+                    }));
+                  },
+                  child: const Text('地図ページへ'),
+                ),
+              ),
+              // ここまで遷移ボタン
             ],
           ),
         ),
