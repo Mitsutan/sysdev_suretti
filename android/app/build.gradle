@@ -1,11 +1,9 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    id "com.google.gms.google-services"
     id "dev.flutter.flutter-gradle-plugin"
+    // id "com.google.gms.google-services"
 }
-
-apply plugin: 'com.android.application'
 
 import java.util.Properties
 import java.io.File
@@ -69,4 +67,9 @@ flutter {
     source = "../.."
 }
 
-apply plugin: 'com.google.gms.google-services'
+// 試験的に追加
+tasks.whenTaskAdded { task ->
+    if (task.name == 'processDebugGoogleServices') {
+        task.dependsOn 'preBuild'
+    }
+}
