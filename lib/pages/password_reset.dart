@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(PasswordResetApp());
-}
+// void main() {
+//   runApp(PasswordResetApp());
+// }
 
-class PasswordResetApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'パスワード再設定',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: PasswordResetPage(),
-    );
-  }
-}
+// class PasswordResetApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'パスワード再設定',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: PasswordResetPage(),
+//     );
+//   }
+// }
 
 class PasswordResetPage extends StatefulWidget {
+  const PasswordResetPage({super.key});
+
   @override
   _PasswordResetPageState createState() => _PasswordResetPageState();
 }
@@ -42,7 +44,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
         _errorMessage = null;
         // ここで保存処理を追加
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("パスワードが更新されました")),
+          const SnackBar(content: Text("パスワードが更新されました")),
         );
       }
     });
@@ -52,8 +54,8 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: Text('パスワード再設定'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('パスワード再設定'),
         centerTitle: true,
       ),
       body: Center(
@@ -63,63 +65,64 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 '現在のパスワードを入力してください',
                 style: TextStyle(fontSize: 16),
               ),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               TextField(
                 controller: _currentPasswordController,
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: '8桁以上32桁以内',
                 ),
               ),
-              SizedBox(height: 16.0),
-              Text(
+              const SizedBox(height: 16.0),
+              const Text(
                 '新しいパスワードを入力してください',
                 style: TextStyle(fontSize: 16),
               ),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               TextField(
                 controller: _newPasswordController,
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: '8桁以上32桁以内',
                 ),
               ),
-              SizedBox(height: 16.0),
-              Text(
+              const SizedBox(height: 16.0),
+              const Text(
                 'もう一度入力してください',
                 style: TextStyle(fontSize: 16),
               ),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               TextField(
                 controller: _confirmPasswordController,
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: '8桁以上32桁以内',
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               if (_errorMessage != null) ...[
                 Text(
-                  _errorMessage!,//ここでなんか適当なエラーを表示する
-                  style: TextStyle(color: Colors.red, fontSize: 14),
+                  _errorMessage!, //ここでなんか適当なエラーを表示する
+                  style: const TextStyle(color: Colors.red, fontSize: 14),
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
               ],
               Center(
-                child: ElevatedButton(//多分この下にパスワードを保存する処理を追加する
+                child: ElevatedButton(
+                  //多分この下にパスワードを保存する処理を追加する
                   onPressed: _validateAndSubmit,
-                  child: Text('登録する'),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 40.0),
-                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                    // backgroundColor: Colors.blue,
                   ),
+                  child: const Text('登録する'),
                 ),
               ),
             ],

@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 
 import 'package:sysdev_suretti/pages/loading.dart';
+import 'package:sysdev_suretti/pages/password_reset.dart';
 import 'package:sysdev_suretti/utils/csb.dart';
 import 'package:uuid/uuid.dart';
 
@@ -92,7 +93,10 @@ class _SettingsPageState extends State<SettingsPage> {
     log("name update start");
     final supabase = Supabase.instance.client;
     try {
-      await supabase.from('users').update({'nickname': _nameController.text}).eq('auth_id', supabase.auth.currentUser!.id);
+      await supabase
+          .from('users')
+          .update({'nickname': _nameController.text}).eq(
+              'auth_id', supabase.auth.currentUser!.id);
       await supabase.auth
           .updateUser(UserAttributes(data: {'username': _nameController.text}));
     } catch (e) {
@@ -294,7 +298,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   const Text('**********xzy'),
                   const SizedBox(height: 8.0),
                   GestureDetector(
-                    // onTap: () => _navigateTo('パスワード再設定'),
+                    onTap: () {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return const PasswordResetPage();
+                      }));
+                    },
                     child: RichText(
                       text: const TextSpan(
                         text: 'パスワード再設定は',
