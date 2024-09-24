@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sysdev_suretti/main.dart';
 
 class MessagePostConfirmation extends StatelessWidget {
   final String category;
@@ -108,8 +109,9 @@ class MessagePostConfirmation extends StatelessWidget {
                   // ここの処理はまだ適当に書いてます
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                        builder: (context) => MessagePostConfirmation(
-                            category, recommend, address, message)),
+                        builder: (context) => const MyHomePage(
+                              title: '',
+                            )),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -129,6 +131,8 @@ class MessagePostConfirmation extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF1A73E8), width: 1),
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
                   minimumSize: const Size(100, 40),
                 ),
                 child: const Text('いいえ'),
