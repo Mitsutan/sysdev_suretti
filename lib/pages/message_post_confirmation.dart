@@ -21,7 +21,7 @@ class MessagePostConfirmation extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 400,
+            width: 350,
             child: TextFormField(
               cursorColor: const Color.fromRGBO(131, 124, 124, 1),
               initialValue: category,
@@ -39,7 +39,7 @@ class MessagePostConfirmation extends StatelessWidget {
             height: 24,
           ),
           SizedBox(
-            width: 400,
+            width: 350,
             child: TextFormField(
               initialValue: recommend,
               readOnly: true,
@@ -56,7 +56,7 @@ class MessagePostConfirmation extends StatelessWidget {
             height: 24,
           ),
           SizedBox(
-            width: 400,
+            width: 350,
             child: TextFormField(
               cursorColor: const Color.fromRGBO(131, 124, 124, 1),
               initialValue: address,
@@ -73,7 +73,7 @@ class MessagePostConfirmation extends StatelessWidget {
             height: 24,
           ),
           SizedBox(
-            width: 400,
+            width: 350,
             child: TextFormField(
               keyboardType: TextInputType.multiline,
               minLines: 2,
