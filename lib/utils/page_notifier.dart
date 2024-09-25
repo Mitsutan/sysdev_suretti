@@ -14,7 +14,7 @@ class PageNotifier extends ChangeNotifier {
 
   void updateCount(Pages page, int count) {
     _pageCounts[page]?.value = count;
-    log('updateCount: $page, $count');
+    // log('updateCount: $page, $count');
     notifyListeners();
     // log('updateCount: ${getCount(page)}');
   }
