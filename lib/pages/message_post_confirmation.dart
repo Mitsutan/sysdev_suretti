@@ -1,6 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:developer';
 
-class MessagePostConfirmation extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sysdev_suretti/utils/provider.dart';
+
+class MessagePostConfirmation extends ConsumerWidget {
   final String category;
   final String recommend;
   final String address;
@@ -10,7 +15,25 @@ class MessagePostConfirmation extends StatelessWidget {
       {super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userData = ref.watch(userDataProvider);
+
+    Future<void> postMessage() async {
+      final supabase = Supabase.instance.client;
+
+      try {
+        await supabase.from('messages').upsert({
+          // 'category': category,
+          // 'recommended_place': recommend,
+          // 'location': address,
+          'message_text': message,
+          'user_id': userData.userData['user_id'],
+        });
+      } catch (e) {
+        log('エラーが発生しました: $e');
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -106,11 +129,12 @@ class MessagePostConfirmation extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // ここの処理はまだ適当に書いてます
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => MessagePostConfirmation(
-                            category, recommend, address, message)),
-                  );
+                  // Navigator.of(context).push(
+                  //   MaterialPageRoute(
+                  //       builder: (context) => MessagePostConfirmation(
+                  //           category, recommend, address, message)),
+                  // );
+                  postMessage();
                 },
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF1A73E8), width: 1),
