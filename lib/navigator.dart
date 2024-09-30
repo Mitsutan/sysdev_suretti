@@ -8,7 +8,6 @@ import 'package:sysdev_suretti/utils/page_notifier.dart';
 
 
 
-
 final _navigatorKeys = <Pages, GlobalKey<NavigatorState>>{
   Pages.home: GlobalKey<NavigatorState>(),
   Pages.search: GlobalKey<NavigatorState>(),
