@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sysdev_suretti/pages/message_settings.dart';
+import 'package:sysdev_suretti/pages/search_screen.dart';
 import 'package:sysdev_suretti/pages/testhome.dart';
-import 'package:sysdev_suretti/pages/testpage1.dart';
+// import 'package:sysdev_suretti/pages/testpage1.dart';
 import 'package:sysdev_suretti/pages/testpage2.dart';
 
 enum Pages {
@@ -13,7 +14,7 @@ enum Pages {
   search(
     title: '検索',
     icon: Icons.search,
-    page: TestPage1(),
+    page: SearchApp(),
   ),
   post(
     title: '投稿',
