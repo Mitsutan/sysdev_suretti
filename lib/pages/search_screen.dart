@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(SearchApp());
-}
+// void main() {
+//   runApp(SearchApp());
+// }
 
 class SearchApp extends StatelessWidget {
+  const SearchApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+      ),
       title: '検索画面',
-      home: SearchPage(),
+      home: const SearchPage(),
     );
   }
 }
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -36,7 +44,7 @@ class _SearchPageState extends State<SearchPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("フィルターを選択"),
+          title: const Text("フィルターを選択"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: _filters.map((filter) {
@@ -61,17 +69,17 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('検索'),
+        title: const Text('検索'),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             // 戻る処理（実際にはNavigator.pop()などを使用）
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             onPressed: () {
               // 設定画面を開く処理
             },
@@ -88,27 +96,27 @@ class _SearchPageState extends State<SearchPage> {
                 Expanded(
                   child: TextField(
                     controller: _searchController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: '検索したいキーワードを入力してください',
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(),
                     ),
                   ),
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 IconButton(
-                  icon: Icon(Icons.filter_list),
+                  icon: const Icon(Icons.filter_list),
                   onPressed: _showFilterDialog,
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               '選択されたフィルター: $_selectedFilter',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            SizedBox(height: 16),
-            Expanded(
+            const SizedBox(height: 16),
+            const Expanded(
               child: Center(
                 child: Text(
                   '検索してください',
