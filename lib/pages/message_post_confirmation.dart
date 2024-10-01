@@ -22,13 +22,23 @@ class MessagePostConfirmation extends ConsumerWidget {
       final supabase = Supabase.instance.client;
 
       try {
-        await supabase.from('messages').upsert({
+        final data = await supabase.from('messages').upsert({
           // 'category': category,
           // 'recommended_place': recommend,
           // 'location': address,
           'message_text': message,
           'user_id': userData.userData['user_id'],
-        });
+        }).select();
+
+        log('data: $data');
+        final id = data.first['message_id'];
+        // log('id: $id');
+
+        await supabase.from('users').update({
+          'message_id': id,
+        }).eq('auth_id', supabase.auth.currentUser!.id);
+
+        log('投稿しました');
       } catch (e) {
         log('エラーが発生しました: $e');
       }
