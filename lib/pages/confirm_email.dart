@@ -13,11 +13,11 @@ class ConfirmEmailPage extends StatefulWidget {
   final String email;
 
   @override
-  State<ConfirmEmailPage> createState() => _ConfirmEmailPageState();
+  _ConfirmEmailPageState createState() => _ConfirmEmailPageState();
 }
 
 class _ConfirmEmailPageState extends State<ConfirmEmailPage> {
-  Future<int>? totalPriceFuture;
+  // Future<int>? totalPriceFuture;
 
   void resendEmail() async {
     try {
@@ -32,9 +32,12 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> {
     }
   }
 
+  late StreamSubscription<AuthState> _authSubscription;
+
   @override
-  Widget build(BuildContext context) {
-    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+  void initState() {
+    _authSubscription =
+        Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       final AuthChangeEvent event = data.event;
       if (event == AuthChangeEvent.signedIn) {
         Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
@@ -43,6 +46,11 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> {
         }), (route) => false);
       }
     });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return Scaffold(
       appBar: AppBar(
@@ -60,6 +68,7 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> {
                 onPressed: resendEmail, child: const Text("メールを再送信する")),
             TextButton(
                 onPressed: () {
+                  _authSubscription.cancel();
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
                     return const LoginPage();
