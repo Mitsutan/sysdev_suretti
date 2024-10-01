@@ -53,7 +53,8 @@ class Testhome extends ConsumerWidget {
           .select()
           .eq('auth_id', Supabase.instance.client.auth.currentUser!.id);
       log(user.toString());
-      userData.updateNickname(user.first['nickname']);
+      // userData.updateNickname(user.first['nickname']);
+      userData.updateUserData(user.first);
       String userId = user.first['user_id'].toRadixString(16).padLeft(8, '0');
       beacon.major = int.parse(userId.substring(0, 4), radix: 16);
       beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
@@ -87,7 +88,7 @@ class Testhome extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               // Text(user!.userMetadata!['username'].toString()),
-              Text(userData.nickname),
+              Text(userData.userData['nickname'].toString()),
               TextButton(
                   onPressed: () {
                     Supabase.instance.client.auth.signOut();

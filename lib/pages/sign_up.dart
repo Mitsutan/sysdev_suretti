@@ -17,7 +17,7 @@ class SignupPage extends StatefulWidget {
   // }
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  _SignupPageState createState() => _SignupPageState();
 }
 
 class _SignupPageState extends State<SignupPage> {
@@ -55,9 +55,14 @@ class _SignupPageState extends State<SignupPage> {
       if (!mounted) {
         return;
       }
+
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        return ConfirmEmailPage(email: email,);
+        return ConfirmEmailPage(
+          email: email,
+        );
+        // return const LoginPage();
       }));
+
       log('登録完了', name: 'RegisterPage');
     } on AuthException catch (error) {
       log(error.message, name: 'RegisterPage', error: error);
@@ -81,6 +86,14 @@ class _SignupPageState extends State<SignupPage> {
         _isLoading = false;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _usernameController.dispose();
+    super.dispose();
   }
 
   @override
