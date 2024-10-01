@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sysdev_suretti/pages/message_settings.dart';
 import 'package:sysdev_suretti/pages/search_screen.dart';
+import 'package:sysdev_suretti/pages/setting.dart';
 import 'package:sysdev_suretti/pages/testhome.dart';
 // import 'package:sysdev_suretti/pages/testpage1.dart';
 import 'package:sysdev_suretti/pages/testpage2.dart';
@@ -29,7 +30,7 @@ enum Pages {
   profile(
     title: 'アカウント',
     icon: Icons.account_circle,
-    page: TestPage2(),
+    page: SettingsPage(),
   );
 
   const Pages({
