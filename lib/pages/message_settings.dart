@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sysdev_suretti/pages/message_post_confirmation.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MessageSettingsPage extends StatelessWidget {
+  const MessageSettingsPage({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
