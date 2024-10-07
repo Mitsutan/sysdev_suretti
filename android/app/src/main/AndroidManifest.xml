@@ -5,6 +5,9 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
 
+<!--    地図の位置情報取得のために必要そうなやつ-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <!-- New Bluetooth permissions in Android 12
     https://developer.android.com/about/versions/12/features/bluetooth-permissions -->
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
@@ -13,7 +16,6 @@
     <!-- legacy for Android 11 or lower -->
     <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
-
     <!-- legacy for Android 9 or lower -->
     <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="28" /> -->
 
@@ -25,7 +27,8 @@
     <application
         android:label="sysdev_suretti"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true">
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
@@ -64,12 +67,17 @@
             android:value="2" />
 
         <!-- グーグルマップのapiキー関連 -->
-        <!-- <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAbiv9ex9Tk5TYroTUYNRu_2tU217XQfDM"/> -->
+<!--        <meta-data-->
+<!--            android:name="com.google.android.geo.API_KEY"-->
+<!--            android:value="AIzaSyAbiv9ex9Tk5TYroTUYNRu_2tU217XQfDM"/>-->
+        <!-- APIキー二つ目       -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/maps_api_key"/>
+            android:value="AIzaSyBz9-3jq9-dufEG7Htbctjcn7Od_161Pv0"/>
+
+        <!--        <meta-data-->
+<!--            android:name="com.google.android.geo.API_KEY"-->
+<!--            android:value="@string/maps_api_key"/>-->
 
     </application>
     <!-- Required to query activities that can process text, see:

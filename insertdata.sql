@@ -1,15 +1,15 @@
-INSERT INTO users (nickname, user_flag, icon, location, auth_id)
+INSERT INTO users (nickname, user_flag, icon, auth_id)
 VALUES 
-('User1', false, 'img/user/default.png', ST_GeomFromText('POINT(0 0)', 4326), null),
-('User2', false, 'img/user/default.png', ST_GeomFromText('POINT(1 1)', 4326), null),
-('User3', false, 'img/user/default.png', ST_GeomFromText('POINT(2 2)', 4326), null),
-('User4', false, 'img/user/default.png', ST_GeomFromText('POINT(3 3)', 4326), null),
-('User5', false, 'img/user/default.png', ST_GeomFromText('POINT(4 4)', 4326), null),
-('User6', false, 'img/user/default.png', ST_GeomFromText('POINT(5 5)', 4326), null),
-('User7', false, 'img/user/default.png', ST_GeomFromText('POINT(6 6)', 4326), null),
-('User8', false, 'img/user/default.png', ST_GeomFromText('POINT(7 7)', 4326), null),
-('User9', false, 'img/user/default.png', ST_GeomFromText('POINT(8 8)', 4326), null),
-('User10', false, 'img/user/default.png', ST_GeomFromText('POINT(9 9)', 4326), null);
+('User1', false, 'img/user/default.png', null),
+('User2', false, 'img/user/default.png', null),
+('User3', false, 'img/user/default.png', null),
+('User4', false, 'img/user/default.png', null),
+('User5', false, 'img/user/default.png', null),
+('User6', false, 'img/user/default.png', null),
+('User7', false, 'img/user/default.png', null),
+('User8', false, 'img/user/default.png', null),
+('User9', false, 'img/user/default.png', null),
+('User10', false, 'img/user/default.png', null);
 -- Messagesテーブルのテストデータ
 INSERT INTO messages (address, message_text, recommended_place, location, category, post_timestamp, user_id)
 VALUES 

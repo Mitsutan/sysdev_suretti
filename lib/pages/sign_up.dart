@@ -171,7 +171,7 @@ class _SignupPageState extends State<SignupPage> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                      return const MapPage();
+                      return const MapView();
                     }));
                   },
                   child: const Text('地図ページへ'),
