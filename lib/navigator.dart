@@ -1,43 +1,19 @@
-// タブメニューに表示するページ情報
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:sysdev_suretti/pages/testhome.dart';
+import 'package:sysdev_suretti/stream_mock.dart';
+import 'package:sysdev_suretti/utils/enum_pages.dart';
+import 'package:sysdev_suretti/utils/page_notifier.dart';
 
-import 'pages/testpage1.dart';
-import 'pages/testpage2.dart';
 
-enum Pages {
-  page1(
-    title: 'ホーム',
-    icon: Icons.home,
-    page: Testhome(),
-  ),
-  page2(
-    title: 'page1',
-    icon: Icons.home_repair_service_sharp,
-    page: TestPage1(),
-  ),
-  page3(
-    title: 'page2',
-    icon: Icons.home_work_outlined,
-    page: TestPage2(),
-  );
-
-  const Pages({
-    required this.title,
-    required this.icon,
-    required this.page,
-  });
-
-  final String title;
-  final IconData icon;
-  final Widget page;
-}
 
 final _navigatorKeys = <Pages, GlobalKey<NavigatorState>>{
-  Pages.page1: GlobalKey<NavigatorState>(),
-  Pages.page2: GlobalKey<NavigatorState>(),
-  Pages.page3: GlobalKey<NavigatorState>(),
+  Pages.home: GlobalKey<NavigatorState>(),
+  Pages.search: GlobalKey<NavigatorState>(),
+  Pages.post: GlobalKey<NavigatorState>(),
+  Pages.notice: GlobalKey<NavigatorState>(),
+  Pages.profile: GlobalKey<NavigatorState>(),
 };
 
 // ナビゲーターウィジェット
@@ -46,7 +22,23 @@ class Navigation extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentTab = useState(Pages.page1);
+    final currentTab = useState(Pages.home);
+    final pageNotifier = useMemoized(() => PageNotifier(), []);
+    final secondsStream = useMemoized(() => SecondsStream(), []);
+
+    useEffect(() {
+      return () {
+        secondsStream.dispose();
+      };
+    }, [secondsStream]);
+
+    try {
+      secondsStream.stream.listen((seconds) {
+        pageNotifier.updateCount(Pages.notice, seconds);
+      });
+    } catch (e) {
+      log("stream", error: e);
+    }
 
     return Scaffold(
         body: Stack(
@@ -69,7 +61,17 @@ class Navigation extends HookWidget {
           currentIndex: Pages.values.indexOf(currentTab.value),
           items: Pages.values
               .map((page) => BottomNavigationBarItem(
-                    icon: Icon(page.icon),
+                    icon: ValueListenableBuilder<int>(
+                      valueListenable: pageNotifier.getCountNotifier(page),
+                      builder: (context, count, child) {
+                        // return Text(count.toString());
+                        return Badge(
+                          label: Text(count.toString()),
+                          isLabelVisible: count == 0 ? false : true,
+                          child: Icon(page.icon),
+                        );
+                      },
+                    ),
                     label: page.title,
                   ))
               .toList(),

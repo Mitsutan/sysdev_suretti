@@ -9,7 +9,7 @@
             "request": "launch",
             "type": "dart",
             "args": [
-                "--dart-define-from-file=lib/.env/env.json"
+                // "--dart-define-from-file=lib/.env/env.json"
             ]
         },
         {
