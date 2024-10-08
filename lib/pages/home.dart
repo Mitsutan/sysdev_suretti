@@ -26,6 +26,7 @@ class HomePage extends ConsumerWidget {
 
     // final Sqlite sqlite = Sqlite(supabase.auth.currentUser!.id);
 
+    // ライフサイクル取得：ビーコンスキャン中ではない場合、スキャン開始
     ref.listen<AppLifecycleState>(appLifecycleProvider, (previous, next) {
       if (next == AppLifecycleState.resumed) {
         if (!beacon.isScanning()) {
@@ -42,7 +43,6 @@ class HomePage extends ConsumerWidget {
           .select()
           .eq('auth_id', supabase.auth.currentUser!.id);
       log(user.toString());
-      // userData.updateNickname(user.first['nickname']);
       userData.updateUserData(user.first);
       String userId = user.first['user_id'].toRadixString(16).padLeft(8, '0');
       beacon.major = int.parse(userId.substring(0, 4), radix: 16);
@@ -51,6 +51,9 @@ class HomePage extends ConsumerWidget {
       userData.updateIsGotUserData(true);
     }
 
+    // ユーザー情報未取得の場合：情報取得を試み、その間ローディングインジケーターを表示
+    // なんらかの理由で例外が発生した場合、Loadingへ遷移
+    // ユーザー情報取得済みの場合：ホーム画面構築
     if (!userData.isGotUserData) {
       try {
         getUserData();
