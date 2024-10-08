@@ -5,25 +5,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final beaconProvider = ChangeNotifierProvider((ref) => BeaconFunc());
 
 class BeaconFunc extends ChangeNotifier {
   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
-  List<ScanResult> _scanResults = [];
+  List<Map<String, dynamic>> _scanResults = [];
 
   int major = 1;
   int minor = 1;
 
   BluetoothAdapterState get adapterState => _adapterState;
-  List<ScanResult> get scanResults => _scanResults;
+  List<Map<String, dynamic>> get scanResults => _scanResults;
 
   void updateAdapterState(BluetoothAdapterState newState) {
     _adapterState = newState;
     notifyListeners();
   }
 
-  void updateScanResults(List<ScanResult> newResults) {
+  void updateScanResults(List<Map<String, dynamic>> newResults) {
     _scanResults = newResults;
     notifyListeners();
   }
@@ -92,8 +93,49 @@ class BeaconFunc extends ChangeNotifier {
     }
 
     // FBP scanResults listen
-    FlutterBluePlus.scanResults.listen((results) {
-      updateScanResults(results);
+    FlutterBluePlus.scanResults.listen((results) async {
+      final List<Map<String, dynamic>> resultsList = [];
+
+      for (final result in results) {
+        if (result.advertisementData.manufacturerData.isEmpty) {
+          continue;
+        }
+        final major1 = result.advertisementData.manufacturerData.values.first
+            .elementAt(18)
+            .toRadixString(16);
+        final major2 = result.advertisementData.manufacturerData.values.first
+            .elementAt(19)
+            .toRadixString(16);
+        final minor1 = result.advertisementData.manufacturerData.values.first
+            .elementAt(20)
+            .toRadixString(16);
+        final minor2 = result.advertisementData.manufacturerData.values.first
+            .elementAt(21)
+            .toRadixString(16);
+
+        final id = int.parse('$major1$major2$minor1$minor2', radix: 16);
+        final supabase = Supabase.instance.client;
+        try {
+          final tmpMsgId = await supabase
+              .from('users')
+              .select('message_id')
+              .eq('user_id', id);
+          log('msgId: ${tmpMsgId.first['message_id']}');
+
+          await supabase
+              .from('messages')
+              .select()
+              .eq('message_id', tmpMsgId.first['message_id'])
+              .then((data) {
+            resultsList.add(data.first);
+            log('msgData: $data');
+          });
+
+        } catch (e) {
+          log("get message fail", error: e, name: 'msgData');
+        }
+      }
+      updateScanResults(resultsList);
     }, onError: (e) {
       log('Scan error', name: 'FlutterBluePlus', error: e);
     });
