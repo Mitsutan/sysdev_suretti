@@ -6,6 +6,7 @@ import 'package:sysdev_suretti/pages/testhome.dart';
 // import 'package:sysdev_suretti/pages/testpage1.dart';
 import 'package:sysdev_suretti/pages/testpage2.dart';
 
+/// ナビゲーションバーに表示する画面
 enum Pages {
   home(
     title: 'ホーム',

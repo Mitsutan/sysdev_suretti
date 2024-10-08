@@ -8,7 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/pages/loading.dart';
 
-// エントリーポイント
+/// エントリーポイント
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
@@ -37,11 +37,12 @@ Future<void> main() async {
     return;
   }
 
+  // Supabase初期化
   await Supabase.initialize(
     url: supabaseUrl,
     anonKey: supabaseAnonKey,
   );
-  // mitsutan
+  // mitsutan:dart標準の環境変数読込処理
   // await Supabase.initialize(
   //   url: const String.fromEnvironment(
   //       "SUPABASE_URL"), // ここにSupabaseプロジェクトのURLを入力
@@ -58,6 +59,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  /// 各種権限リクエスト
   Future<void> requestPermission() async {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.bluetoothAdvertise,
