@@ -1,24 +1,64 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sysdev_suretti/utils/page_notifier.dart';
 
-class TestPage2 extends StatefulWidget {
+class TestPage2 extends StatelessWidget {
   const TestPage2({super.key});
 
-  final String title = 'Page 2';
-
   @override
-  State<TestPage2> createState() => _TestPage2State();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+      ),
+      title: '通知画面',
+      home: const NotificationPage(),
+    );
+  }
 }
 
-class _TestPage2State extends State<TestPage2> {
-  Future<int>? totalPriceFuture;
-  late PageNotifier pageNotifier;
+class NotificationPage extends StatefulWidget {
+  const NotificationPage({super.key});
 
   @override
-  void initState() {
-    pageNotifier = PageNotifier();
-    super.initState();
+  _NotificationPageState createState() => _NotificationPageState();
+}
+
+class _NotificationPageState extends State<NotificationPage> {
+  String _selectedFilter = "フィルター";
+  final List<String> _filters = [
+    '新しい順',
+    '古い順',
+  ];
+
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("フィルターを選択"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: _filters.map((filter) {
+              return ListTile(
+                title: Text(filter),
+                onTap: () {
+                  setState(() {
+                    _selectedFilter = filter;
+                  });
+                  Navigator.pop(context);
+                },
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -26,40 +66,151 @@ class _TestPage2State extends State<TestPage2> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text('通知'),
+        centerTitle: true,
       ),
-      body: Container(
-        alignment: Alignment.center,
-        child: const Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Card(
-              elevation: 5,
-              margin: EdgeInsets.all(10),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  SizedBox(
-                    width: double.infinity,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Opacity(
+                  opacity: 0,
+                  child: IconButton(
+                    icon: const Icon(Icons.filter_list),
+                    onPressed: () {
+                      _showFilterDialog();
+                    },
                   ),
-                  Text(
-                    'ぺーじ２',
-                    style: TextStyle(
-                      fontSize: 20,
+                ),
+                const Text(
+                  "通知",
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.filter_list),
+                  onPressed: () {
+                    _showFilterDialog();
+                  },
+                ),
+              ],
+            ),
+            const Divider(
+              height: 16,
+              thickness: 1,
+              color: Colors.grey,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  '選択されたフィルター: $_selectedFilter',
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ],
+            ),
+            const Card(
+              color: Color(0xFFF4F6FF),
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Icon(
+                      Icons.account_circle,
+                      color: Colors.grey,
+                      size: 48.0,
                     ),
-                  ),
-                ],
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '名前',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '〇〇付近で〇〇さんとすれ違いました',
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          '2024/09/23',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-            // ElevatedButton(
-            //     onPressed: () {
-            //       // pageNotifier.updateCount(
-            //       //     Pages.notice, pageNotifier.getCount(Pages.notice) + 1);
-            //     },
-            //     child: const Text('add')),
+            const Card(
+              color: Color(0xFFF4F6FF),
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Icon(
+                      Icons.account_circle,
+                      color: Colors.grey,
+                      size: 48.0,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '名前',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '〇〇付近で〇〇さんとすれ違いました',
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          '2024/09/23',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            )
           ],
         ),
       ),
     );
   }
 }
+// こんにちは僕の名前はオチンポ・ムキムキマンですあなたのパソコンをハッキングしました
+// 解除してほしければ１０万円を送金してください
