@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sysdev_suretti/main.dart';
 
 class MessageEdit extends StatelessWidget {
   final String category;
@@ -102,12 +101,12 @@ class MessageEdit extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // ここの処理はまだ適当に書いてます
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => const MyHomePage(
-                              title: '',
-                            )),
-                  );
+                  // Navigator.of(context).push(
+                  //   MaterialPageRoute(
+                  //       builder: (context) => const MyHomePage(
+                  //             title: '',
+                  //           )),
+                  // );
                 },
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF1A73E8), width: 1),
