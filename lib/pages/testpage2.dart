@@ -206,5 +206,3 @@ class _NotificationPageState extends State<NotificationPage> {
     );
   }
 }
-// こんにちは僕の名前はオチンポ・ムキムキマンですあなたのパソコンをハッキングしました
-// 解除してほしければ１０万円を送金してください
