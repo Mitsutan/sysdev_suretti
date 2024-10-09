@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/pages/loading.dart';
 import 'package:sysdev_suretti/utils/beacon.dart';
+import 'package:sysdev_suretti/utils/diff_time.dart';
 import 'package:sysdev_suretti/utils/lifecycle.dart';
 import 'package:sysdev_suretti/utils/provider.dart';
 // import 'package:sysdev_suretti/utils/sqlite.dart';
@@ -112,9 +113,10 @@ class HomePage extends ConsumerWidget {
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            const Text(
-                              '5分前に投稿',
-                              style: TextStyle(color: Colors.grey),
+                             Text(
+                              // result['messages']['post_timestamp'],
+                              diffTime(DateTime.now(), DateTime.parse(result['messages']['post_timestamp'])),
+                              style: const TextStyle(color: Colors.grey),
                             ),
                           ],
                         ),
