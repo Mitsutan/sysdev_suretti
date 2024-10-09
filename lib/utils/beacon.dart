@@ -28,6 +28,7 @@ class BeaconFunc extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// スキャンするビーコンのフィルター
   final MsdFilter _msdFilterData = MsdFilter(76, data: [
     0x02,
     0x15,

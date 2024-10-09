@@ -16,7 +16,7 @@ final _navigatorKeys = <Pages, GlobalKey<NavigatorState>>{
   Pages.profile: GlobalKey<NavigatorState>(),
 };
 
-// ナビゲーターウィジェット
+/// ナビゲーターウィジェット
 class Navigation extends HookWidget {
   const Navigation({super.key});
 

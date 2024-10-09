@@ -5,6 +5,8 @@ import 'package:sysdev_suretti/pages/sign_up.dart';
 
 // import 'package:sysdev_suretti/sign_up.dart';
 
+/// ユーザーのログイン状態に応じて適切な画面へ遷移させる
+/// 処理中はローディングインジケーターを表示
 class Loading extends StatefulWidget {
   const Loading({super.key});
 
