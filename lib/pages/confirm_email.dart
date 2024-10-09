@@ -13,11 +13,11 @@ class ConfirmEmailPage extends StatefulWidget {
   final String email;
 
   @override
-  _ConfirmEmailPageState createState() => _ConfirmEmailPageState();
+  State<ConfirmEmailPage> createState() => _ConfirmEmailPageState();
 }
 
 class _ConfirmEmailPageState extends State<ConfirmEmailPage> {
-  // Future<int>? totalPriceFuture;
+  Future<int>? totalPriceFuture;
 
   void resendEmail() async {
     try {
@@ -32,12 +32,9 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> {
     }
   }
 
-  late StreamSubscription<AuthState> _authSubscription;
-
   @override
-  void initState() {
-    _authSubscription =
-        Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+  Widget build(BuildContext context) {
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       final AuthChangeEvent event = data.event;
       if (event == AuthChangeEvent.signedIn) {
         Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
@@ -46,29 +43,26 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> {
         }), (route) => false);
       }
     });
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        centerTitle: true,
       ),
       body: Container(
         alignment: Alignment.center,
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
                 "入力したメールアドレスに確認メールを送信しました。\nメール内のリンクをクリックして登録を完了してください。"),
+                //スペースを追加しました。消してもらってもいいです。 by山下
+                const SizedBox(height: 15),
             ElevatedButton(
                 onPressed: resendEmail, child: const Text("メールを再送信する")),
             TextButton(
                 onPressed: () {
-                  _authSubscription.cancel();
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
                     return const LoginPage();

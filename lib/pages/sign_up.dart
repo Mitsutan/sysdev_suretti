@@ -110,6 +110,8 @@ class _SignupPageState extends State<SignupPage> {
           child: ListView(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
             children: [
+              //スペースを追加しました。消してもらってもいいです。 by山下
+              const SizedBox(height: 60), 
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(
