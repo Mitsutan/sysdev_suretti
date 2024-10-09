@@ -116,16 +116,10 @@ class BeaconFunc extends ChangeNotifier {
         final id = int.parse('$major1$major2$minor1$minor2', radix: 16);
         final supabase = Supabase.instance.client;
         try {
-          final tmpMsgId = await supabase
-              .from('users')
-              .select('message_id')
-              .eq('user_id', id);
-          log('msgId: ${tmpMsgId.first['message_id']}');
-
           await supabase
-              .from('messages')
-              .select()
-              .eq('message_id', tmpMsgId.first['message_id'])
+              .from('users')
+              .select('nickname, icon, message_id, messages!users_message_id_fkey(message_id, message_text, post_timestamp)')
+              .eq('user_id', id)
               .then((data) {
             resultsList.add(data.first);
             log('msgData: $data');

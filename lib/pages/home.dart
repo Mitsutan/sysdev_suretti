@@ -98,19 +98,21 @@ class HomePage extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        const CircleAvatar(
+                        CircleAvatar(
                           radius: 20,
-                          child: Icon(Icons.person),
+                          foregroundImage: NetworkImage(
+                              "https://jeluoazapxqjksdfvftm.supabase.co/storage/v1/object/public/${result['icon']}"),
                         ),
                         const SizedBox(width: 8.0),
-                        const Column(
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'すれちがいおにいさん',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              result['nickname'],
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            Text(
+                            const Text(
                               '5分前に投稿',
                               style: TextStyle(color: Colors.grey),
                             ),
@@ -126,7 +128,7 @@ class HomePage extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 8.0),
-                    Text(result['message_text']),
+                    Text(result['messages']['message_text']),
                     const SizedBox(height: 8.0),
                     Image.network('https://via.placeholder.com/150'), // サンプル画像
                     const SizedBox(height: 8.0),
