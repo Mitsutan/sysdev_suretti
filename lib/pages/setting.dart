@@ -193,6 +193,8 @@ class _SettingsPageState extends State<SettingsPage> {
       return userdata;
     }
 
+    log(const String.fromEnvironment("IBEACON_UUID"));
+
     return FutureBuilder(
       future: getUserData(),
       builder: (context, AsyncSnapshot snapshot) {
