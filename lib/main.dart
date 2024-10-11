@@ -38,17 +38,17 @@ Future<void> main() async {
   }
 
   // Supabase初期化
-  await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
-  );
-  // mitsutan:dart標準の環境変数読込処理
   // await Supabase.initialize(
-  //   url: const String.fromEnvironment(
-  //       "SUPABASE_URL"), // ここにSupabaseプロジェクトのURLを入力
-  //   anonKey: const String.fromEnvironment(
-  //       "SUPABASE_ANON_KEY"), // ここにSupabaseプロジェクトのanonキーを入力
+  //   url: supabaseUrl,
+  //   anonKey: supabaseAnonKey,
   // );
+  // mitsutan:dart標準の環境変数読込処理
+  await Supabase.initialize(
+    url: const String.fromEnvironment(
+        "SUPABASE_URL"), // ここにSupabaseプロジェクトのURLを入力
+    anonKey: const String.fromEnvironment(
+        "SUPABASE_ANON_KEY"), // ここにSupabaseプロジェクトのanonキーを入力
+  );
 
   // ログレベルの設定
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
