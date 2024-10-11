@@ -28,6 +28,9 @@ jobs:
       - name: Decode android/key.properties
         run: echo "${{ secrets.KEY_PROPERTIES_PROD }}" | base64 --decode > android/key.properties
 
+      - name: Decode .env
+        run: echo "${{ secrets.ENV_FILE }}" | base64 --decode > .env
+
       - uses: olegtarasov/get-tag@v2.1.3 # that generate $GIT_TAG_NAME env
         id: tagName
         with:
@@ -45,7 +48,7 @@ jobs:
       #   run: flutter build appbundle --release
 
       - name: Build APK
-        run: flutter build apk --release
+        run: flutter build apk --release --dart-define-from-file=.env
 
       - name: Create Github Release
         uses: ncipollo/release-action@v1

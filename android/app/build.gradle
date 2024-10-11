@@ -25,6 +25,17 @@ if (flutterVersionName == null) {
     flutterVersionName = "1.0"
 }
 
+def dartDefines = [:];
+if (project.hasProperty('dart-defines')) {
+    // カンマ区切りかつBase64でエンコードされている dart-defines をデコードして変数に格納します。
+    dartDefines = dartDefines + project.property('dart-defines')
+        .split(',')
+        .collectEntries { entry ->
+            def pair = new String(entry.decodeBase64(), 'UTF-8').split('=')
+            pair.length == 2 ? [(pair.first()): pair.last()] : [:]
+        }
+}
+
 android {
     namespace = "dev.mitsutan.sysdev_suretti"
     compileSdk = flutter.compileSdkVersion
@@ -45,6 +56,9 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+
+        resValue "string", "app_name", "${dartDefines.APP_NAME}"
+        resValue "string", "google_maps_api_key", "${dartDefines.GOOGLEMAP_API_KEY}"
     }
 
     signingConfigs {
