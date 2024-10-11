@@ -16,9 +16,9 @@ Future<void> main() async {
   ]);
 
   // ログの設定
-  void log(String level, String message) {
-    debugPrint('$level: ${DateTime.now()}: $message');
-  }
+  // void log(String level, String message) {
+  //   debugPrint('$level: ${DateTime.now()}: $message');
+  // }
 
   // try {
   //   // .env ファイルのロード
