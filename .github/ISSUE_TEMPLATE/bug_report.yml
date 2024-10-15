@@ -26,6 +26,14 @@ body:
       placeholder: 例：12
     validations:
       required: true
+  - type: input
+    id: model
+    attributes:
+      label: デバイスモデル
+      description: どのデバイスで再現できますか？
+      placeholder: 例：Pixel 6
+    validations:
+      required: true
   - type: textarea
     id: what-happened
     attributes:
