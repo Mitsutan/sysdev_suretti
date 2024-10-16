@@ -145,7 +145,8 @@ class _MessageSettings extends State<MessageSettings> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF1A73E8)),
+                  backgroundColor: const Color(0xFF1A73E8),
+                  foregroundColor: Colors.white,
                   minimumSize: const Size(100, 40),
                 ),
                 child: const Text('送信'),

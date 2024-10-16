@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 import 'dart:developer';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/utils/provider.dart';
@@ -53,7 +53,7 @@ class MessagePostConfirmation extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 400,
+            width: 350,
             child: TextFormField(
               cursorColor: const Color.fromRGBO(131, 124, 124, 1),
               initialValue: category,
@@ -71,7 +71,7 @@ class MessagePostConfirmation extends ConsumerWidget {
             height: 24,
           ),
           SizedBox(
-            width: 400,
+            width: 350,
             child: TextFormField(
               initialValue: recommend,
               readOnly: true,
@@ -88,7 +88,7 @@ class MessagePostConfirmation extends ConsumerWidget {
             height: 24,
           ),
           SizedBox(
-            width: 400,
+            width: 350,
             child: TextFormField(
               cursorColor: const Color.fromRGBO(131, 124, 124, 1),
               initialValue: address,
@@ -105,7 +105,7 @@ class MessagePostConfirmation extends ConsumerWidget {
             height: 24,
           ),
           SizedBox(
-            width: 400,
+            width: 350,
             child: TextFormField(
               keyboardType: TextInputType.multiline,
               minLines: 2,
@@ -163,6 +163,8 @@ class MessagePostConfirmation extends ConsumerWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF1A73E8), width: 1),
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
                   minimumSize: const Size(100, 40),
                 ),
                 child: const Text('いいえ'),

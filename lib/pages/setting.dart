@@ -10,23 +10,7 @@ import 'package:sysdev_suretti/pages/password_reset.dart';
 import 'package:sysdev_suretti/utils/csb.dart';
 import 'package:uuid/uuid.dart';
 
-// void main() {
-//   runApp(SettingsApp());
-// }
-
-// class SettingsApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: '設定',
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: SettingsPage(),
-//     );
-//   }
-// }
-
+/// 設定画面
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -53,25 +37,30 @@ class _SettingsPageState extends State<SettingsPage> {
   //   });
   // }
 
+  /// 端末のアルバム等から画像取得
   Future<XFile?> _getImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     return pickedFile;
   }
 
+  /// プロフィール画像変更処理
   void changeavatar() async {
     final image = await _getImage();
     if (image == null) {
       return;
     }
 
+    // ファイル名重複を防ぐため、UUIDを作成
     final filenameUUID = const Uuid().v4();
 
     final supabase = Supabase.instance.client;
     try {
+      // Supabaseストレージへ画像アップロード
       await supabase.storage
           .from('avatar')
           .upload('users/$filenameUUID', File(image.path));
+      // ユーザーのプロフィール画像パスを上書き
       await supabase
           .from('users')
           .update({'icon': 'avatar/users/$filenameUUID'}).eq(
@@ -89,14 +78,17 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  /// ユーザー名変更処理
   Future<void> _editName() async {
     log("name update start");
     final supabase = Supabase.instance.client;
     try {
+      // usersテーブルのnicknameを変更
       await supabase
           .from('users')
           .update({'nickname': _nameController.text}).eq(
               'auth_id', supabase.auth.currentUser!.id);
+      // authテーブルのusernameを変更
       await supabase.auth
           .updateUser(UserAttributes(data: {'username': _nameController.text}));
     } catch (e) {
@@ -151,6 +143,7 @@ class _SettingsPageState extends State<SettingsPage> {
   //   );
   // }
 
+  /// ログアウト処理
   void _logout() {
     showDialog(
       context: context,
@@ -199,6 +192,8 @@ class _SettingsPageState extends State<SettingsPage> {
       userdata.add(metadata);
       return userdata;
     }
+
+    log(const String.fromEnvironment("IBEACON_UUID"));
 
     return FutureBuilder(
       future: getUserData(),

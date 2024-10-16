@@ -25,10 +25,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     
     <application
-        android:label="sysdev_suretti"
+        android:label="@string/app_name"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
-        android:enableOnBackInvokedCallback="true">
+        android:icon="@mipmap/android_launcher_icon">
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
@@ -50,7 +49,8 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -73,11 +73,8 @@
         <!-- APIキー二つ目       -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBz9-3jq9-dufEG7Htbctjcn7Od_161Pv0"/>
-
-        <!--        <meta-data-->
-<!--            android:name="com.google.android.geo.API_KEY"-->
-<!--            android:value="@string/maps_api_key"/>-->
+            android:value="@string/google_maps_api_key"/>
+<!--            android:value="AIzaSyBz9-3jq9-dufEG7Htbctjcn7Od_161Pv0"/>-->
 
     </application>
     <!-- Required to query activities that can process text, see:
