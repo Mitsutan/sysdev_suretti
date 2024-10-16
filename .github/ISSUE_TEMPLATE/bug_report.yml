@@ -1,0 +1,50 @@
+name: バグ・不具合報告
+description: 症状を再現するために、各項目はできるだけ詳細に入力してください。
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        アプリを使用していただきありがとうございます。
+        おかしな動作が見つかりましたか？状況を共有していただけると幸いです。
+        「Q&A」もご覧ください。
+        ご協力感謝します。
+  - type: input
+    id: app-version
+    attributes:
+      label: アプリバージョン
+      description: どのバージョンで再現できますか？
+      placeholder: 例：internal-1.0.0+1
+    validations:
+      required: true
+  - type: input
+    id: os-version
+    attributes:
+      label: OSバージョン
+      description: どのAndroid OSバージョンで再現できますか？
+      placeholder: 例：12
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: デバイスモデル
+      description: どのデバイスで再現できますか？
+      placeholder: 例：Pixel 6
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 何が起こっていますか？
+      description: 何をどのようにしてその不具合が発生しましたか？
+      placeholder: できるだけ詳細にお願いします。
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: ログ
+      description: もしあなたにAndroidアプリ開発の知識があり、ログを取得することが可能ならば不具合発生時のログを張り付けていただけると幸いです。
+      render: shell

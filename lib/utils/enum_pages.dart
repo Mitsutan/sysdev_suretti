@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:sysdev_suretti/pages/home.dart';
 import 'package:sysdev_suretti/pages/message_settings.dart';
 import 'package:sysdev_suretti/pages/search_screen.dart';
 import 'package:sysdev_suretti/pages/setting.dart';
-import 'package:sysdev_suretti/pages/testhome.dart';
+// import 'package:sysdev_suretti/pages/testhome.dart';
 // import 'package:sysdev_suretti/pages/testpage1.dart';
-import 'package:sysdev_suretti/pages/testpage2.dart';
+import 'package:sysdev_suretti/pages/notice.dart';
 
 /// ナビゲーションバーに表示する画面
 enum Pages {
   home(
     title: 'ホーム',
     icon: Icons.home,
-    page: Testhome(),
+    page: HomePage(),
   ),
   search(
     title: '検索',
@@ -26,7 +27,7 @@ enum Pages {
   notice(
     title: '通知',
     icon: Icons.notifications,
-    page: TestPage2(),
+    page: NoticePage(),
   ),
   profile(
     title: 'アカウント',
