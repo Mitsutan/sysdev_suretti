@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
@@ -8,6 +9,29 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final beaconProvider = ChangeNotifierProvider((ref) => BeaconFunc());
+
+final bf = BeaconFunc();
+
+// アプリがバックグラウンドで実行されている場合に実行されるタスク
+@pragma('vm:entry-point')
+void backgroundFetchHeadlessTask(HeadlessTask task) async {
+  String taskId = task.taskId;
+  bool isTimeout = task.timeout;
+  if (isTimeout) {
+    // This task has exceeded its allowed running-time.
+    // You must stop what you're doing and immediately .finish(taskId)
+    log('Headless task timed-out: $taskId', name: 'BackgroundFetch');
+    BackgroundFetch.finish(taskId);
+    return;
+  }
+  log('Headless event received.', name: 'BackgroundFetch');
+  // Do your work here...
+  if (!!bf.isScanning()) {
+    bf.stopBeacon();
+    bf.startBeacon(bf.major, bf.minor);
+  }
+  BackgroundFetch.finish(taskId);
+}
 
 class BeaconFunc extends ChangeNotifier {
   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
@@ -119,13 +143,13 @@ class BeaconFunc extends ChangeNotifier {
         try {
           await supabase
               .from('users')
-              .select('nickname, icon, message_id, messages!users_message_id_fkey(message_id, message_text, post_timestamp)')
+              .select(
+                  'nickname, icon, message_id, messages!users_message_id_fkey(message_id, message_text, post_timestamp)')
               .eq('user_id', id)
               .then((data) {
             resultsList.add(data.first);
             log('msgData: $data');
           });
-
         } catch (e) {
           log("get message fail", error: e, name: 'msgData');
         }

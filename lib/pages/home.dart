@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -24,6 +25,57 @@ class HomePage extends ConsumerWidget {
     final userData = ref.watch(userDataProvider);
 
     final supabase = Supabase.instance.client;
+
+    // バックグラウンドタスクの登録
+    BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
+
+    // Platform messages are asynchronous, so we initialize in an async method.
+    Future<void> initPlatformState() async {
+      // Configure BackgroundFetch.
+      int status = await BackgroundFetch.configure(
+          BackgroundFetchConfig(
+              minimumFetchInterval: 15,
+              stopOnTerminate: false,
+              enableHeadless: true,
+              requiresBatteryNotLow: false,
+              requiresCharging: false,
+              requiresStorageNotLow: false,
+              requiresDeviceIdle: false,
+              requiredNetworkType: NetworkType.ANY), (String taskId) async {
+        // <-- Event handler
+        // This is the fetch-event callback.
+        log("Event received $taskId", name: 'BackgroundFetch');
+        // setState(() {
+        //   _events.insert(0, new DateTime.now());
+        // });
+        if (!beacon.isScanning()) {
+          beacon.stopBeacon();
+          beacon.startBeacon(beacon.major, beacon.minor);
+        }
+        // IMPORTANT:  You must signal completion of your task or the OS can punish your app
+        // for taking too long in the background.
+        BackgroundFetch.finish(taskId);
+      }, (String taskId) async {
+        // <-- Task timeout handler.
+        // This task has exceeded its allowed running-time.  You must stop what you're doing and immediately .finish(taskId)
+        if (!beacon.isScanning()) {
+          beacon.stopBeacon();
+        }
+        log("TASK TIMEOUT taskId: $taskId", name: 'BackgroundFetch');
+        BackgroundFetch.finish(taskId);
+      });
+      log('configure success: $status', name: 'BackgroundFetch');
+      // setState(() {
+      //   _status = status;
+      // });
+
+      // If the widget was removed from the tree while the asynchronous platform
+      // message was in flight, we want to discard the reply rather than calling
+      // setState to update our non-existent appearance.
+      // if (!mounted) return;
+    }
+
+    initPlatformState();
 
     // final Sqlite sqlite = Sqlite(supabase.auth.currentUser!.id);
 
@@ -113,9 +165,12 @@ class HomePage extends ConsumerWidget {
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                             Text(
+                            Text(
                               // result['messages']['post_timestamp'],
-                              diffTime(DateTime.now(), DateTime.parse(result['messages']['post_timestamp'])),
+                              diffTime(
+                                  DateTime.now(),
+                                  DateTime.parse(
+                                      result['messages']['post_timestamp'])),
                               style: const TextStyle(color: Colors.grey),
                             ),
                           ],
