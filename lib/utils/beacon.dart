@@ -3,7 +3,8 @@ import 'dart:developer';
 
 import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide BluetoothState;
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,7 +27,7 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
   }
   log('Headless event received.', name: 'BackgroundFetch');
   // Do your work here...
-  if (!!bf.isScanning()) {
+  if (!bf.isScanning()) {
     bf.stopBeacon();
     bf.startBeacon(bf.major, bf.minor);
   }
@@ -98,15 +99,30 @@ class BeaconFunc extends ChangeNotifier {
     // flutterBeacon start broadcast
     log((await flutterBeacon.isBroadcasting()).toString(),
         name: 'flutterBeacon.isBroadcasting()');
+    // try {
+    //   await flutterBeacon.startBroadcast(BeaconBroadcast(
+    //     proximityUUID: const String.fromEnvironment("IBEACON_UUID"),
+    //     major: major,
+    //     minor: minor,
+    //     identifier: 'dev.mitsutan.sysdev_suretti',
+    //   ));
+    // } catch (e) {
+    //   log('Start broadcast error', name: 'beacon', error: e);
+    // }
     try {
-      await flutterBeacon.startBroadcast(BeaconBroadcast(
-        proximityUUID: const String.fromEnvironment("IBEACON_UUID"),
-        major: major,
-        minor: minor,
-        identifier: 'dev.mitsutan.sysdev_suretti',
-      ));
-    } catch (e) {
-      log('Start broadcast error', name: 'beacon', error: e);
+      debugPrint('Beacon Start!');
+      final status = await flutterBeacon.authorizationStatus;
+      debugPrint(status.value);
+      if (status.value == AuthorizationStatus.notDetermined.value) {
+        final result = await flutterBeacon.bluetoothState;
+        if (result.value == BluetoothState.stateOn.value) await flutterBeacon.initializeAndCheckScanning;
+      } else {
+        await flutterBeacon.initializeScanning;
+      }
+    } on PlatformException catch (e, s) {
+      debugPrint(e.toString());
+      debugPrint(s.toString());
+      // Sentry.captureException(e, stackTrace: s);
     }
 
     // FBP start scan
