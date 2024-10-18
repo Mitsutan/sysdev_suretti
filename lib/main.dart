@@ -1,3 +1,4 @@
+import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/services.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:developer';
@@ -7,6 +8,29 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/pages/loading.dart';
+import 'package:sysdev_suretti/utils/beacon.dart';
+
+// アプリがバックグラウンドで実行されている場合に実行されるタスク
+@pragma('vm:entry-point')
+void backgroundFetchHeadlessTask(HeadlessTask task) async {
+  String taskId = task.taskId;
+  bool isTimeout = task.timeout;
+  if (isTimeout) {
+    // This task has exceeded its allowed running-time.
+    // You must stop what you're doing and immediately .finish(taskId)
+    log('Headless task timed-out: $taskId', name: 'BackgroundFetch');
+    BackgroundFetch.finish(taskId);
+    return;
+  }
+  log('Headless event received.', name: 'BackgroundFetch');
+  debugPrint('Headless event received.');
+  // Do your work here...
+  if (!bf.isScanning()) {
+    bf.stopBeacon();
+    bf.startBeacon(bf.major, bf.minor);
+  }
+  BackgroundFetch.finish(taskId);
+}
 
 /// エントリーポイント
 Future<void> main() async {
@@ -54,6 +78,9 @@ Future<void> main() async {
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
 
   runApp(const ProviderScope(child: MyApp()));
+
+  // バックグラウンドタスクの登録
+  BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }
 
 class MyApp extends StatelessWidget {
