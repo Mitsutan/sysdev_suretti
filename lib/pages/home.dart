@@ -26,9 +26,6 @@ class HomePage extends ConsumerWidget {
 
     final supabase = Supabase.instance.client;
 
-    // バックグラウンドタスクの登録
-    BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
-
     // Platform messages are asynchronous, so we initialize in an async method.
     Future<void> initPlatformState() async {
       // Configure BackgroundFetch.
@@ -37,6 +34,7 @@ class HomePage extends ConsumerWidget {
               minimumFetchInterval: 15,
               stopOnTerminate: false,
               enableHeadless: true,
+              startOnBoot: true,
               requiresBatteryNotLow: false,
               requiresCharging: false,
               requiresStorageNotLow: false,

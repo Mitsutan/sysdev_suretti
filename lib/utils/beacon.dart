@@ -14,25 +14,26 @@ final beaconProvider = ChangeNotifierProvider((ref) => BeaconFunc());
 final bf = BeaconFunc();
 
 // アプリがバックグラウンドで実行されている場合に実行されるタスク
-@pragma('vm:entry-point')
-void backgroundFetchHeadlessTask(HeadlessTask task) async {
-  String taskId = task.taskId;
-  bool isTimeout = task.timeout;
-  if (isTimeout) {
-    // This task has exceeded its allowed running-time.
-    // You must stop what you're doing and immediately .finish(taskId)
-    log('Headless task timed-out: $taskId', name: 'BackgroundFetch');
-    BackgroundFetch.finish(taskId);
-    return;
-  }
-  log('Headless event received.', name: 'BackgroundFetch');
-  // Do your work here...
-  if (!bf.isScanning()) {
-    bf.stopBeacon();
-    bf.startBeacon(bf.major, bf.minor);
-  }
-  BackgroundFetch.finish(taskId);
-}
+// @pragma('vm:entry-point')
+// void backgroundFetchHeadlessTask(HeadlessTask task) async {
+//   String taskId = task.taskId;
+//   bool isTimeout = task.timeout;
+//   if (isTimeout) {
+//     // This task has exceeded its allowed running-time.
+//     // You must stop what you're doing and immediately .finish(taskId)
+//     log('Headless task timed-out: $taskId', name: 'BackgroundFetch');
+//     BackgroundFetch.finish(taskId);
+//     return;
+//   }
+//   // log('Headless event received.', name: 'BackgroundFetch');
+//   debugPrint('Headless event received.');
+//   // Do your work here...
+//   if (!bf.isScanning()) {
+//     bf.stopBeacon();
+//     bf.startBeacon(bf.major, bf.minor);
+//   }
+//   BackgroundFetch.finish(taskId);
+// }
 
 class BeaconFunc extends ChangeNotifier {
   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
