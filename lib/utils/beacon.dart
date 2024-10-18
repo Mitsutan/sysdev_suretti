@@ -89,9 +89,9 @@ class BeaconFunc extends ChangeNotifier {
           .setLayout('m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24')
           .setManufacturerId(0x004C)
           .start();
-
     } catch (e) {
-      log('Start broadcast error', name: 'beacon', error: e);
+      // log('Start broadcast error', name: 'beacon', error: e);
+      debugPrint('Start broadcast error: $e');
     }
 
     // FBP start scan
@@ -99,7 +99,8 @@ class BeaconFunc extends ChangeNotifier {
       await FlutterBluePlus.startScan(
           withMsd: [_msdFilterData], androidUsesFineLocation: true);
     } catch (e) {
-      log('Start scan Err', name: 'beacon', error: e);
+      // log('Start scan Err', name: 'beacon', error: e);
+      debugPrint('Start scan Err: $e');
     }
 
     // FBP scanResults listen
@@ -124,6 +125,16 @@ class BeaconFunc extends ChangeNotifier {
             .toRadixString(16);
 
         final id = int.parse('$major1$major2$minor1$minor2', radix: 16);
+
+        try {
+          await Supabase.initialize(
+            url: const String.fromEnvironment("SUPABASE_URL"),
+            anonKey: const String.fromEnvironment("SUPABASE_ANON_KEY"),
+          );
+        } on AssertionError catch (e) {
+          log('Supabase initialize error', name: 'Supabase', error: e);
+        }
+
         final supabase = Supabase.instance.client;
         try {
           await supabase
@@ -133,7 +144,8 @@ class BeaconFunc extends ChangeNotifier {
               .eq('user_id', id)
               .then((data) {
             resultsList.add(data.first);
-            log('msgData: $data');
+            // log('msgData: $data');
+            debugPrint('msgData: $data');
           });
         } catch (e) {
           log("get message fail", error: e, name: 'msgData');
