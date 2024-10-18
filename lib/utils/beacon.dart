@@ -1,39 +1,15 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:background_fetch/background_fetch.dart';
+import 'package:beacon_broadcast/beacon_broadcast.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide BluetoothState;
-import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final beaconProvider = ChangeNotifierProvider((ref) => BeaconFunc());
 
 final bf = BeaconFunc();
-
-// アプリがバックグラウンドで実行されている場合に実行されるタスク
-// @pragma('vm:entry-point')
-// void backgroundFetchHeadlessTask(HeadlessTask task) async {
-//   String taskId = task.taskId;
-//   bool isTimeout = task.timeout;
-//   if (isTimeout) {
-//     // This task has exceeded its allowed running-time.
-//     // You must stop what you're doing and immediately .finish(taskId)
-//     log('Headless task timed-out: $taskId', name: 'BackgroundFetch');
-//     BackgroundFetch.finish(taskId);
-//     return;
-//   }
-//   // log('Headless event received.', name: 'BackgroundFetch');
-//   debugPrint('Headless event received.');
-//   // Do your work here...
-//   if (!bf.isScanning()) {
-//     bf.stopBeacon();
-//     bf.startBeacon(bf.major, bf.minor);
-//   }
-//   BackgroundFetch.finish(taskId);
-// }
 
 class BeaconFunc extends ChangeNotifier {
   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
@@ -44,6 +20,8 @@ class BeaconFunc extends ChangeNotifier {
 
   BluetoothAdapterState get adapterState => _adapterState;
   List<Map<String, dynamic>> get scanResults => _scanResults;
+
+  BeaconBroadcast beacon = BeaconBroadcast();
 
   void updateAdapterState(BluetoothAdapterState newState) {
     _adapterState = newState;
@@ -98,32 +76,22 @@ class BeaconFunc extends ChangeNotifier {
 
   Future<void> startBeacon(int major, int minor) async {
     // flutterBeacon start broadcast
-    log((await flutterBeacon.isBroadcasting()).toString(),
-        name: 'flutterBeacon.isBroadcasting()');
-    // try {
-    //   await flutterBeacon.startBroadcast(BeaconBroadcast(
-    //     proximityUUID: const String.fromEnvironment("IBEACON_UUID"),
-    //     major: major,
-    //     minor: minor,
-    //     identifier: 'dev.mitsutan.sysdev_suretti',
-    //   ));
-    // } catch (e) {
-    //   log('Start broadcast error', name: 'beacon', error: e);
-    // }
+    // log((await flutterBeacon.isBroadcasting()).toString(),
+    //     name: 'flutterBeacon.isBroadcasting()');
     try {
       debugPrint('Beacon Start!');
-      final status = await flutterBeacon.authorizationStatus;
-      debugPrint(status.value);
-      if (status.value == AuthorizationStatus.notDetermined.value) {
-        final result = await flutterBeacon.bluetoothState;
-        if (result.value == BluetoothState.stateOn.value) await flutterBeacon.initializeAndCheckScanning;
-      } else {
-        await flutterBeacon.initializeScanning;
-      }
-    } on PlatformException catch (e, s) {
-      debugPrint(e.toString());
-      debugPrint(s.toString());
-      // Sentry.captureException(e, stackTrace: s);
+
+      beacon
+          .setUUID(const String.fromEnvironment("IBEACON_UUID"))
+          .setMajorId(major)
+          .setMinorId(minor)
+          .setIdentifier('dev.mitsutan.sysdev_suretti')
+          .setLayout('m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24')
+          .setManufacturerId(0x004C)
+          .start();
+
+    } catch (e) {
+      log('Start broadcast error', name: 'beacon', error: e);
     }
 
     // FBP start scan
@@ -179,10 +147,10 @@ class BeaconFunc extends ChangeNotifier {
 
   Future<void> stopBeacon() async {
     // flutterBeacon stop broadcast
-    log((await flutterBeacon.isBroadcasting()).toString(),
-        name: 'flutterBeacon.isBroadcasting()');
+    // log((await flutterBeacon.isBroadcasting()).toString(),
+    //     name: 'flutterBeacon.isBroadcasting()');
     try {
-      await flutterBeacon.stopBroadcast();
+      beacon.stop();
     } catch (e) {
       log('Stop broadcast error', name: 'beacon', error: e);
     }
@@ -197,8 +165,8 @@ class BeaconFunc extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> isBroadcasting() async {
-    return await flutterBeacon.isBroadcasting();
+  Future<bool?> isBroadcasting() async {
+    return await beacon.isAdvertising();
   }
 
   bool isScanning() {
