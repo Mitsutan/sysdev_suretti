@@ -25,9 +25,16 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
   log('Headless event received.', name: 'BackgroundFetch');
   debugPrint('Headless event received.');
   // Do your work here...
+  final bf = BeaconFunc();
+
+  while (!bf.isInitialized) {
+    await Future.delayed(const Duration(milliseconds: 100));
+    debugPrint('Waiting for initialization...${bf.isInitialized}');
+  }
+  
   if (!bf.isScanning()) {
     bf.stopBeacon();
-    bf.startBeacon(bf.major, bf.minor);
+    bf.startBeacon(bf.prefs.getInt('major') ?? 1, bf.prefs.getInt('minor') ?? 1);
   }
   BackgroundFetch.finish(taskId);
 }

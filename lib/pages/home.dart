@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/pages/loading.dart';
 import 'package:sysdev_suretti/utils/beacon.dart';
@@ -48,7 +49,7 @@ class HomePage extends ConsumerWidget {
         // });
         if (!beacon.isScanning()) {
           beacon.stopBeacon();
-          beacon.startBeacon(beacon.major, beacon.minor);
+          beacon.startBeacon(beacon.prefs.getInt('major') ?? 1, beacon.prefs.getInt('minor') ?? 1);
         }
         // IMPORTANT:  You must signal completion of your task or the OS can punish your app
         // for taking too long in the background.
@@ -82,13 +83,15 @@ class HomePage extends ConsumerWidget {
       if (next == AppLifecycleState.resumed) {
         if (!beacon.isScanning()) {
           beacon.stopBeacon();
-          beacon.startBeacon(beacon.major, beacon.minor);
+          beacon.startBeacon(beacon.prefs.getInt('major') ?? 1, beacon.prefs.getInt('minor') ?? 1);
         }
       }
     });
 
     // usersテーブルからuser.auth_idをキーにしてユーザー情報を取得
     Future<void> getUserData() async {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      
       final user = await supabase
           .from('users')
           .select()
@@ -96,8 +99,13 @@ class HomePage extends ConsumerWidget {
       log(user.toString());
       userData.updateUserData(user.first);
       String userId = user.first['user_id'].toRadixString(16).padLeft(8, '0');
-      beacon.major = int.parse(userId.substring(0, 4), radix: 16);
-      beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
+      // beacon.major = int.parse(userId.substring(0, 4), radix: 16);
+      // beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
+
+      // set to shared preference
+      prefs.setInt('major', int.parse(userId.substring(0, 4), radix: 16));
+      prefs.setInt('minor', int.parse(userId.substring(4, 8), radix: 16));
+      
 
       userData.updateIsGotUserData(true);
     }
@@ -269,7 +277,7 @@ class HomePage extends ConsumerWidget {
               )
             : FloatingActionButton(
                 onPressed: () {
-                  beacon.startBeacon(beacon.major, beacon.minor);
+                  beacon.startBeacon(beacon.prefs.getInt('major') ?? 1, beacon.prefs.getInt('minor') ?? 1);
                 },
                 child: const Text("SCAN"),
               ),

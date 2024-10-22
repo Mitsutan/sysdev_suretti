@@ -5,18 +5,30 @@ import 'package:beacon_broadcast/beacon_broadcast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide BluetoothState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final beaconProvider = ChangeNotifierProvider((ref) => BeaconFunc());
-
-final bf = BeaconFunc();
 
 class BeaconFunc extends ChangeNotifier {
   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
   List<Map<String, dynamic>> _scanResults = [];
 
-  int major = 1;
-  int minor = 1;
+  late SharedPreferences prefs;
+  bool isInitialized = false;
+
+  // int major;
+  // int minor;
+
+  // constructor
+  BeaconFunc() {
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    prefs = await SharedPreferences.getInstance();
+    isInitialized = true;
+  }
 
   BluetoothAdapterState get adapterState => _adapterState;
   List<Map<String, dynamic>> get scanResults => _scanResults;
@@ -85,6 +97,8 @@ class BeaconFunc extends ChangeNotifier {
     
     try {
       debugPrint('Beacon Start!');
+
+      debugPrint('major: $major, minor: $minor');
 
       await beacon
           .setUUID(const String.fromEnvironment("IBEACON_UUID"))
