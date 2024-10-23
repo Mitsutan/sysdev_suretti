@@ -155,21 +155,25 @@ class _SettingsPageState extends State<SettingsPage> {
           actions: [
             TextButton(
               onPressed: () async {
-                try {
-                  Supabase.instance.client.auth.signOut();
-
-                  final SharedPreferences prefs = await SharedPreferences.getInstance();
-                  await prefs.remove('major');
-                  await prefs.remove('minor');
-                } catch (e) {
-                  log("logout error", error: e);
-                }
                 // userData.updateIsGotUserData(false);
                 Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) {
                   return const Loading();
                 }), (route) => false);
                 // Navigator.of(context).pop();
+
+                Csb.showSnackBar(context, 'ログアウトしました', CsbType.nomal);
+
+                try {
+                  Supabase.instance.client.auth.signOut();
+
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  await prefs.remove('major');
+                  await prefs.remove('minor');
+                } catch (e) {
+                  log("logout error", error: e);
+                }
               },
               child: const Text('OK'),
             ),
