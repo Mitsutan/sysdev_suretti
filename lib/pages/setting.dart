@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 
@@ -153,14 +154,26 @@ class _SettingsPageState extends State<SettingsPage> {
           content: const Text('ログアウトしました。'),
           actions: [
             TextButton(
-              onPressed: () {
-                Supabase.instance.client.auth.signOut();
+              onPressed: () async {
                 // userData.updateIsGotUserData(false);
                 Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) {
                   return const Loading();
                 }), (route) => false);
                 // Navigator.of(context).pop();
+
+                Csb.showSnackBar(context, 'ログアウトしました', CsbType.nomal);
+
+                try {
+                  Supabase.instance.client.auth.signOut();
+
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  await prefs.remove('major');
+                  await prefs.remove('minor');
+                } catch (e) {
+                  log("logout error", error: e);
+                }
               },
               child: const Text('OK'),
             ),

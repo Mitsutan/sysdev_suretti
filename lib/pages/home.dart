@@ -1,7 +1,9 @@
 import 'dart:developer';
 
+import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/pages/loading.dart';
 import 'package:sysdev_suretti/utils/beacon.dart';
@@ -25,6 +27,55 @@ class HomePage extends ConsumerWidget {
 
     final supabase = Supabase.instance.client;
 
+    // Platform messages are asynchronous, so we initialize in an async method.
+    Future<void> initPlatformState() async {
+      // Configure BackgroundFetch.
+      int status = await BackgroundFetch.configure(
+          BackgroundFetchConfig(
+              minimumFetchInterval: 15,
+              stopOnTerminate: false,
+              enableHeadless: true,
+              startOnBoot: true,
+              requiresBatteryNotLow: false,
+              requiresCharging: false,
+              requiresStorageNotLow: false,
+              requiresDeviceIdle: false,
+              requiredNetworkType: NetworkType.ANY), (String taskId) async {
+        // <-- Event handler
+        // This is the fetch-event callback.
+        log("Event received $taskId", name: 'BackgroundFetch');
+        // setState(() {
+        //   _events.insert(0, new DateTime.now());
+        // });
+        if (!beacon.isScanning()) {
+          beacon.stopBeacon();
+          beacon.startBeacon(beacon.prefs.getInt('major') ?? 1, beacon.prefs.getInt('minor') ?? 1);
+        }
+        // IMPORTANT:  You must signal completion of your task or the OS can punish your app
+        // for taking too long in the background.
+        BackgroundFetch.finish(taskId);
+      }, (String taskId) async {
+        // <-- Task timeout handler.
+        // This task has exceeded its allowed running-time.  You must stop what you're doing and immediately .finish(taskId)
+        if (!beacon.isScanning()) {
+          beacon.stopBeacon();
+        }
+        log("TASK TIMEOUT taskId: $taskId", name: 'BackgroundFetch');
+        BackgroundFetch.finish(taskId);
+      });
+      log('configure success: $status', name: 'BackgroundFetch');
+      // setState(() {
+      //   _status = status;
+      // });
+
+      // If the widget was removed from the tree while the asynchronous platform
+      // message was in flight, we want to discard the reply rather than calling
+      // setState to update our non-existent appearance.
+      // if (!mounted) return;
+    }
+
+    initPlatformState();
+
     // final Sqlite sqlite = Sqlite(supabase.auth.currentUser!.id);
 
     // ライフサイクル取得：ビーコンスキャン中ではない場合、スキャン開始
@@ -32,13 +83,15 @@ class HomePage extends ConsumerWidget {
       if (next == AppLifecycleState.resumed) {
         if (!beacon.isScanning()) {
           beacon.stopBeacon();
-          beacon.startBeacon(beacon.major, beacon.minor);
+          beacon.startBeacon(beacon.prefs.getInt('major') ?? 1, beacon.prefs.getInt('minor') ?? 1);
         }
       }
     });
 
     // usersテーブルからuser.auth_idをキーにしてユーザー情報を取得
     Future<void> getUserData() async {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      
       final user = await supabase
           .from('users')
           .select()
@@ -46,8 +99,13 @@ class HomePage extends ConsumerWidget {
       log(user.toString());
       userData.updateUserData(user.first);
       String userId = user.first['user_id'].toRadixString(16).padLeft(8, '0');
-      beacon.major = int.parse(userId.substring(0, 4), radix: 16);
-      beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
+      // beacon.major = int.parse(userId.substring(0, 4), radix: 16);
+      // beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
+
+      // set to shared preference
+      prefs.setInt('major', int.parse(userId.substring(0, 4), radix: 16));
+      prefs.setInt('minor', int.parse(userId.substring(4, 8), radix: 16));
+      
 
       userData.updateIsGotUserData(true);
     }
@@ -113,9 +171,12 @@ class HomePage extends ConsumerWidget {
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                             Text(
+                            Text(
                               // result['messages']['post_timestamp'],
-                              diffTime(DateTime.now(), DateTime.parse(result['messages']['post_timestamp'])),
+                              diffTime(
+                                  DateTime.now(),
+                                  DateTime.parse(
+                                      result['messages']['post_timestamp'])),
                               style: const TextStyle(color: Colors.grey),
                             ),
                           ],
@@ -216,7 +277,7 @@ class HomePage extends ConsumerWidget {
               )
             : FloatingActionButton(
                 onPressed: () {
-                  beacon.startBeacon(beacon.major, beacon.minor);
+                  beacon.startBeacon(beacon.prefs.getInt('major') ?? 1, beacon.prefs.getInt('minor') ?? 1);
                 },
                 child: const Text("SCAN"),
               ),
