@@ -90,6 +90,7 @@ Future<void> main() async {
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }
 
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
