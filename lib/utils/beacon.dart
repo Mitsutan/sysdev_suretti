@@ -7,6 +7,8 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide BluetoothState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sysdev_suretti/models/scanned_user.dart';
+import 'package:sysdev_suretti/utils/sqlite.dart';
 
 final beaconProvider = ChangeNotifierProvider((ref) => BeaconFunc());
 
@@ -94,7 +96,7 @@ class BeaconFunc extends ChangeNotifier {
       // log('isAdvertising: $isAdvertising', name: 'beacon');
       debugPrint('isAdvertising: $isAdvertising');
     });
-    
+
     try {
       debugPrint('Beacon Start!');
 
@@ -108,7 +110,6 @@ class BeaconFunc extends ChangeNotifier {
           .setLayout('m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24')
           .setManufacturerId(0x004C)
           .start();
-
     } catch (e) {
       // log('Start broadcast error', name: 'beacon', error: e);
       debugPrint('Start broadcast error: $e');
@@ -123,7 +124,7 @@ class BeaconFunc extends ChangeNotifier {
       debugPrint('Start scan Err: $e');
     }
 
-      // debugPrint("isAd:${(await beacon.isAdvertising()).toString()}");
+    // debugPrint("isAd:${(await beacon.isAdvertising()).toString()}");
 
     // FBP scanResults listen
     FlutterBluePlus.scanResults.listen((results) async {
@@ -158,6 +159,9 @@ class BeaconFunc extends ChangeNotifier {
         }
 
         final supabase = Supabase.instance.client;
+
+        final Sqlite sqlite = Sqlite(supabase.auth.currentUser!.id);
+
         try {
           await supabase
               .from('users')
@@ -166,6 +170,14 @@ class BeaconFunc extends ChangeNotifier {
               .eq('user_id', id)
               .then((data) {
             resultsList.add(data.first);
+
+            ScannedUser scannedUser = ScannedUser(
+              messageId: int.parse(data.first['message_id']),
+              scannedAt: DateTime.now(),
+            );
+
+            sqlite.insertScanedUser(scannedUser);
+            
             // log('msgData: $data');
             debugPrint('msgData: $data');
           });
