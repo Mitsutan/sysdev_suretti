@@ -21,7 +21,7 @@ class Sqlite {
       version: 1,
       onCreate: (db, version) {
         return db.execute(
-            'CREATE TABLE IF NOT EXISTS scanned_user(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, is_got_post INTEGER DEFAULT 0, scanned_at TEXT)');
+            'CREATE TABLE IF NOT EXISTS scanned_user(id INTEGER PRIMARY KEY AUTOINCREMENT, message_id INTEGER, scanned_at TEXT)');
       },
       onUpgrade: (db, oldVersion, newVersion) {
         for (var i = oldVersion + 1; i <= newVersion; i++) {
@@ -39,10 +39,12 @@ class Sqlite {
   Future<void> deleteDatabase(String id) async {
     // final db = await _database;
     // await db.delete('scanned_user');
-    databaseFactory.deleteDatabase(join(await getDatabasesPath(), '$id-suretti.db'),);
+    databaseFactory.deleteDatabase(
+      join(await getDatabasesPath(), '$id-suretti.db'),
+    );
   }
 
-  /// スキャンしたユーザーデータを登録する
+  /// スキャンしたユーザーデータを一件登録する
   ///
   /// @param ScanedUser scandUser
   /// @return Future<void>
@@ -58,17 +60,17 @@ class Sqlite {
   /// スキャンしたユーザーデータのうち投稿未取得のものを取得する
   ///
   /// @return Future<List<ScanedUser>>
-  Future<List<ScannedUser>> getScanedUsers() async {
-    final db = await _database;
-    final List<Map<String, dynamic>> maps =
-        await db.query('scanned_user', where: 'is_got_post = 0');
-    return List.generate(maps.length, (i) {
-      return ScannedUser(
-        id: maps[i]['id'],
-        userId: maps[i]['user_id'],
-        isGotPost: maps[i]['is_got_post'],
-        scannedAt: DateTime.parse(maps[i]['scanned_at']),
-      );
-    });
-  }
+  // Future<List<ScannedUser>> getScanedUsers() async {
+  //   final db = await _database;
+  //   final List<Map<String, dynamic>> maps =
+  //       await db.query('scanned_user', where: 'is_got_post = 0');
+  //   return List.generate(maps.length, (i) {
+  //     return ScannedUser(
+  //       id: maps[i]['id'],
+  //       userId: maps[i]['user_id'],
+  //       isGotPost: maps[i]['is_got_post'],
+  //       scannedAt: DateTime.parse(maps[i]['scanned_at']),
+  //     );
+  //   });
+  // }
 }
