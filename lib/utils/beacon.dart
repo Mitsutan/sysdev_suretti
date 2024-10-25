@@ -20,6 +20,7 @@ class BeaconFunc extends ChangeNotifier {
   bool isInitialized = false;
 
   StreamSubscription? _streamMonitoring;
+  bool isStart = false;
 
   // int major;
   // int minor;
@@ -91,6 +92,7 @@ class BeaconFunc extends ChangeNotifier {
   ]);
 
   Future<void> startBeacon(int major, int minor) async {
+    isStart = true;
     // flutterBeacon start broadcast
     // log((await flutterBeacon.isBroadcasting()).toString(),
     //     name: 'flutterBeacon.isBroadcasting()');
@@ -206,6 +208,7 @@ class BeaconFunc extends ChangeNotifier {
   }
 
   Future<void> stopBeacon() async {
+    isStart = false;
     // flutterBeacon stop broadcast
     // log((await flutterBeacon.isBroadcasting()).toString(),
     //     name: 'flutterBeacon.isBroadcasting()');
@@ -237,11 +240,11 @@ class BeaconFunc extends ChangeNotifier {
     if (Platform.isAndroid) {
       return FlutterBluePlus.isScanningNow;
     } else if (Platform.isIOS) {
-      if (_streamMonitoring == null) {
-        log('isScanning error: _streamMonitoring is null', name: 'beacon');
+      if (isStart) {
+        return _streamMonitoring!.isPaused;
+      } else {
         return false;
       }
-      return _streamMonitoring!.isPaused;
     } else {
       return false;
     }
