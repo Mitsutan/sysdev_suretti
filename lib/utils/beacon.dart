@@ -19,7 +19,7 @@ class BeaconFunc extends ChangeNotifier {
   late SharedPreferences prefs;
   bool isInitialized = false;
 
-  late StreamSubscription _streamMonitoring;
+  StreamSubscription? _streamMonitoring;
 
   // int major;
   // int minor;
@@ -220,7 +220,7 @@ class BeaconFunc extends ChangeNotifier {
       if (Platform.isAndroid) {
         await FlutterBluePlus.stopScan();
       } else if (Platform.isIOS) {
-        _streamMonitoring.cancel();
+        _streamMonitoring?.cancel();
       }
     } catch (e) {
       log('Stop scan Err', name: 'beacon', error: e);
@@ -238,7 +238,7 @@ class BeaconFunc extends ChangeNotifier {
       return FlutterBluePlus.isScanningNow;
     } else if (Platform.isIOS) {
       try {
-        return _streamMonitoring.isPaused;
+        return _streamMonitoring!.isPaused;
       } catch (e) {
         log('isScanning error', name: 'beacon', error: e);
         return false;
