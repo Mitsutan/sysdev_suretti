@@ -234,7 +234,13 @@ class BeaconFunc extends ChangeNotifier {
   }
 
   bool isScanning() {
-    return FlutterBluePlus.isScanningNow;
+    if (Platform.isAndroid) {
+      return FlutterBluePlus.isScanningNow;
+    } else if (Platform.isIOS) {
+      return _streamMonitoring.isPaused;
+    } else {
+      return false;
+    }
   }
 
   Stream<BluetoothAdapterState> getAdapterState() {
