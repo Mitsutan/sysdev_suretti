@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:beacon_broadcast/beacon_broadcast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_beacon/flutter_beacon.dart' hide BeaconBroadcast;
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide BluetoothState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +18,8 @@ class BeaconFunc extends ChangeNotifier {
 
   late SharedPreferences prefs;
   bool isInitialized = false;
+
+  late StreamSubscription _streamMonitoring;
 
   // int major;
   // int minor;
@@ -94,7 +98,7 @@ class BeaconFunc extends ChangeNotifier {
       // log('isAdvertising: $isAdvertising', name: 'beacon');
       debugPrint('isAdvertising: $isAdvertising');
     });
-    
+
     try {
       debugPrint('Beacon Start!');
 
@@ -108,75 +112,97 @@ class BeaconFunc extends ChangeNotifier {
           .setLayout('m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24')
           .setManufacturerId(0x004C)
           .start();
-
     } catch (e) {
       // log('Start broadcast error', name: 'beacon', error: e);
       debugPrint('Start broadcast error: $e');
     }
 
-    // FBP start scan
+    final regions = <Region>[];
+
     try {
-      await FlutterBluePlus.startScan(
-          withMsd: [_msdFilterData], androidUsesFineLocation: true);
+      if (Platform.isAndroid) {
+        // FBP start scan
+        await FlutterBluePlus.startScan(
+            withMsd: [_msdFilterData], androidUsesFineLocation: true);
+      } else if (Platform.isIOS) {
+        // flutterBeacon initialize
+        regions.add(Region(
+          identifier: 'dev.mitsutan.sysdev_suretti',
+          proximityUUID: const String.fromEnvironment("IBEACON_UUID"),
+        ));
+      }
     } catch (e) {
       // log('Start scan Err', name: 'beacon', error: e);
       debugPrint('Start scan Err: $e');
     }
 
-      // debugPrint("isAd:${(await beacon.isAdvertising()).toString()}");
+    // debugPrint("isAd:${(await beacon.isAdvertising()).toString()}");
 
-    // FBP scanResults listen
-    FlutterBluePlus.scanResults.listen((results) async {
-      final List<Map<String, dynamic>> resultsList = [];
+    if (Platform.isAndroid) {
+      // FBP scanResults listen
+      FlutterBluePlus.scanResults.listen((results) async {
+        final List<Map<String, dynamic>> resultsList = [];
 
-      for (final result in results) {
-        if (result.advertisementData.manufacturerData.isEmpty) {
-          continue;
+        for (final result in results) {
+          if (result.advertisementData.manufacturerData.isEmpty) {
+            continue;
+          }
+          final major1 = result.advertisementData.manufacturerData.values.first
+              .elementAt(18)
+              .toRadixString(16);
+          final major2 = result.advertisementData.manufacturerData.values.first
+              .elementAt(19)
+              .toRadixString(16);
+          final minor1 = result.advertisementData.manufacturerData.values.first
+              .elementAt(20)
+              .toRadixString(16);
+          final minor2 = result.advertisementData.manufacturerData.values.first
+              .elementAt(21)
+              .toRadixString(16);
+
+          final id = int.parse('$major1$major2$minor1$minor2', radix: 16);
+
+          try {
+            await Supabase.initialize(
+              url: const String.fromEnvironment("SUPABASE_URL"),
+              anonKey: const String.fromEnvironment("SUPABASE_ANON_KEY"),
+            );
+          } on AssertionError catch (e) {
+            log('Supabase initialize error', name: 'Supabase', error: e);
+          }
+
+          final supabase = Supabase.instance.client;
+          try {
+            await supabase
+                .from('users')
+                .select(
+                    'nickname, icon, message_id, messages!users_message_id_fkey(message_id, message_text, post_timestamp)')
+                .eq('user_id', id)
+                .then((data) {
+              resultsList.add(data.first);
+              // log('msgData: $data');
+              debugPrint('msgData: $data');
+            });
+          } catch (e) {
+            log("get message fail", error: e, name: 'msgData');
+          }
         }
-        final major1 = result.advertisementData.manufacturerData.values.first
-            .elementAt(18)
-            .toRadixString(16);
-        final major2 = result.advertisementData.manufacturerData.values.first
-            .elementAt(19)
-            .toRadixString(16);
-        final minor1 = result.advertisementData.manufacturerData.values.first
-            .elementAt(20)
-            .toRadixString(16);
-        final minor2 = result.advertisementData.manufacturerData.values.first
-            .elementAt(21)
-            .toRadixString(16);
+        updateScanResults(resultsList);
+      }, onError: (e) {
+        log('Scan error', name: 'FlutterBluePlus', error: e);
+      });
+    } else if (Platform.isIOS) {
+      // to start monitoring beacons
+      _streamMonitoring =
+          flutterBeacon.monitoring(regions).listen((MonitoringResult result) {
+        // result contains a region, event type and event state
 
-        final id = int.parse('$major1$major2$minor1$minor2', radix: 16);
-
-        try {
-          await Supabase.initialize(
-            url: const String.fromEnvironment("SUPABASE_URL"),
-            anonKey: const String.fromEnvironment("SUPABASE_ANON_KEY"),
-          );
-        } on AssertionError catch (e) {
-          log('Supabase initialize error', name: 'Supabase', error: e);
+        if (result.monitoringState == MonitoringState.inside) {
+          debugPrint(
+              'Inside region: ${result.region.major}, ${result.region.minor}');
         }
-
-        final supabase = Supabase.instance.client;
-        try {
-          await supabase
-              .from('users')
-              .select(
-                  'nickname, icon, message_id, messages!users_message_id_fkey(message_id, message_text, post_timestamp)')
-              .eq('user_id', id)
-              .then((data) {
-            resultsList.add(data.first);
-            // log('msgData: $data');
-            debugPrint('msgData: $data');
-          });
-        } catch (e) {
-          log("get message fail", error: e, name: 'msgData');
-        }
-      }
-      updateScanResults(resultsList);
-    }, onError: (e) {
-      log('Scan error', name: 'FlutterBluePlus', error: e);
-    });
+      });
+    }
   }
 
   Future<void> stopBeacon() async {
@@ -191,7 +217,11 @@ class BeaconFunc extends ChangeNotifier {
 
     // FBP stop scan
     try {
-      await FlutterBluePlus.stopScan();
+      if (Platform.isAndroid) {
+        await FlutterBluePlus.stopScan();
+      } else if (Platform.isIOS) {
+        _streamMonitoring.cancel();
+      }
     } catch (e) {
       log('Stop scan Err', name: 'beacon', error: e);
     }
