@@ -7,7 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 
 import 'package:sysdev_suretti/pages/loading.dart';
-import 'package:sysdev_suretti/pages/password_reset.dart';
+// import 'package:sysdev_suretti/pages/password_reset.dart';
 import 'package:sysdev_suretti/utils/csb.dart';
 import 'package:uuid/uuid.dart';
 
@@ -22,8 +22,8 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   // File? _image;
   String _name = '名前';
-  String _selectedNotificationFrequency = '1日or数日に一回';
-  String _selectedLocationInfo = '公開';
+  // String _selectedNotificationFrequency = '1日or数日に一回';
+  // String _selectedLocationInfo = '公開';
 
   final _nameController = TextEditingController();
 
@@ -284,125 +284,125 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16.0),
-                  const Text('210****@********.ac.jp'),
-                  const SizedBox(height: 8.0),
-                  GestureDetector(
-                    // onTap: () => _navigateTo('メールアドレス再設定'),
-                    child: RichText(
-                      text: const TextSpan(
-                        text: 'メールアドレス再設定は',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                        children: [
-                          TextSpan(
-                            text: 'こちら',
-                            style: TextStyle(color: Colors.red, fontSize: 16.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text('**********xzy'),
-                  const SizedBox(height: 8.0),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return const PasswordResetPage();
-                      }));
-                    },
-                    child: RichText(
-                      text: const TextSpan(
-                        text: 'パスワード再設定は',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                        children: [
-                          TextSpan(
-                            text: 'こちら',
-                            style: TextStyle(color: Colors.red, fontSize: 16.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text('通知頻度'),
-                  DropdownButton<String>(
-                    value: _selectedNotificationFrequency,
-                    items: const [
-                      DropdownMenuItem(
-                        value: '1日or数日に一回',
-                        child: Text('1日or数日に一回'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'ユーザーが指定した時間帯に',
-                        child: Text('ユーザーが指定した時間帯に'),
-                      ),
-                      DropdownMenuItem(
-                        value: '何人か毎に',
-                        child: Text('何人か毎に'),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedNotificationFrequency = value!;
-                      });
-                    },
-                    hint: const Text('選択してください'),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text('位置情報'),
-                  DropdownButton<String>(
-                    value: _selectedLocationInfo,
-                    items: const [
-                      DropdownMenuItem(
-                        value: '公開',
-                        child: Text('公開'),
-                      ),
-                      DropdownMenuItem(
-                        value: '非公開',
-                        child: Text('非公開'),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedLocationInfo = value!;
-                      });
-                    },
-                    hint: const Text('選択してください'),
-                  ),
-                  const SizedBox(height: 16.0),
-                  GestureDetector(
-                    // onTap: () => _navigateTo('投稿の編集'),
-                    child: RichText(
-                      text: const TextSpan(
-                        text: '投稿の編集は',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                        children: [
-                          TextSpan(
-                            text: 'こちら',
-                            style: TextStyle(color: Colors.red, fontSize: 16.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  GestureDetector(
-                    // onTap: () => _navigateTo('アカウントの切り替え'),
-                    child: RichText(
-                      text: const TextSpan(
-                        text: 'アカウントの切り替えは',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                        children: [
-                          TextSpan(
-                            text: 'こちら',
-                            style: TextStyle(color: Colors.red, fontSize: 16.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  // const SizedBox(height: 16.0),
+                  // const Text('210****@********.ac.jp'),
+                  // const SizedBox(height: 8.0),
+                  // GestureDetector(
+                  //   // onTap: () => _navigateTo('メールアドレス再設定'),
+                  //   child: RichText(
+                  //     text: const TextSpan(
+                  //       text: 'メールアドレス再設定は',
+                  //       style: TextStyle(fontSize: 16.0, color: Colors.black),
+                  //       children: [
+                  //         TextSpan(
+                  //           text: 'こちら',
+                  //           style: TextStyle(color: Colors.red, fontSize: 16.0),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 16.0),
+                  // const Text('**********xzy'),
+                  // const SizedBox(height: 8.0),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     Navigator.of(context)
+                  //         .push(MaterialPageRoute(builder: (context) {
+                  //       return const PasswordResetPage();
+                  //     }));
+                  //   },
+                  //   child: RichText(
+                  //     text: const TextSpan(
+                  //       text: 'パスワード再設定は',
+                  //       style: TextStyle(fontSize: 16.0, color: Colors.black),
+                  //       children: [
+                  //         TextSpan(
+                  //           text: 'こちら',
+                  //           style: TextStyle(color: Colors.red, fontSize: 16.0),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 16.0),
+                  // const Text('通知頻度'),
+                  // DropdownButton<String>(
+                  //   value: _selectedNotificationFrequency,
+                  //   items: const [
+                  //     DropdownMenuItem(
+                  //       value: '1日or数日に一回',
+                  //       child: Text('1日or数日に一回'),
+                  //     ),
+                  //     DropdownMenuItem(
+                  //       value: 'ユーザーが指定した時間帯に',
+                  //       child: Text('ユーザーが指定した時間帯に'),
+                  //     ),
+                  //     DropdownMenuItem(
+                  //       value: '何人か毎に',
+                  //       child: Text('何人か毎に'),
+                  //     ),
+                  //   ],
+                  //   onChanged: (value) {
+                  //     setState(() {
+                  //       _selectedNotificationFrequency = value!;
+                  //     });
+                  //   },
+                  //   hint: const Text('選択してください'),
+                  // ),
+                  // const SizedBox(height: 16.0),
+                  // const Text('位置情報'),
+                  // DropdownButton<String>(
+                  //   value: _selectedLocationInfo,
+                  //   items: const [
+                  //     DropdownMenuItem(
+                  //       value: '公開',
+                  //       child: Text('公開'),
+                  //     ),
+                  //     DropdownMenuItem(
+                  //       value: '非公開',
+                  //       child: Text('非公開'),
+                  //     ),
+                  //   ],
+                  //   onChanged: (value) {
+                  //     setState(() {
+                  //       _selectedLocationInfo = value!;
+                  //     });
+                  //   },
+                  //   hint: const Text('選択してください'),
+                  // ),
+                  // const SizedBox(height: 16.0),
+                  // GestureDetector(
+                  //   // onTap: () => _navigateTo('投稿の編集'),
+                  //   child: RichText(
+                  //     text: const TextSpan(
+                  //       text: '投稿の編集は',
+                  //       style: TextStyle(fontSize: 16.0, color: Colors.black),
+                  //       children: [
+                  //         TextSpan(
+                  //           text: 'こちら',
+                  //           style: TextStyle(color: Colors.red, fontSize: 16.0),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 16.0),
+                  // GestureDetector(
+                  //   // onTap: () => _navigateTo('アカウントの切り替え'),
+                  //   child: RichText(
+                  //     text: const TextSpan(
+                  //       text: 'アカウントの切り替えは',
+                  //       style: TextStyle(fontSize: 16.0, color: Colors.black),
+                  //       children: [
+                  //         TextSpan(
+                  //           text: 'こちら',
+                  //           style: TextStyle(color: Colors.red, fontSize: 16.0),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                   const SizedBox(height: 16.0),
                   GestureDetector(
                     onTap: _logout,
