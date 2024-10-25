@@ -211,7 +211,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return FutureBuilder(
       future: getUserData(),
       builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (snapshot.connectionState == ConnectionState.waiting || snapshot.connectionState == ConnectionState.none) {
           return const Scaffold(
             body: Center(
               child: CircularProgressIndicator(),
