@@ -25,7 +25,7 @@ class MessagePostConfirmation extends ConsumerWidget {
         final data = await supabase.from('messages').upsert({
           'category': category,
           'recommended_place': recommend,
-          // 'location': address,
+          'address': address,
           'message_text': message,
           'user_id': userData.userData['user_id'],
         }).select();
