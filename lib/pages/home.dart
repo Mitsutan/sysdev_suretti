@@ -49,7 +49,8 @@ class HomePage extends ConsumerWidget {
         // });
         if (!beacon.isScanning()) {
           beacon.stopBeacon();
-          beacon.startBeacon(beacon.prefs.getInt('major') ?? 1, beacon.prefs.getInt('minor') ?? 1);
+          beacon.startBeacon(beacon.prefs.getInt('major') ?? 1,
+              beacon.prefs.getInt('minor') ?? 1);
         }
         // IMPORTANT:  You must signal completion of your task or the OS can punish your app
         // for taking too long in the background.
@@ -83,7 +84,8 @@ class HomePage extends ConsumerWidget {
       if (next == AppLifecycleState.resumed) {
         if (!beacon.isScanning()) {
           beacon.stopBeacon();
-          beacon.startBeacon(beacon.prefs.getInt('major') ?? 1, beacon.prefs.getInt('minor') ?? 1);
+          beacon.startBeacon(beacon.prefs.getInt('major') ?? 1,
+              beacon.prefs.getInt('minor') ?? 1);
         }
       }
     });
@@ -91,21 +93,25 @@ class HomePage extends ConsumerWidget {
     // usersテーブルからuser.auth_idをキーにしてユーザー情報を取得
     Future<void> getUserData() async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      
-      final user = await supabase
-          .from('users')
-          .select()
-          .eq('auth_id', supabase.auth.currentUser!.id);
-      log(user.toString());
-      userData.updateUserData(user.first);
-      String userId = user.first['user_id'].toRadixString(16).padLeft(8, '0');
-      // beacon.major = int.parse(userId.substring(0, 4), radix: 16);
-      // beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
 
-      // set to shared preference
-      prefs.setInt('major', int.parse(userId.substring(0, 4), radix: 16));
-      prefs.setInt('minor', int.parse(userId.substring(4, 8), radix: 16));
-      
+      try {
+        final user = await supabase
+            .from('users')
+            .select()
+            .eq('auth_id', supabase.auth.currentUser!.id);
+        log(user.toString());
+        userData.updateUserData(user.first);
+        String userId = user.first['user_id'].toRadixString(16).padLeft(8, '0');
+        // beacon.major = int.parse(userId.substring(0, 4), radix: 16);
+        // beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
+
+        // set to shared preference
+        prefs.setInt('major', int.parse(userId.substring(0, 4), radix: 16));
+        prefs.setInt('minor', int.parse(userId.substring(4, 8), radix: 16));
+      } catch (e) {
+        log('getUserData error', error: e);
+        return;
+      }
 
       userData.updateIsGotUserData(true);
     }
@@ -277,7 +283,8 @@ class HomePage extends ConsumerWidget {
               )
             : FloatingActionButton(
                 onPressed: () {
-                  beacon.startBeacon(beacon.prefs.getInt('major') ?? 1, beacon.prefs.getInt('minor') ?? 1);
+                  beacon.startBeacon(beacon.prefs.getInt('major') ?? 1,
+                      beacon.prefs.getInt('minor') ?? 1);
                 },
                 child: const Text("SCAN"),
               ),

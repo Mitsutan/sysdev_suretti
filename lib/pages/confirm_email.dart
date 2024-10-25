@@ -51,7 +51,6 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -62,8 +61,8 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> {
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-                "入力したメールアドレスに確認メールを送信しました。\nメール内のリンクをクリックして登録を完了してください。"),
+            Text(
+                "入力したメールアドレス(${widget.email})に確認メールを送信しました。\nメール内のリンクをクリックして登録を完了してください。"),
             ElevatedButton(
                 onPressed: resendEmail, child: const Text("メールを再送信する")),
             TextButton(
