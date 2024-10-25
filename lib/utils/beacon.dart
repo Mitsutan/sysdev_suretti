@@ -237,7 +237,12 @@ class BeaconFunc extends ChangeNotifier {
     if (Platform.isAndroid) {
       return FlutterBluePlus.isScanningNow;
     } else if (Platform.isIOS) {
-      return _streamMonitoring.isPaused;
+      try {
+        return _streamMonitoring.isPaused;
+      } catch (e) {
+        log('isScanning error', name: 'beacon', error: e);
+        return false;
+      }
     } else {
       return false;
     }
