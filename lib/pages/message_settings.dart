@@ -34,8 +34,10 @@ class _MessageSettings extends State<MessageSettings> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: const Text('投稿'),
         ),
-        body: Padding(
+        body: SingleChildScrollView(
+            child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -142,6 +144,6 @@ class _MessageSettings extends State<MessageSettings> {
               ),
             ],
           ),
-        ));
+        )));
   }
 }
