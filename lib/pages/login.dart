@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/navigator.dart';
 
+/// ログイン画面
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -21,8 +22,10 @@ class _LoginPageState extends State<LoginPage> {
 
   String? _errorMessage;
 
+  /// 利便性のためSupabaseのクライアントインスタンスを代入
   final supabase = Supabase.instance.client;
 
+  /// ログイン処理
   Future<void> _signIn() async {
     log('ログイン処理開始', name: 'LoginPage');
     setState(() {
@@ -30,6 +33,7 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
 
+    // バリデーションチェック：エラーがあればその場で処理終了
     final isValid = _formKey.currentState!.validate();
     if (!isValid) {
       setState(() {
@@ -46,6 +50,7 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) {
         return;
       }
+      // 画面履歴をすべて削除したうえでNavigationへ遷移
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) {
         return const Navigation();

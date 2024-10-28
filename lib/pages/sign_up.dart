@@ -7,6 +7,7 @@ import 'package:sysdev_suretti/pages/login.dart';
 
 // import 'login_page.dart';
 
+/// サインアップ画面
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
@@ -33,12 +34,15 @@ class _SignupPageState extends State<SignupPage> {
 
   final supabase = Supabase.instance.client;
 
+  /// サインアップ処理
   Future<void> _signUp() async {
     log('登録処理開始', name: 'RegisterPage');
     setState(() {
       _errorMessage = null;
       _isLoading = true;
     });
+
+    // バリデーションチェック：エラーがあればその場で処理終了
     final isValid = _formKey.currentState!.validate();
     if (!isValid) {
       setState(() {
@@ -56,11 +60,11 @@ class _SignupPageState extends State<SignupPage> {
         return;
       }
 
+      // メールアドレス確認指示画面へ遷移
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         return ConfirmEmailPage(
           email: email,
         );
-        // return const LoginPage();
       }));
 
       log('登録完了', name: 'RegisterPage');
