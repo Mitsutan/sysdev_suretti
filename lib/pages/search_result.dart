@@ -56,12 +56,12 @@ class SearchResultsScreen extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('検索結果'),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            // 戻るボタンの処理
-          },
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back),
+        //   onPressed: () {
+        //     // 戻るボタンの処理
+        //   },
+        // ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
