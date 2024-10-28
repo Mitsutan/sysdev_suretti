@@ -198,6 +198,7 @@ class BeaconFunc extends ChangeNotifier {
       _streamMonitoring =
           flutterBeacon.monitoring(regions).listen((MonitoringResult result) {
         // result contains a region, event type and event state
+        debugPrint('Monitoring: $result');
 
         if (result.monitoringState == MonitoringState.inside) {
           debugPrint(
