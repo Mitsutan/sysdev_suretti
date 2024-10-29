@@ -1,16 +1,65 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="styleseets/style.css">
+    <script src="scripts/script.js"></script>
+
     <title>Document</title>
 </head>
+
 <body>
-    <h1>テスト</h1>
+    <div class="container text-center">
+        <!-- <h1>すれっち</h1> -->
+        <div class="w-75 mx-auto">
+            <img src="imgs/すれっち.png" alt="すれっち" class="img-fluid">
+        </div>
+        <a class="btn btn-primary disabled" id="download" href="" role="button">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </a>
+    </div>
+
     <!-- scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-    <script src="scripts/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+    <script>
+        /**
+         * GitHubのリリースページから最新のダウンロードURLを取得する
+         * @returns {object} {"url": downloadURL, "version": version}
+         */
+        async function getLatestDownloadURL() {
+            const url = "https://api.github.com/repos/mitsutan/sysdev_suretti/releases/latest";
+
+            try {
+                await fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        const downloadURL = data.assets[0].browser_download_url;
+                        const version = data.tag_name;
+                        const result = { "url": downloadURL, "version": version };
+                        console.dir(result);
+
+                        const downloadLink = document.getElementById("download");
+                        downloadLink.href = result.url;
+                        downloadLink.innerHTML = "<span class='fw-bold fs-3'>最新版ダウンロード</span><br />" + result.version;
+                        downloadLink.classList.remove("disabled");
+                    }
+                    );
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        getLatestDownloadURL();
+
+    </script>
 </body>
+
 </html>
