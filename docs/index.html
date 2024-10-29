@@ -2,64 +2,146 @@
 <html lang="ja">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <link rel="stylesheet" href="styleseets/style.css">
-    <script src="scripts/script.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <link rel="stylesheet" href="styleseets/style.css">
+  <script src="scripts/script.js"></script>
 
-    <title>Document</title>
+  <title>すれっち</title>
 </head>
 
 <body>
-    <div class="container text-center">
-        <!-- <h1>すれっち</h1> -->
-        <div class="w-75 mx-auto">
-            <img src="imgs/すれっち.png" alt="すれっち" class="img-fluid">
-        </div>
-        <a class="btn btn-primary disabled" id="download" href="" role="button">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </a>
+  <div class="container text-center">
+    <!-- <h1>すれっち</h1> -->
+    <div class="w-75 mx-auto">
+      <img src="imgs/すれっち.png" alt="すれっち" class="img-fluid">
     </div>
+    <a class="d-inline-block btn btn-primary disabled" id="download" href="" role="button">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </a>
+    <p><a href="https://github.com/Mitsutan/sysdev_suretti/tags">以前のバージョンはこちら</a></p>
 
-    <!-- scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-        crossorigin="anonymous"></script>
-    <script>
-        /**
-         * GitHubのリリースページから最新のダウンロードURLを取得する
-         * @returns {object} {"url": downloadURL, "version": version}
-         */
-        async function getLatestDownloadURL() {
-            const url = "https://api.github.com/repos/mitsutan/sysdev_suretti/releases/latest";
+    <section class="container">
+      <h2 class="display-5">Q&A</h2>
+      <div class="accordion text-start" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button question" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              確認メールが届きません
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+            <div class="accordion-body answer">
+              確認メールが届かない場合、
+              <pre class="d-inline">contact@suretti.mitsutan.dev</pre>からのメールを受信できるよう設定したうえで以下の手順をお試しください。
+              <ol>
+                <li>迷惑メールフォルダやごみ箱を確認してください。</li>
+                <li>メールアドレスを間違えて入力している可能性があります。再度入力してください。</li>
+                <li>メールアドレスが正しい場合、サーバーのトラブルが考えられます。時間をおいて再度お試しください。</li>
+              </ol>
+              開発側でも特定のメールアドレスへメールが届かない事例があることを確認しています。
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed question" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              誰ともすれ違えない
+            </button>
+          </h2>
+          <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body answer">
+              以下をご確認ください。
+              <ol>
+                <li>アプリに位置情報、Bluetoothの許可をしているか確認してください。</li>
+                <li>位置情報、Bluetoothを有効にしてください。</li>
+                <li>アプリの再起動をお試しください。</li>
+              </ol>
+              端末の相性によってはすれ違えないことを確認しています。
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed question" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              iPhone版はありますか？
+            </button>
+          </h2>
+          <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body answer">
+              現時点ではiPhone版はありません。今後のリリースにご期待ください。<span class="text-secondary">iPhoneアプリを配布するためにDeveloper Programに加入しないといけないのですが、それが年間99米ドルもするので手を出せません。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <h2 class="display-5">利用ガイド</h2>
+      <div>
+        <h3>禁止事項</h3>
+        <p>以下の行為は禁止されています。</p>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">閲覧者が不快に感じる内容の投稿</li>
+          <li class="list-group-item">当サイトの趣旨に反する内容の投稿</li>
+          <li class="list-group-item">法令に反する行為</li>
+        </ul>
+        <p>上記を含めこちらが問題がある書き込みであると判断した場合は、 当該の書き込みを削除したり、書き込みを行ったユーザに制限をかける場合があります。</p>
+      </div>
+      <div>
+        <h3>免責</h3>
+        <p>本サービスに関連して生じたユーザおよび第三者の結果的損害、付随的損害、逸失利益等の間接被害について、 それらの予見、予見可能性の有無にかかわらず一切の責任を負いません。</p>
+      </div>
 
-            try {
-                await fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        const downloadURL = data.assets[0].browser_download_url;
-                        const version = data.tag_name;
-                        const result = { "url": downloadURL, "version": version };
-                        console.dir(result);
+    </section>
+  </div>
+  <footer>
+    <div class="container text-center">
+      <p>2024 ConnecTech</p>
+    </div>
+  </footer>
 
-                        const downloadLink = document.getElementById("download");
-                        downloadLink.href = result.url;
-                        downloadLink.innerHTML = "<span class='fw-bold fs-3'>最新版ダウンロード</span><br />" + result.version;
-                        downloadLink.classList.remove("disabled");
-                    }
-                    );
-            } catch (error) {
-                console.error(error);
-            }
-        }
+  <!-- scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
+  <script>
+    /**
+     * GitHubのリリースページから最新のダウンロードURLを取得する
+     * @returns {object} {"url": downloadURL, "version": version}
+     */
+    async function getLatestDownloadURL() {
+      const url = "https://api.github.com/repos/mitsutan/sysdev_suretti/releases/latest";
 
-        getLatestDownloadURL();
+      try {
+        await fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            const downloadURL = data.assets[0].browser_download_url;
+            const version = data.tag_name;
+            const result = { "url": downloadURL, "version": version };
+            console.dir(result);
 
-    </script>
+            const downloadLink = document.getElementById("download");
+            downloadLink.href = result.url;
+            downloadLink.innerHTML = "<span class='fw-bold fs-3'>最新版ダウンロード</span><br />" + result.version;
+            downloadLink.classList.remove("disabled");
+          }
+          );
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    getLatestDownloadURL();
+
+  </script>
 </body>
 
 </html>
