@@ -51,6 +51,7 @@ class MessagePostConfirmation extends ConsumerWidget {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: const Text('確認'),
+          centerTitle: true,
         ),
         body: SingleChildScrollView(
           child: Padding(

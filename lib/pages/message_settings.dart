@@ -35,6 +35,7 @@ class _MessageSettings extends State<MessageSettings> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: const Text('投稿'),
+          centerTitle: true,
         ),
         body: SingleChildScrollView(
             child: Padding(
