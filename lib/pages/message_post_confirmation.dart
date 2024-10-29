@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sysdev_suretti/utils/csb.dart';
 import 'package:sysdev_suretti/utils/provider.dart';
 
 class MessagePostConfirmation extends ConsumerWidget {
@@ -18,7 +19,7 @@ class MessagePostConfirmation extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userData = ref.watch(userDataProvider);
 
-    Future<void> postMessage() async {
+    Future<bool> postMessage() async {
       final supabase = Supabase.instance.client;
 
       try {
@@ -39,8 +40,10 @@ class MessagePostConfirmation extends ConsumerWidget {
         }).eq('auth_id', supabase.auth.currentUser!.id);
 
         log('投稿しました');
+        return true;
       } catch (e) {
         log('エラーが発生しました: $e');
+        return false;
       }
     }
 
@@ -128,14 +131,20 @@ class MessagePostConfirmation extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        onPressed: () {
-                          // ここの処理はまだ適当に書いてます
-                          // Navigator.of(context).push(
-                          //   MaterialPageRoute(
-                          //       builder: (context) => MessagePostConfirmation(
-                          //           category, recommend, address, message)),
-                          // );
-                          postMessage();
+                        onPressed: () async {
+                          if (await postMessage()) {
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                              Csb.showSnackBar(
+                                  context, '投稿しました', CsbType.nomal);
+                            }
+                          } else {
+                            if (context.mounted) {
+                              Csb.showSnackBar(
+                                  context, 'エラーが発生しました', CsbType.error);
+                            }
+                          }
+                          ();
                         },
                         style: ElevatedButton.styleFrom(
                           side: const BorderSide(
