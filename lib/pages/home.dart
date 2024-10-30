@@ -3,8 +3,6 @@ import 'dart:developer';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/pages/loading.dart';
 import 'package:sysdev_suretti/utils/beacon.dart';
 import 'package:sysdev_suretti/utils/diff_time.dart';
@@ -23,9 +21,7 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final beacon = ref.watch(beaconProvider);
-    final userData = ref.watch(userDataProvider);
-
-    final supabase = Supabase.instance.client;
+    final udp = ref.watch(userDataProvider);
 
     // Platform messages are asynchronous, so we initialize in an async method.
     Future<void> initPlatformState() async {
@@ -90,40 +86,14 @@ class HomePage extends ConsumerWidget {
       }
     });
 
-    // usersテーブルからuser.auth_idをキーにしてユーザー情報を取得
-    Future<void> getUserData() async {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      try {
-        final user = await supabase
-            .from('users')
-            .select()
-            .eq('auth_id', supabase.auth.currentUser!.id);
-        log(user.toString());
-        userData.updateUserData(user.first);
-        String userId = user.first['user_id'].toRadixString(16).padLeft(8, '0');
-        // beacon.major = int.parse(userId.substring(0, 4), radix: 16);
-        // beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
-
-        // set to shared preference
-        prefs.setInt('major', int.parse(userId.substring(0, 4), radix: 16));
-        prefs.setInt('minor', int.parse(userId.substring(4, 8), radix: 16));
-      } catch (e) {
-        log('getUserData error', error: e);
-        return;
-      }
-
-      userData.updateIsGotUserData(true);
-    }
-
     // ユーザー情報未取得の場合：情報取得を試み、その間ローディングインジケーターを表示
     // なんらかの理由で例外が発生した場合、Loadingへ遷移
     // ユーザー情報取得済みの場合：ホーム画面構築
-    if (!userData.isGotUserData) {
+    if (!udp.isGotUserData) {
       try {
-        getUserData();
+        udp.getUserData();
       } catch (e) {
-        log(e.toString());
+        log('getUserData error. try transfer loading page.', error: e);
         Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) {
           return const Loading();
