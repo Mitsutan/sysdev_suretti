@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sysdev_suretti/pages/loading.dart';
 import 'package:sysdev_suretti/utils/beacon.dart';
-import 'package:sysdev_suretti/utils/diff_time.dart';
+import 'package:sysdev_suretti/utils/display_time.dart';
 import 'package:sysdev_suretti/utils/lifecycle.dart';
 import 'package:sysdev_suretti/utils/provider.dart';
 // import 'package:sysdev_suretti/utils/sqlite.dart';

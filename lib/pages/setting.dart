@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 
 import 'package:sysdev_suretti/pages/loading.dart';
+import 'package:sysdev_suretti/pages/mypage.dart';
 // import 'package:sysdev_suretti/pages/password_reset.dart';
 import 'package:sysdev_suretti/utils/csb.dart';
 import 'package:sysdev_suretti/utils/provider.dart';
@@ -407,22 +408,26 @@ class SettingsPage extends ConsumerWidget {
                 //   },
                 //   hint: const Text('選択してください'),
                 // ),
-                // const SizedBox(height: 16.0),
-                // GestureDetector(
-                //   // onTap: () => _navigateTo('投稿の編集'),
-                //   child: RichText(
-                //     text: const TextSpan(
-                //       text: '投稿の編集は',
-                //       style: TextStyle(fontSize: 16.0, color: Colors.black),
-                //       children: [
-                //         TextSpan(
-                //           text: 'こちら',
-                //           style: TextStyle(color: Colors.red, fontSize: 16.0),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
+                const SizedBox(height: 16.0),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                      return const MyPage();
+                    }));
+                  },
+                  child: RichText(
+                    text: const TextSpan(
+                      text: '投稿一覧',
+                      style: TextStyle(fontSize: 16.0, color: Colors.black),
+                      children: [
+                        TextSpan(
+                          text: 'こちら',
+                          style: TextStyle(color: Colors.red, fontSize: 16.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 // const SizedBox(height: 16.0),
                 // GestureDetector(
                 //   // onTap: () => _navigateTo('アカウントの切り替え'),
