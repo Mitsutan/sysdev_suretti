@@ -38,7 +38,7 @@ class UserData extends ChangeNotifier {
         .then((value) {
       log(value.toString());
       updateUserData(value.first);
-      String userId = value.first['user_id'].toRadixString(16).padLeft(8, '0');
+      String userId = int.parse(value.first['user_id'].toString()).toRadixString(16).padLeft(8, '0');
       // set to shared preference
       prefs.setInt('major', int.parse(userId.substring(0, 4), radix: 16));
       prefs.setInt('minor', int.parse(userId.substring(4, 8), radix: 16));
