@@ -172,7 +172,7 @@ class BeaconFunc extends ChangeNotifier {
             resultsList.add(data.first);
 
             ScannedUser scannedUser = ScannedUser(
-              messageId: int.parse(data.first['message_id']),
+              messageId: int.parse(data.first['message_id'].toString()),
               scannedAt: DateTime.now(),
             );
 
