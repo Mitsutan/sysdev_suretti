@@ -36,10 +36,28 @@ class SearchService {
 
   Future<List<dynamic>> search(String query, String filter) async {
     // 検索処理
-    final response = await supabase
+    var queryBuilder = supabase
         .from('messages')
         .select('')
         .ilike('recommended_place', '%$query%');
+
+    // フィルターの適用
+    if (filter == '観光地') {
+      queryBuilder = queryBuilder.eq('category', '観光地');
+    } else if (filter == '飲食店') {
+      queryBuilder = queryBuilder.eq('category', '飲食店');
+    } else if (filter == '宿泊地') {
+      queryBuilder = queryBuilder.eq('category', '宿泊地');
+    }
+    // } else if (filter == '距離が近い') {
+    //   queryBuilder = queryBuilder.order('distance', ascending: true);
+    // } else if (filter == '距離が遠い') {
+    //   queryBuilder = queryBuilder.order('distance', ascending: false);
+    // } else if (filter == '新しい順') {
+    //   queryBuilder = queryBuilder.order('created_at', ascending: false);
+    // }
+
+    final response = await queryBuilder.select().order('message_id', ascending: false);
 
     return response;
   }

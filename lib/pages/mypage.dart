@@ -1,4 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sysdev_suretti/utils/display_time.dart';
 
 // 表示状態を管理する列挙型
 enum DisplayState {
@@ -6,6 +11,11 @@ enum DisplayState {
   favorites, // お気に入り
   bookmarks // ブックマーク
 }
+
+final supabase = Supabase.instance.client;
+
+late final SharedPreferences _prefs;
+int userId = 0;
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -20,6 +30,27 @@ class _MyPageState extends State<MyPage> {
   void _switchDisplay(DisplayState newState) {
     setState(() {
       _currentState = newState;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializePreferences();
+  }
+
+  Future<void> _initializePreferences() async {
+    try {
+      _prefs = await SharedPreferences.getInstance();
+    } catch (e) {
+      log("init fail", error: e);
+    }
+
+    setState(() {
+      final major = _prefs.getInt('major').toString();
+      final minor = _prefs.getInt('minor').toString();
+
+      userId = int.parse(major + minor);
     });
   }
 
@@ -103,13 +134,46 @@ class _MyPageState extends State<MyPage> {
   }
 
   Widget _buildPostsList() {
-    return Column(
-      children: [
-        _buildUserCard(
-            'すれちがいおにいさん', '2024/04/26', '@suretigai_man', 'こんにちは！この観光地おすすめです！'),
-        _buildUserCard(
-            'すれちがいおにいさん', '2024/04/27', '@suretigai_man', 'こんばんは！この観光地おすすめです！'),
-      ],
+    if (userId == 0) {
+      return const Text('ユーザーIDが取得できませんでした');
+    }
+
+    return StreamBuilder(
+      stream: supabase
+          .from('messages')
+          .select('*, users!messages_user_id_fkey(*)')
+          .eq('user_id', userId)
+          .asStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          log('snapshot error:', error: snapshot.error);
+          return const Text('エラーが発生しました');
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+        final posts = snapshot.data; // as List;
+        if (posts == null) {
+          return const Text('データがありません');
+        }
+        // log('posts: $posts');
+        return Expanded(
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              final post = posts[index];
+              return _buildUserCard(
+                post['users']['icon'].toString(),
+                post['users']['nickname'].toString(),
+                formatDate(post['post_timestamp'].toString()),
+                post['message_id'].toString(),
+                post['message_text'].toString(),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -117,7 +181,7 @@ class _MyPageState extends State<MyPage> {
     return Column(
       children: [
         _buildUserCard(
-            'お気に入りユーザー1', '2024/02/06', '@favorite_user1', 'おはようございます！'),
+            "", 'お気に入りユーザー1', '2024/02/06', '@favorite_user1', 'おはようございます！'),
       ],
     );
   }
@@ -126,13 +190,13 @@ class _MyPageState extends State<MyPage> {
     return Column(
       children: [
         _buildUserCard(
-            'ブックマークユーザー1', '2024/10/13', '@bookmark_user1', 'こんばんは！'),
+            "", 'ブックマークユーザー1', '2024/10/13', '@bookmark_user1', 'こんばんは！'),
       ],
     );
   }
 
-  Widget _buildUserCard(
-      String username, String date, String userid, String message) {
+  Widget _buildUserCard(String iconpath, String username, String date,
+      String userid, String message) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Padding(
@@ -142,9 +206,10 @@ class _MyPageState extends State<MyPage> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 20,
-                  child: Icon(Icons.person),
+                  foregroundImage: NetworkImage(
+                      "https://jeluoazapxqjksdfvftm.supabase.co/storage/v1/object/public/$iconpath"),
                 ),
                 const SizedBox(width: 8),
                 Column(

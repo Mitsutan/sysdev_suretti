@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 String diffTime(DateTime base, DateTime target) {
   final diffInSeconds = base.difference(target).inSeconds;
   if (diffInSeconds < 60) {
@@ -33,4 +35,10 @@ String diffTime(DateTime base, DateTime target) {
 
   final diffInYears = (diffInDays / 365).floor();
   return '$diffInYears年前';
+}
+
+String formatDate(String dateStr) {
+  DateTime dateTime = DateTime.parse(dateStr);
+  DateFormat formatter = DateFormat('yyyy/MM/dd HH:mm:ss');
+  return formatter.format(dateTime);
 }
