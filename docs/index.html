@@ -14,6 +14,12 @@
 </head>
 
 <body>
+  <header class="p-2">
+    <div class="form-check form-switch form-check-reverse">
+      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleTheme()">
+      <label class="form-check-label" for="flexSwitchCheckDefault">テーマ</label>
+    </div>
+  </header>
   <div class="container text-center">
     <!-- <h1>すれっち</h1> -->
     <div class="w-75 mx-auto">
@@ -141,6 +147,12 @@
     }
 
     getLatestDownloadURL();
+
+
+    // テーマの設定
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.getElementById("flexSwitchCheckDefault").checked = true;
+    }
 
   </script>
 </body>
