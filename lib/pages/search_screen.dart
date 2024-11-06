@@ -96,7 +96,7 @@ class _SearchPageState extends State<SearchPage> {
                   });
                   Navigator.pop(context);
                   // フィルター選択後に検索を実行
-                _performSearch(_searchController.text);
+                  _performSearch(_searchController.text);
                 },
               );
             }).toList(),
