@@ -33,9 +33,9 @@ class Navigation extends HookWidget {
     }, [secondsStream]);
 
     try {
-      secondsStream.stream.listen((seconds) {
-        pageNotifier.updateCount(Pages.notice, seconds);
-      });
+      // secondsStream.stream.listen((seconds) {
+      //   pageNotifier.updateCount(Pages.notice, seconds);
+      // });
     } catch (e) {
       log("stream", error: e);
     }
