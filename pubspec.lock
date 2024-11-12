@@ -86,6 +86,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  background_fetch:
+    dependency: "direct main"
+    description:
+      name: background_fetch
+      sha256: e9f26ae54d88310b7ac2a68f2f9fcee0081a4d5f11100f233a70702021e7ac4f
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.7"
+  beacon_broadcast:
+    dependency: "direct main"
+    description:
+      name: beacon_broadcast
+      sha256: "9aa58bcf83b9184adca8c5ed6a8c5d7286d07b48c8b809fdf5b1432d16574d86"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -347,14 +363,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_beacon:
-    dependency: "direct main"
-    description:
-      name: flutter_beacon
-      sha256: c93ee7a2e572a2dba31eb8db9f7a2c514b2b3e22584ea7d78d8cc854fdbded79
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.1"
   flutter_blue_plus:
     dependency: "direct main"
     description:
@@ -685,6 +693,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  intl:
+    dependency: "direct main"
+    description:
+      name: intl
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.19.0"
   js:
     dependency: transitive
     description:
@@ -1006,7 +1022,7 @@ packages:
     source: hosted
     version: "2.1.0"
   shared_preferences:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences
       sha256: "746e5369a43170c25816cc472ee016d3a66bc13fcf430c0bc41ad7b4b2922051"
@@ -1025,10 +1041,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_foundation
-      sha256: c4b35f6cb8f63c147312c054ce7c2254c8066745125264f0c88739c417fc9d9f
+      sha256: "07e050c7cd39bad516f8d64c455f04508d09df104be326d8c02551590a0d513d"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.2"
+    version: "2.5.3"
   shared_preferences_linux:
     dependency: transitive
     description:

@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:beacon_broadcast/beacon_broadcast.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:flutter_beacon/flutter_beacon.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide BluetoothState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final beaconProvider = ChangeNotifierProvider((ref) => BeaconFunc());
@@ -13,11 +14,26 @@ class BeaconFunc extends ChangeNotifier {
   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
   List<Map<String, dynamic>> _scanResults = [];
 
-  int major = 1;
-  int minor = 1;
+  late SharedPreferences prefs;
+  bool isInitialized = false;
+
+  // int major;
+  // int minor;
+
+  // constructor
+  BeaconFunc() {
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    prefs = await SharedPreferences.getInstance();
+    isInitialized = true;
+  }
 
   BluetoothAdapterState get adapterState => _adapterState;
   List<Map<String, dynamic>> get scanResults => _scanResults;
+
+  BeaconBroadcast beacon = BeaconBroadcast();
 
   void updateAdapterState(BluetoothAdapterState newState) {
     _adapterState = newState;
@@ -72,17 +88,30 @@ class BeaconFunc extends ChangeNotifier {
 
   Future<void> startBeacon(int major, int minor) async {
     // flutterBeacon start broadcast
-    log((await flutterBeacon.isBroadcasting()).toString(),
-        name: 'flutterBeacon.isBroadcasting()');
+    // log((await flutterBeacon.isBroadcasting()).toString(),
+    //     name: 'flutterBeacon.isBroadcasting()');
+    beacon.getAdvertisingStateChange().listen((isAdvertising) {
+      // log('isAdvertising: $isAdvertising', name: 'beacon');
+      debugPrint('isAdvertising: $isAdvertising');
+    });
+    
     try {
-      await flutterBeacon.startBroadcast(BeaconBroadcast(
-        proximityUUID: const String.fromEnvironment("IBEACON_UUID"),
-        major: major,
-        minor: minor,
-        identifier: 'dev.mitsutan.sysdev_suretti',
-      ));
+      debugPrint('Beacon Start!');
+
+      debugPrint('major: $major, minor: $minor');
+
+      await beacon
+          .setUUID(const String.fromEnvironment("IBEACON_UUID"))
+          .setMajorId(major)
+          .setMinorId(minor)
+          .setIdentifier('dev.mitsutan.sysdev_suretti')
+          .setLayout('m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24')
+          .setManufacturerId(0x004C)
+          .start();
+
     } catch (e) {
-      log('Start broadcast error', name: 'beacon', error: e);
+      // log('Start broadcast error', name: 'beacon', error: e);
+      debugPrint('Start broadcast error: $e');
     }
 
     // FBP start scan
@@ -90,8 +119,11 @@ class BeaconFunc extends ChangeNotifier {
       await FlutterBluePlus.startScan(
           withMsd: [_msdFilterData], androidUsesFineLocation: true);
     } catch (e) {
-      log('Start scan Err', name: 'beacon', error: e);
+      // log('Start scan Err', name: 'beacon', error: e);
+      debugPrint('Start scan Err: $e');
     }
+
+      // debugPrint("isAd:${(await beacon.isAdvertising()).toString()}");
 
     // FBP scanResults listen
     FlutterBluePlus.scanResults.listen((results) async {
@@ -115,17 +147,28 @@ class BeaconFunc extends ChangeNotifier {
             .toRadixString(16);
 
         final id = int.parse('$major1$major2$minor1$minor2', radix: 16);
+
+        try {
+          await Supabase.initialize(
+            url: const String.fromEnvironment("SUPABASE_URL"),
+            anonKey: const String.fromEnvironment("SUPABASE_ANON_KEY"),
+          );
+        } on AssertionError catch (e) {
+          log('Supabase initialize error', name: 'Supabase', error: e);
+        }
+
         final supabase = Supabase.instance.client;
         try {
           await supabase
               .from('users')
-              .select('nickname, icon, message_id, messages!users_message_id_fkey(message_id, message_text, post_timestamp)')
+              .select(
+                  'nickname, icon, message_id, messages!users_message_id_fkey(message_id, message_text, post_timestamp)')
               .eq('user_id', id)
               .then((data) {
             resultsList.add(data.first);
-            log('msgData: $data');
+            // log('msgData: $data');
+            debugPrint('msgData: $data');
           });
-
         } catch (e) {
           log("get message fail", error: e, name: 'msgData');
         }
@@ -138,10 +181,10 @@ class BeaconFunc extends ChangeNotifier {
 
   Future<void> stopBeacon() async {
     // flutterBeacon stop broadcast
-    log((await flutterBeacon.isBroadcasting()).toString(),
-        name: 'flutterBeacon.isBroadcasting()');
+    // log((await flutterBeacon.isBroadcasting()).toString(),
+    //     name: 'flutterBeacon.isBroadcasting()');
     try {
-      await flutterBeacon.stopBroadcast();
+      beacon.stop();
     } catch (e) {
       log('Stop broadcast error', name: 'beacon', error: e);
     }
@@ -156,8 +199,8 @@ class BeaconFunc extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> isBroadcasting() async {
-    return await flutterBeacon.isBroadcasting();
+  Future<bool?> isBroadcasting() async {
+    return await beacon.isAdvertising();
   }
 
   bool isScanning() {
