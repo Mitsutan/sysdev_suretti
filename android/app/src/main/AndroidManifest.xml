@@ -67,14 +67,10 @@
             android:value="2" />
 
         <!-- グーグルマップのapiキー関連 -->
-<!--        <meta-data-->
-<!--            android:name="com.google.android.geo.API_KEY"-->
-<!--            android:value="AIzaSyAbiv9ex9Tk5TYroTUYNRu_2tU217XQfDM"/>-->
-        <!-- APIキー二つ目       -->
-        <meta-data
+        <meta-data 
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_api_key"/>
-<!--            android:value="AIzaSyBz9-3jq9-dufEG7Htbctjcn7Od_161Pv0"/>-->
+            android:value="${MAPS_API_KEY}" />
+
 
     </application>
     <!-- Required to query activities that can process text, see:

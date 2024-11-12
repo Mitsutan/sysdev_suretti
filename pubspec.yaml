@@ -18,22 +18,27 @@ dependencies:
   flutter_native_splash: ^2.4.1
   sqflite: ^2.3.3+1
   path: ^1.9.0
-  google_maps_flutter: ^2.0.6
+  google_maps_flutter: ^2.9.0
   geolocator: ^7.6.2
   flutter_riverpod: ^2.5.1
   permission_handler: ^11.3.1
   image_picker: ^1.1.2
   uuid: ^4.4.2
   flutter_launcher_icons: ^0.14.1
+  flutter_dotenv: ^5.0.2
+  envied: ^0.5.4+1
+  flutter_config: ^2.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^3.0.0
+  build_runner: ^2.4.13
+  envied_generator: ^0.5.4+1
 
 flutter:
-  # assets:
-  #   - .env
-  uses-material-design: true
+   assets:
+     - .env
+   uses-material-design: true
 

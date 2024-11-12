@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -10,32 +10,41 @@ import 'package:sysdev_suretti/pages/loading.dart';
 
 /// エントリーポイント
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
+//  WidgetsFlutterBinding.ensureInitialized();
+//  SystemChrome.setPreferredOrientations([
+//    DeviceOrientation.portraitUp,
+//  ]);
+
+  WidgetsFlutterBinding.ensureInitialized();  // 追加
+
+  // デバッグ出力を追加
+  try {
+    runApp(const MyApp());
+  } catch (e) {
+    print('Error starting app: $e');
+  }
 
   // ログの設定
   // void log(String level, String message) {
   //   debugPrint('$level: ${DateTime.now()}: $message');
   // }
 
-  // try {
-  //   // .env ファイルのロード
-  //   await dotenv.load(fileName: ".env");
-  //   log('INFO', '.env file loaded successfully');
-  // } catch (e) {
-  //   log('SEVERE', 'Failed to load .env file: $e');
-  //   return;
-  // }
+  try {
+    // .env ファイルのロード
+    await dotenv.load();
+    log('INFO .env file loaded successfully');
+  } catch (e) {
+    log('SEVERE Failed to load .env file: $e');
+    return;
+  }
 
-  // final supabaseUrl = dotenv.env['SUPABASE_URL'];
-  // final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'];
+  final supabaseUrl = dotenv.env['SUPABASE_URL'];
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'];
 
-  // if (supabaseUrl == null || supabaseAnonKey == null) {
-  //   log('SEVERE', 'SUPABASE_URL or SUPABASE_ANON_KEY is not set in .env file');
-  //   return;
-  // }
+  if (supabaseUrl == null || supabaseAnonKey == null) {
+    log('SEVERE SUPABASE_URL or SUPABASE_ANON_KEY is not set in .env file');
+    return;
+  }
 
 
   // Supabase初期化

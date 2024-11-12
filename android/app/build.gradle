@@ -5,6 +5,8 @@ plugins {
 //    id "com.google.gms.google-services"
 }
 
+apply from: project(':flutter_config').projectDir.getPath() + "/dotenv.gradle"
+
 def keystorePropertiesFile = rootProject.file("key.properties") 
 
 def localProperties = new Properties()
@@ -26,7 +28,8 @@ if (flutterVersionName == null) {
 }
 
 
-def MAPS_API_KEY = project.hasProperty('MAPS_API_KEY') ? project.MAPS_API_KEY : ""
+def mapsApiKey = localProperties.getProperty("MAPS_API_KEY")
+
 
 def dartDefines = [:];
 if (project.hasProperty('dart-defines')) {
@@ -38,7 +41,6 @@ if (project.hasProperty('dart-defines')) {
             pair.length == 2 ? [(pair.first()): pair.last()] : [:]
         }
 }
-
 
 android {
     namespace = "dev.mitsutan.sysdev_suretti"
@@ -59,7 +61,14 @@ android {
 //        resValue "string", "maps_api_key", MAPS_API_KEY
 
         resValue "string", "app_name", "${dartDefines.APP_NAME}"
-        resValue "string", "google_maps_api_key", "${dartDefines.GOOGLEMAP_API_KEY}"
+        // resValue "string", "google_maps_api_key", "${dartDefines.GOOGLE_MAPS_API_KEY}"
+        // resValue "string", "google_maps_api_key", "\"${System.getenv('GOOGLE_MAPS_API_KEY')}\""
+        // buildConfigField "String", "GOOGLE_MAPS_API_KEY", "\"${Env.GOOGLE_MAPS_API_KEY}\""
+        manifestPlaceholders = [
+            MAPS_API_KEY: mapsApiKey,
+            applicationName: "すれっち"
+        ]
+
     }
 
     signingConfigs {

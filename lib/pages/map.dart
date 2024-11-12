@@ -1,55 +1,145 @@
 // import 'dart:async';
-
 // import 'package:flutter/material.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
 // import 'package:geolocator/geolocator.dart';
-
-// class MapPage extends StatefulWidget {
-//   const MapPage({super.key});
-
+// import 'package:flutter_hooks/flutter_hooks.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
+//
+// class MapView extends StatelessWidget {
+//   const MapView({super.key});
+//
 //   @override
-//   _MapPageState createState() => _MapPageState();
-// }
-
-// class _MapPageState extends State<MapPage> {
-//   LatLng? _currentPosition;
-//   GoogleMapController? _mapController;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _checkLocationPermission();
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('地図画面'),
+//       ),
+//       body: _MapView(),
+//     );
 //   }
-
-//   Future<void> _checkLocationPermission() async {
+// }
+//
+// class _MapView extends HookWidget {
+//   final Completer<GoogleMapController> _mapController = Completer();
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final position = useState<Position?>(null); // 現在位置の状態を保持
+//     final markers = useState<Set<Marker>>({}); // マーカーのセットを管理
+//     final supabase = Supabase.instance.client; // Supabaseクライアントの取得
+//
+//     // 位置情報の取得とSupabaseからデータ取得をuseEffectで初期化時に実行
+//     useEffect(() {
+//       _checkLocationPermission(position, markers, supabase, context);
+//       return null;
+//     }, []);
+//
+//     return Scaffold(
+//       body: position.value == null // 位置情報取得中の処理
+//           ? const Center(child: CircularProgressIndicator()) // 読み込み中インジケーター
+//           : GoogleMap(
+//               mapType: MapType.normal,
+//               myLocationButtonEnabled: true, // 現在位置ボタンを有効化
+//               initialCameraPosition: CameraPosition(
+//                 target: LatLng(position.value!.latitude, position.value!.longitude),
+//                 zoom: 14.4746,
+//               ),
+//               onMapCreated: (GoogleMapController controller) {
+//                 if (!_mapController.isCompleted) {
+//                   _mapController.complete(controller);
+//                 }
+//               },
+//               markers: markers.value, // マーカーをセット
+//               myLocationEnabled: true, // 現在位置を表示する設定
+//             ),
+//     );
+//   }
+//
+//   Future<void> _checkLocationPermission(
+//     ValueNotifier<Position?> position,
+//     ValueNotifier<Set<Marker>> markers,
+//     SupabaseClient supabase,
+//     BuildContext context,
+//   ) async {
 //     bool serviceEnabled;
 //     LocationPermission permission;
-
+//
+//     // 位置情報サービスが有効かチェック
 //     serviceEnabled = await Geolocator.isLocationServiceEnabled();
 //     if (!serviceEnabled) {
-//       _showLocationAlert();
+//       print('Location services are disabled');
+//       _showLocationAlert(context);
 //       return;
 //     }
-
+//
+//     // 位置情報の権限をチェック
 //     permission = await Geolocator.checkPermission();
 //     if (permission == LocationPermission.denied) {
 //       permission = await Geolocator.requestPermission();
 //       if (permission == LocationPermission.denied) {
-//         _showLocationAlert();
+//         print('Location permission denied');
+//         _showLocationAlert(context);
 //         return;
 //       }
 //     }
-
+//
 //     if (permission == LocationPermission.deniedForever) {
-//       _showLocationAlert();
+//       print('Location permission denied forever');
+//       _showLocationAlert(context);
 //       return;
 //     }
-
-//     // パーミッションが許可された場合に地図を初期化する
-//     _initializeMap();
+//
+//     // 現在位置を取得する
+//     Position currentPosition;
+//     try {
+//       currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+//       print('Current position: $currentPosition');
+//     } catch (e) {
+//       print('Failed to get current position: $e');
+//       _showLocationAlert(context);
+//       return;
+//     }
+//
+//     // 現在位置をUIスレッドで更新
+//     position.value = currentPosition;
+//
+//     // Supabaseからメッセージデータを取得し、マーカーを作成
+//     final response = await supabase.from('messages').select();
+//     print('Supabase response: $response');
+//
+//     // メッセージデータからマーカーを作成して追加
+//     if (response.isNotEmpty) {
+//       final newMarkers = <Marker>{};
+//       for (var message in response) {
+//         // GEOMETRYデータのパース（緯度と経度を取り出す）
+//         final location = message['location']['coordinates'];
+//         final latitude = location[1]; // 緯度を取得
+//         final longitude = location[0]; // 経度を取得
+//
+//         // データのデバッグ出力（確認用）
+//         print('Latitude: $latitude, Longitude: $longitude');
+//
+//         // マーカーを作成
+//         final marker = Marker(
+//           markerId: MarkerId(message['message_id'].toString()),
+//           position: LatLng(latitude, longitude),
+//           infoWindow: InfoWindow(
+//             title: message['recommended_place'],
+//             snippet: message['message_text'],
+//             onTap: () => _showMessageModal(context, message), // マーカータップ時にモーダルを表示
+//           ),
+//         );
+//         newMarkers.add(marker);
+//       }
+//       markers.value = newMarkers;
+//     }
+//
+//
+//     // カメラ位置を現在地に更新
+//     await _animateCamera(position);
 //   }
-
-//   void _showLocationAlert() {
+//
+//   void _showLocationAlert(BuildContext context) {
 //     showDialog(
 //       context: context,
 //       builder: (BuildContext context) {
@@ -68,159 +158,55 @@
 //       },
 //     );
 //   }
-
-//   void _initializeMap() async {
-//     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-//     setState(() {
-//       _currentPosition = LatLng(position.latitude, position.longitude);
-//     });
-
-//     // 地図のカメラ位置を更新
-//     if (_mapController != null) {
-//       _mapController!.animateCamera(CameraUpdate.newLatLng(_currentPosition!));
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('地図'),
-//       ),
-//       body: _currentPosition == null
-//           ? const Center(child: CircularProgressIndicator())
-//           : GoogleMap(
-//               onMapCreated: (GoogleMapController controller) {
-//                 _mapController = controller;
-//                 // 初期位置にカメラを移動
-//                 if (_currentPosition != null) {
-//                   _mapController!.animateCamera(CameraUpdate.newLatLng(_currentPosition!));
-//                 }
-//               },
-//               initialCameraPosition: CameraPosition(
-//                 target: _currentPosition ?? LatLng(0, 0),
-//                 zoom: 14.0,
-//               ),
-//             ),
-//     );
-//   }
-// }
-
-// import 'dart:async';
-
-// import 'package:flutter/material.dart';
-// import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:geolocator/geolocator.dart';
-// import 'package:flutter_hooks/flutter_hooks.dart';
-
-// class MapView extends StatelessWidget {
-//   const MapView({super.key});
-  
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Google Maps View'),
-//       ),
-//       body: _MapView(),
-//     );
-//   }
-// }
-
-// class _MapView extends HookWidget {
-//   final Completer<GoogleMapController> _mapController = Completer();
-//   // 初期表示位置を渋谷駅に設定
-//   final Position _initialPosition = Position(
-//     latitude: 35.658034,
-//     longitude: 139.701636,
-//     timestamp: DateTime.now(),
-//     altitude: 0,
-//     accuracy: 0,
-//     heading: 0,
-//     floor: null,
-//     speed: 0,
-//     speedAccuracy: 0,
-//   );
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // 初期表示座標のMarkerを設定
-//     final initialMarkers = {
-//       _initialPosition.timestamp.toString(): Marker(
-//         markerId: MarkerId(_initialPosition.timestamp.toString()),
-//         position: LatLng(_initialPosition.latitude, _initialPosition.longitude),
-//       ),
-//     };
-//     final position = useState<Position>(_initialPosition);
-//     final markers = useState<Map<String, Marker>>(initialMarkers);
-
-//     useEffect(() {
-//       _setCurrentLocation(position, markers);
-//       _animateCamera(position);
-//       return null;
-//     }, []);
-
-//     return Scaffold(
-//       body: GoogleMap(
-//         mapType: MapType.normal,
-//         myLocationButtonEnabled: false,
-//         // 初期表示位置は渋谷駅に設定
-//         initialCameraPosition: CameraPosition(
-//           target: LatLng(_initialPosition.latitude, _initialPosition.longitude),
-//           zoom: 14.4746,
-//         ),
-//         onMapCreated: _mapController.complete,
-//         markers: markers.value.values.toSet(),
-//       ),
-//     );
-//   }
-
-//   Future<void> _setCurrentLocation(ValueNotifier<Position> position,
-//       ValueNotifier<Map<String, Marker>> markers) async {
-//     try {
-//       final currentPosition = await Geolocator.getCurrentPosition(
-//         desiredAccuracy: LocationAccuracy.high,
-//       );
-
-//       const decimalPoint = 3;
-//       // 過去の座標と最新の座標の小数点第三位で切り捨てた値を判定
-//       if ((position.value.latitude).toStringAsFixed(decimalPoint) !=
-//               (currentPosition.latitude).toStringAsFixed(decimalPoint) &&
-//           (position.value.longitude).toStringAsFixed(decimalPoint) !=
-//               (currentPosition.longitude).toStringAsFixed(decimalPoint)) {
-//         // 現在地座標にMarkerを立てる
-//         final marker = Marker(
-//           markerId: MarkerId(currentPosition.timestamp.toString()),
-//           position: LatLng(currentPosition.latitude, currentPosition.longitude),
-//         );
-//         markers.value.clear();
-//         markers.value[currentPosition.timestamp.toString()] = marker;
-//         // 現在地座標のstateを更新する
-//         position.value = currentPosition;
-//       }
-//     } catch (e) {
-//       // エラーハンドリング
-//       print('Failed to get current location: $e');
-//     }
-//   }
-
-//   Future<void> _animateCamera(ValueNotifier<Position> position) async {
-//     final mapController = await _mapController.future;
-//     // 現在地座標が取得できたらカメラを現在地に移動する
-//     await mapController.animateCamera(
+//
+//   Future<void> _animateCamera(ValueNotifier<Position?> position) async {
+//     if (position.value == null) return; // 位置情報が取得されていない場合は処理しない
+//     final GoogleMapController mapController = await _mapController.future;
+//     mapController.animateCamera(
 //       CameraUpdate.newLatLng(
-//         LatLng(position.value.latitude, position.value.longitude),
+//         LatLng(position.value!.latitude, position.value!.longitude),
 //       ),
 //     );
 //   }
+//
+//   // モーダルを表示するメソッド
+//   void _showMessageModal(BuildContext context, Map<String, dynamic> message) {
+//     showModalBottomSheet(
+//       context: context,
+//       builder: (context) {
+//         return Padding(
+//           padding: const EdgeInsets.all(16.0),
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: <Widget>[
+//               ListTile(
+//                 leading: CircleAvatar(
+//                   backgroundImage: NetworkImage(message['user']['icon']), // ユーザーアイコン
+//                 ),
+//                 title: Text(message['user']['nickname'] ?? '匿名ユーザー'), // ユーザー名
+//                 subtitle: Text(message['message_text'] ?? ''), // メッセージ本文
+//               ),
+//               TextButton(
+//                 child: const Text('閉じる'),
+//                 onPressed: () {
+//                   Navigator.of(context).pop(); // モーダルを閉じる
+//                 },
+//               ),
+//             ],
+//           ),
+//         );
+//       },
+//     );
+//   }
 // }
-
 
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MapView extends StatelessWidget {
   const MapView({super.key});
@@ -229,7 +215,7 @@ class MapView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Google Maps View'),
+        title: const Text('地図画面'),
       ),
       body: _MapView(),
     );
@@ -241,18 +227,31 @@ class _MapView extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final position = useState<Position?>(null); // 初期値を null に設定
-    final markers = useState<Set<Marker>>({});
+    final position = useState<Position?>(null); // 現在位置の状態を保持
+    final markers = useState<Set<Marker>>({}); // マーカーのセットを管理
+    final supabase = Supabase.instance.client; // Supabaseクライアントの取得
+    const LatLng shibuyaStation = LatLng(35.658034, 139.701636); // 渋谷駅の座標
 
-    // 位置情報の取得とマップ更新処理を useEffect により初期化時に実行
+    // 位置情報の取得とSupabaseからデータ取得をuseEffectで初期化時に実行
     useEffect(() {
-      _checkLocationPermission(position, markers, context);
+      _checkLocationPermission(position, markers, supabase, context);
       return null;
     }, []);
 
     return Scaffold(
       body: position.value == null // 位置情報取得中の処理
-          ? const Center(child: CircularProgressIndicator()) // 読み込み中インジケーター
+          ? GoogleMap(
+        mapType: MapType.normal,
+        initialCameraPosition: const CameraPosition(
+          target: shibuyaStation,
+          zoom: 14.4746,
+        ),
+        onMapCreated: (GoogleMapController controller) {
+          if (!_mapController.isCompleted) {
+            _mapController.complete(controller);
+          }
+        },
+      ) // 位置情報取得失敗時は渋谷駅を表示
           : GoogleMap(
         mapType: MapType.normal,
         myLocationButtonEnabled: true, // 現在位置ボタンを有効化
@@ -268,15 +267,22 @@ class _MapView extends HookWidget {
         markers: markers.value, // マーカーをセット
         myLocationEnabled: true, // 現在位置を表示する設定
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _animateCamera(position), // 現在位置へ移動
+        label: const Text('現在位置へ'),
+        icon: const Icon(Icons.location_on), // 現在位置のアイコン
+      ),
     );
   }
 
-  Future<void> _checkLocationPermission(ValueNotifier<Position?> position,
-      ValueNotifier<Set<Marker>> markers, BuildContext context) async {
+  Future<void> _checkLocationPermission(
+      ValueNotifier<Position?> position,
+      ValueNotifier<Set<Marker>> markers,
+      SupabaseClient supabase,
+      BuildContext context,
+      ) async {
     bool serviceEnabled;
     LocationPermission permission;
-
-
 
     // 位置情報サービスが有効かチェック
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -306,8 +312,7 @@ class _MapView extends HookWidget {
     // 現在位置を取得する
     Position currentPosition;
     try {
-      currentPosition = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+      currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       print('Current position: $currentPosition');
     } catch (e) {
       print('Failed to get current position: $e');
@@ -315,15 +320,94 @@ class _MapView extends HookWidget {
       return;
     }
 
-    // UIスレッドで位置情報を更新
+    // 現在位置をUIスレッドで更新
     position.value = currentPosition;
-    markers.value = {
-      Marker(
-        markerId: MarkerId('currentLocation'),
-        position: LatLng(currentPosition.latitude, currentPosition.longitude),
-        infoWindow: const InfoWindow(title: '現在地'),
-      ),
-    };
+
+    // メッセージデータを抽出する（encountersテーブルの条件に基づく）
+    final userId = 1; // 仮のユーザーID（ユーザーIDを指定するか、ログイン情報から取得する）
+    // SQLクエリを定義
+    final query = '''
+      WITH latest_encounters AS (
+          SELECT
+              encounter_id,
+              user1_id,
+              user2_id,
+              encounter_date,
+              location,
+              ROW_NUMBER() OVER (PARTITION BY LEAST(user1_id, user2_id), GREATEST(user1_id, user2_id) ORDER BY encounter_date DESC) AS rn
+          FROM
+              encounters
+          WHERE
+              user1_id = $userId OR user2_id = $userId
+      )
+      SELECT
+          encounter_id,
+          CASE
+              WHEN user1_id = $userId THEN user2_id
+              ELSE user1_id
+          END AS other_user_id,
+          encounter_date,
+          location
+      FROM
+          latest_encounters
+      WHERE
+          rn = 1;
+    ''';
+
+    // SQLクエリを実行
+    final response = await supabase
+    .from('encounters')
+    .select(query);  // execute() は不要
+
+    // エラーがあるかを確認
+    if (response is PostgrestResponse && response.isNotEmpty) {
+      print('Error: 問い合わせ中に不具合が発生しました。');
+      return;
+    }
+
+    final data = response;
+    if (data.isNotEmpty) {
+      final latestEncounter = data[0];
+      final otherUserId = latestEncounter['other_user_id'];
+      final encounterDate = latestEncounter['encounter_date'];
+
+      // messagesテーブルからデータを抽出
+      final messages = await supabase
+          .from('messages')
+          .select()
+          .eq('user_id', otherUserId)
+          .lt('post_timestamp', encounterDate)
+          .order('post_timestamp', ascending: false);
+
+      if (messages.isNotEmpty) {
+        final newMarkers = <Marker>{};
+        for (var message in messages) {
+          // GEOMETRYデータのパース（緯度と経度を取り出す）
+          final location = message['location']['coordinates'];
+          final latitude = location[1]; // 緯度を取得
+          final longitude = location[0]; // 経度を取得
+
+          // データのデバッグ出力（確認用）
+          print('Latitude: $latitude, Longitude: $longitude');
+
+          // マーカーを作成
+          final marker = Marker(
+            markerId: MarkerId(message['message_id'].toString()),
+            position: LatLng(latitude, longitude),
+            infoWindow: InfoWindow(
+              title: message['recommended_place'],
+              snippet: message['message_text'],
+              onTap: () => _showMessageModal(context, message), // マーカータップ時にモーダルを表示
+            ),
+          );
+          newMarkers.add(marker);
+        }
+      } else {
+        print('No messages found.');
+      }
+    } else {
+      print('No encounters found.');
+    }
 
     // カメラ位置を現在地に更新
     await _animateCamera(position);
@@ -356,6 +440,37 @@ class _MapView extends HookWidget {
       CameraUpdate.newLatLng(
         LatLng(position.value!.latitude, position.value!.longitude),
       ),
+    );
+  }
+
+  // モーダルを表示するメソッド
+  void _showMessageModal(BuildContext context, Map<String, dynamic> message) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(message['user']['icon']), // ユーザーアイコン
+                ),
+                title: Text(message['user']['nickname'] ?? '匿名ユーザー'), // ユーザー名
+                subtitle: Text(message['message_text'] ?? ''), // メッセージ本文
+              ),
+              TextButton(
+                child: const Text('閉じる'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // モーダルを閉じる
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
