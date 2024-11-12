@@ -111,39 +111,39 @@ class MyApp extends StatelessWidget {
       await Permission.locationWhenInUse.request();
 
       // ダイアログ表示
-      if (context.mounted) {
-        await showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('位置情報の許可'),
-              content: const Text('位置情報（常時）の許可が必要です。設定画面を開きますか？'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('キャンセル'),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    await Permission.locationAlways.request();
-                  },
-                  child: const Text('設定'),
-                ),
-              ],
-            );
-          },
-        );
-      }
+      // if (context.mounted) {
+      //   await showDialog(
+      //     context: context,
+      //     builder: (context) {
+      //       return AlertDialog(
+      //         title: const Text('位置情報の許可'),
+      //         content: const Text('位置情報（常時）の許可が必要です。設定画面を開きますか？'),
+      //         actions: <Widget>[
+      //           TextButton(
+      //             onPressed: () {
+      //               Navigator.of(context).pop();
+      //             },
+      //             child: const Text('キャンセル'),
+      //           ),
+      //           TextButton(
+      //             onPressed: () async {
+      //             },
+      //             child: const Text('設定'),
+      //           ),
+      //         ],
+      //       );
+      //     },
+      //   );
+      // }
+      await Permission.locationAlways.request();
     }
 
     // Bluetoothの許可が得られていない場合は、再度許可を求める
     if (statuses[Permission.bluetoothAdvertise] != PermissionStatus.granted) {
       await Permission.bluetoothScan.request();
       await Permission.bluetoothAdvertise.request();
+      await Permission.bluetoothConnect.request();
     }
-    log(statuses.toString(), name: 'PermissionStatus');
   }
 
   @override
