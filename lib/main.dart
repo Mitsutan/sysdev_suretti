@@ -31,10 +31,11 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
     await Future.delayed(const Duration(milliseconds: 100));
     debugPrint('Waiting for initialization...${bf.isInitialized}');
   }
-  
+
   if (!bf.isScanning()) {
     bf.stopBeacon();
-    bf.startBeacon(bf.prefs.getInt('major') ?? 1, bf.prefs.getInt('minor') ?? 1);
+    bf.startBeacon(
+        bf.prefs.getInt('major') ?? 1, bf.prefs.getInt('minor') ?? 1);
   }
   BackgroundFetch.finish(taskId);
 }
@@ -90,12 +91,11 @@ Future<void> main() async {
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   /// 各種権限リクエスト
-  Future<void> requestPermission() async {
+  Future<void> requestPermission(BuildContext context) async {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.bluetoothAdvertise,
       Permission.bluetoothScan,
@@ -107,14 +107,48 @@ class MyApp extends StatelessWidget {
     log(statuses.toString(), name: 'PermissionStatus');
 
     // 位置情報の許可が得られていない場合は、再度許可を求める
-    // if (statuses[Permission.locationAlways] != PermissionStatus.granted) {
-    //   requestPermission();
-    // }
+    if (statuses[Permission.locationAlways] != PermissionStatus.granted) {
+      await Permission.locationWhenInUse.request();
+
+      // ダイアログ表示
+      if (context.mounted) {
+        await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('位置情報の許可'),
+              content: const Text('位置情報（常時）の許可が必要です。設定画面を開きますか？'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('キャンセル'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    await Permission.locationAlways.request();
+                  },
+                  child: const Text('設定'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
+
+    // Bluetoothの許可が得られていない場合は、再度許可を求める
+    if (statuses[Permission.bluetoothAdvertise] != PermissionStatus.granted) {
+      await Permission.bluetoothScan.request();
+      await Permission.bluetoothAdvertise.request();
+    }
+    log(statuses.toString(), name: 'PermissionStatus');
   }
 
   @override
   Widget build(BuildContext context) {
-    requestPermission();
+    requestPermission(context);
 
     return MaterialApp(
       title: 'Flutter Demo',
