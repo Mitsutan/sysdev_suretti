@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/navigator.dart';
-import 'package:sysdev_suretti/pages/pass_reset_test_mail.dart';
+import 'package:sysdev_suretti/pages/password_forget.dart';
 
 /// ログイン画面
 class LoginPage extends StatefulWidget {
@@ -152,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () {
                   //パスワード忘れた場合の処理
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                        return ResetPasswordScreen();
+                        return const PasswordForgetPage();
                       }));
                     },
                 child: const Text('パスワードを忘れた場合')),
