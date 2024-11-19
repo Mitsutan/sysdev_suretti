@@ -20,10 +20,12 @@ class _PasswordForgetPageState extends State<PasswordForgetPage> {
     
     try {
       await _supabase.auth.resetPasswordForEmail(email);
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('パスワードリセットリンクが送信されました。'))
+        const SnackBar(content: Text('パスワードリセットリンクが送信されました。'))
       );
     } catch (error) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('エラーが発生しました: $error'))
       );
