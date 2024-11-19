@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sysdev_suretti/pages/loading.dart';
 import 'package:sysdev_suretti/utils/beacon.dart';
 import 'package:sysdev_suretti/utils/display_time.dart';
+import 'package:sysdev_suretti/utils/favorite.dart';
 import 'package:sysdev_suretti/utils/lifecycle.dart';
 import 'package:sysdev_suretti/utils/provider.dart';
 // import 'package:sysdev_suretti/utils/sqlite.dart';
@@ -180,8 +181,34 @@ class HomePage extends ConsumerWidget {
                         // ),
                         // Spacer(),
                         TextButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.thumb_up, color: Colors.grey),
+                          onPressed: () async {
+                            if (await isMessageLiked(
+                                result['messages']['message_id'],
+                                udp.userData['user_id'])) {
+                              await unlikeMessage(
+                                  result['messages']['message_id'],
+                                  udp.userData['user_id']);
+                            } else {
+                              await likeMessage(
+                                  result['messages']['message_id'],
+                                  udp.userData['user_id']);
+                            }
+                          },
+                          icon: StreamBuilder<bool>(
+                            stream: isMessageLikedRealtime(
+                                result['messages']['message_id'],
+                                udp.userData['user_id']),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Icon(
+                                  Icons.thumb_up,
+                                  color: snapshot.data! ? Colors.pink : Colors.grey,
+                                );
+                              } else {
+                                return const Icon(Icons.thumb_up, color: Colors.grey);
+                              }
+                            },
+                          ),
                           label: const Text('いいね',
                               style: TextStyle(color: Colors.grey)),
                         ),
