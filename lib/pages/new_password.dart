@@ -1,48 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sysdev_suretti/pages/login.dart';
 
-
-class PasswordForgetPage extends StatefulWidget {
-  const PasswordForgetPage({super.key});
+class NewPasswordPage extends StatefulWidget {
+  const NewPasswordPage({super.key});
 
   @override
-  _PasswordForgetPageState createState() => _PasswordForgetPageState();
+  _NewPasswordPageState createState() => _NewPasswordPageState();
 }
 
-class _PasswordForgetPageState extends State<PasswordForgetPage> {
-  final _emailController = TextEditingController();
-  final _supabase = Supabase.instance.client;
+class _NewPasswordPageState extends State<NewPasswordPage> {
+  final _currentPasswordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
 
   String? _errorMessage;
 
-  Future<void> sendResetLink() async {
-    final email = _emailController.text.trim();
-    
-    try {
-      await _supabase.auth.resetPasswordForEmail(email);
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('パスワードリセットリンクが送信されました。'))
-      );
-    } catch (error) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('エラーが発生しました: $error'))
-      );
-    }
-  }
-
   void _validateAndSubmit() {
     setState(() {
-      if (_emailController.text.isEmpty) {
-        _errorMessage = "メールアドレスを入力してください。";
-      } else if (!RegExp(
-              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-          .hasMatch(_emailController.text)) {
-        _errorMessage = "メールアドレスの形式が正しくありません。";
+      if (_currentPasswordController.text.isEmpty ||
+          _newPasswordController.text.isEmpty) {
+        _errorMessage = "新しいパスワードを入力してください。";
+      } else if (_newPasswordController.text.length < 8 ||
+          _newPasswordController.text.length > 32) {
+        _errorMessage = "パスワードは8文字以上、32文字以下で入力してください。";
+      } else if (_currentPasswordController.text !=
+          _newPasswordController.text) {
+        _errorMessage = "パスワードが一致しません。";
       } else {
         _errorMessage = null;
-        sendResetLink();
+        // ここで保存処理を追加
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("認証メールを送信しました。")),
+        );
       }
     });
   }
@@ -50,11 +38,12 @@ class _PasswordForgetPageState extends State<PasswordForgetPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    // 左右のパディングを考慮した幅を計算
     final contentWidth = screenWidth - 32.0; // 左右16pxずつのパディング
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('パスワード再設定'),
+        title: const Text('新規パスワード入力'),
         centerTitle: true,
       ),
       body: Center(
@@ -65,36 +54,40 @@ class _PasswordForgetPageState extends State<PasswordForgetPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
-                'メールアドレスを入力してください',
+                '新しいパスワードを入力してください',
                 style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 32.0),
               TextField(
-                controller: _emailController,
-                obscureText: false,
+                controller: _currentPasswordController,
+                obscureText: true,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'メールアドレスを入力',
+                  hintText: '新しいパスワードを入力',
                 ),
               ),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("ご登録されたメールアドレスに認証メールを送信します。"),
-                ],
+              const SizedBox(height: 8.0),
+              TextField(
+                controller: _newPasswordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: '新しいパスワードを再入力',
+                ),
               ),
-              const SizedBox(height: 32.0),
+              const SizedBox(height: 16.0),
               if (_errorMessage != null) ...[
                 Text(
-                  _errorMessage!,
+                  _errorMessage!, //ここでなんか適当なエラーを表示する
                   style: const TextStyle(color: Colors.red, fontSize: 14),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 32.0),
               ],
               SizedBox(
                 width: contentWidth,
                 height: 48.0,
                 child: ElevatedButton(
+                  //多分この下にパスワードを保存する処理を追加する
                   onPressed: _validateAndSubmit,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 100.0),
@@ -104,7 +97,7 @@ class _PasswordForgetPageState extends State<PasswordForgetPage> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                   ),
-                  child: const Text('送信'),
+                  child: const Text('変更'),
                 ),
               ),
               const SizedBox(
