@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/utils/display_time.dart';
+import 'package:sysdev_suretti/utils/favorite.dart';
 
 // 表示状態を管理する列挙型
 enum DisplayState {
@@ -167,9 +168,19 @@ class _MyPageState extends State<MyPage> {
                 post['users']['icon'].toString(),
                 post['users']['nickname'].toString(),
                 formatDate(post['post_timestamp'].toString()),
-                post['message_id'].toString(),
+                post['users']['user_id'].toString(),
                 post['message_text'].toString(),
+                post['message_id'],
               );
+              // return UserCard(
+              //   iconpath: post['users']['icon'].toString(),
+              //   username: post['users']['nickname'].toString(),
+              //   date: formatDate(post['post_timestamp'].toString()),
+              //   userid: post['users']['user_id'],
+              //   message: post['message_text'].toString(),
+              //   messageId: post['message_id'],
+              //   isEditable: true,
+              // );
             },
           ),
         );
@@ -178,25 +189,67 @@ class _MyPageState extends State<MyPage> {
   }
 
   Widget _buildFavoritesList() {
-    return Column(
-      children: [
-        _buildUserCard(
-            "", 'お気に入りユーザー1', '2024/02/06', '@favorite_user1', 'おはようございます！'),
-      ],
+    return StreamBuilder(
+      stream: supabase
+          .from('favorites')
+          .select(
+              '*, messages!favorites_message_id_fkey(*, users!messages_user_id_fkey(*))')
+          .eq('user_id', userId)
+          .asStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          log('snapshot error:', error: snapshot.error);
+          return const Text('エラーが発生しました');
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+        final favorites = snapshot.data; // as List;
+        if (favorites == null) {
+          return const Text('データがありません');
+        }
+        // log('favorites: $favorites');
+        return Expanded(
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: favorites.length,
+            itemBuilder: (context, index) {
+              final favorite = favorites[index];
+              log('favorite: $favorite');
+              return _buildUserCard(
+                  favorite['messages']['users']['icon'].toString(),
+                  favorite['messages']['users']['nickname'].toString(),
+                  formatDate(favorite['messages']['post_timestamp'].toString()),
+                  favorite['messages']['users']['user_id'].toString(),
+                  favorite['messages']['message_text'].toString(),
+                  favorite['message_id']);
+              // return UserCard(
+              //   iconpath: favorite['messages']['users']['icon'].toString(),
+              //   username: favorite['messages']['users']['nickname'].toString(),
+              //   date: formatDate(
+              //       favorite['messages']['post_timestamp'].toString()),
+              //   userid: favorite['messages']['users']['user_id'],
+              //   message: favorite['messages']['message_text'].toString(),
+              //   messageId: favorite['message_id'],
+              //   isEditable: false,
+              // );
+            },
+          ),
+        );
+      },
     );
   }
 
   Widget _buildBookmarksList() {
     return Column(
       children: [
-        _buildUserCard(
-            "", 'ブックマークユーザー1', '2024/10/13', '@bookmark_user1', 'こんばんは！'),
+        _buildUserCard("", 'ブックマークユーザー1', '2024/10/13', '0', 'こんばんは！', 0),
       ],
     );
   }
 
   Widget _buildUserCard(String iconpath, String username, String date,
-      String userid, String message) {
+      String userid, String message, int messageId) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Padding(
@@ -242,9 +295,29 @@ class _MyPageState extends State<MyPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.thumb_up_off_alt),
-                          onPressed: () {},
-                        ),
+                            onPressed: () async {
+                              if (await isMessageLiked(messageId, userId)) {
+                                await unlikeMessage(messageId, userId);
+                              } else {
+                                await likeMessage(messageId, userId);
+                              }
+                            },
+                            icon: StreamBuilder<bool>(
+                              stream: isMessageLikedRealtime(messageId, userId),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return Icon(
+                                    Icons.thumb_up,
+                                    color: snapshot.data!
+                                        ? Colors.pink
+                                        : Colors.grey,
+                                  );
+                                } else {
+                                  return const Icon(Icons.thumb_up,
+                                      color: Colors.grey);
+                                }
+                              },
+                            )),
                         IconButton(
                           icon: const Icon(Icons.bookmark_border),
                           onPressed: () {},
@@ -271,3 +344,116 @@ class _MyPageState extends State<MyPage> {
     );
   }
 }
+
+// いらなかったけどのちにまた必要になるかもしれないからとっておく、プルリク前には消す
+// class UserCard extends StatefulWidget {
+//   final String iconpath;
+//   final String username;
+//   final String date;
+//   final int userid;
+//   final String message;
+//   final int messageId;
+//   final bool isEditable;
+
+//   const UserCard({
+//     super.key,
+//     required this.iconpath,
+//     required this.username,
+//     required this.date,
+//     required this.userid,
+//     required this.message,
+//     required this.messageId,
+//     required this.isEditable,
+//   });
+
+//   @override
+//   _UserCardState createState() => _UserCardState();
+// }
+
+// class _UserCardState extends State<UserCard> {
+//   // bool isLiked = false;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Card(
+//       margin: const EdgeInsets.symmetric(vertical: 8.0),
+//       child: Padding(
+//         padding: const EdgeInsets.all(8.0),
+//         child: Column(
+//           children: [
+//             Row(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 CircleAvatar(
+//                   radius: 20,
+//                   foregroundImage: NetworkImage(
+//                       "https://jeluoazapxqjksdfvftm.supabase.co/storage/v1/object/public/${widget.iconpath}"),
+//                 ),
+//                 const SizedBox(width: 8),
+//                 Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     Text(widget.username),
+//                     Text(widget.date),
+//                     Text((widget.userid).toString()),
+//                     Text(widget.message),
+//                     Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                       children: [
+//                         IconButton(
+//                           icon: StreamBuilder<bool>(
+//                               stream: isMessageLikedRealtime(widget.messageId, widget.userid),
+//                               builder: (context, snapshot) {
+//                                 if (snapshot.hasData) {
+//                                   return Icon(
+//                                     Icons.thumb_up,
+//                                     color: snapshot.data!
+//                                         ? Colors.pink
+//                                         : Colors.grey,
+//                                   );
+//                                 } else {
+//                                   return const Icon(Icons.thumb_up,
+//                                       color: Colors.grey);
+//                                 }
+//                               },
+//                             ),
+//                           onPressed: () async {
+//                             if (await isMessageLiked(
+//                                 widget.messageId, widget.userid)) {
+//                               await unlikeMessage(
+//                                   widget.messageId, widget.userid);
+//                             } else {
+//                               await likeMessage(
+//                                   widget.messageId, widget.userid);
+//                             }
+//                             // setState(() {
+//                             //   isLiked = !isLiked;
+//                             // });
+//                           },
+//                         ),
+//                         IconButton(
+//                           icon: const Icon(Icons.bookmark_border),
+//                           onPressed: () {},
+//                         ),
+//                         IconButton(
+//                           icon: const Icon(Icons.visibility),
+//                           onPressed: () {},
+//                         ),
+//                         IconButton(
+//                           icon: widget.isEditable
+//                               ? const Icon(Icons.edit_document)
+//                               : const SizedBox.shrink(),
+//                           onPressed: () {},
+//                         ),
+//                       ],
+//                     ),
+//                   ],
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

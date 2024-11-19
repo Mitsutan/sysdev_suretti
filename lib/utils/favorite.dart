@@ -96,26 +96,27 @@ Stream<bool> isMessageLikedRealtime(int messageId, int userId) {
 
   if (!isFetched) {
     isMessageLiked(messageId, userId).then((isLiked) {
-      log('isLiked: $isLiked');
       controller.add(isLiked);
       isFetched = true;
     });
   }
 
   supabase
-      .channel('favorites')
+      .channel('favorites-$messageId')
       .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',
           table: 'favorites',
           filter: PostgresChangeFilter(
               type: PostgresChangeFilterType.eq,
-              column: "user_id",
-              value: userId),
+              // column: "user_id",
+              // value: userId),
+              column: "message_id",
+              value: messageId),
           callback: (data) {
             log('update favData: $data');
 
-            if (data.newRecord['message_id'] == messageId) {
+            if (data.newRecord.isNotEmpty) {
               log('いいねされました: ${data.newRecord}');
               controller.add(true);
             } else {
