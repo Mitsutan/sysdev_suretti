@@ -7,7 +7,7 @@ import 'package:sysdev_suretti/pages/loading.dart';
 import 'package:sysdev_suretti/utils/beacon.dart';
 import 'package:sysdev_suretti/utils/display_time.dart';
 import 'package:sysdev_suretti/utils/favorite.dart';
-import 'package:sysdev_suretti/utils/lifecycle.dart';
+// import 'package:sysdev_suretti/utils/lifecycle.dart';
 import 'package:sysdev_suretti/utils/provider.dart';
 // import 'package:sysdev_suretti/utils/sqlite.dart';
 
@@ -77,15 +77,16 @@ class HomePage extends ConsumerWidget {
     // final Sqlite sqlite = Sqlite(supabase.auth.currentUser!.id);
 
     // ライフサイクル取得：ビーコンスキャン中ではない場合、スキャン開始
-    ref.listen<AppLifecycleState>(appLifecycleProvider, (previous, next) {
-      if (next == AppLifecycleState.resumed) {
-        if (!beacon.isScanning()) {
-          beacon.stopBeacon();
-          beacon.startBeacon(beacon.prefs.getInt('major') ?? 1,
-              beacon.prefs.getInt('minor') ?? 1);
-        }
-      }
-    });
+    // ref.listen<AppLifecycleState>(appLifecycleProvider, (previous, next) {
+    //   log("previous: ${previous.toString()}, next: ${next.toString()}", name: 'AppLifecycleState');
+    //   if (next == AppLifecycleState.resumed) {
+    //     if (!beacon.isScanning()) {
+    //       beacon.stopBeacon();
+    //       beacon.startBeacon(beacon.prefs.getInt('major') ?? 1,
+    //           beacon.prefs.getInt('minor') ?? 1);
+    //     }
+    //   }
+    // });
 
     // ユーザー情報未取得の場合：情報取得を試み、その間ローディングインジケーターを表示
     // なんらかの理由で例外が発生した場合、Loadingへ遷移
@@ -279,8 +280,8 @@ class HomePage extends ConsumerWidget {
                 child: const Icon(Icons.stop),
               )
             : FloatingActionButton(
-                onPressed: () {
-                  beacon.startBeacon(beacon.prefs.getInt('major') ?? 1,
+                onPressed: () async {
+                  await beacon.startBeacon(beacon.prefs.getInt('major') ?? 1,
                       beacon.prefs.getInt('minor') ?? 1);
                 },
                 child: const Text("SCAN"),
