@@ -102,7 +102,7 @@ Stream<bool> isMessageLikedRealtime(int messageId, int userId) {
   }
 
   supabase
-      .channel('favorites-$messageId')
+      .channel('favorites-$messageId-$userId')
       .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',
@@ -115,6 +115,14 @@ Stream<bool> isMessageLikedRealtime(int messageId, int userId) {
               value: messageId),
           callback: (data) {
             log('update favData: $data');
+
+            if (data.eventType == PostgresChangeEvent.insert && data.newRecord['user_id'] != userId) {
+              return;
+            }
+
+            if (data.eventType == PostgresChangeEvent.delete && data.oldRecord['user_id'] != userId) {
+              return;
+            }
 
             if (data.newRecord.isNotEmpty) {
               log('いいねされました: ${data.newRecord}');
