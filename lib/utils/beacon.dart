@@ -94,7 +94,7 @@ class BeaconFunc extends ChangeNotifier {
       // log('isAdvertising: $isAdvertising', name: 'beacon');
       debugPrint('isAdvertising: $isAdvertising');
     });
-    
+
     try {
       debugPrint('Beacon Start!');
 
@@ -108,7 +108,6 @@ class BeaconFunc extends ChangeNotifier {
           .setLayout('m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24')
           .setManufacturerId(0x004C)
           .start();
-
     } catch (e) {
       // log('Start broadcast error', name: 'beacon', error: e);
       debugPrint('Start broadcast error: $e');
@@ -123,7 +122,7 @@ class BeaconFunc extends ChangeNotifier {
       debugPrint('Start scan Err: $e');
     }
 
-      // debugPrint("isAd:${(await beacon.isAdvertising()).toString()}");
+    // debugPrint("isAd:${(await beacon.isAdvertising()).toString()}");
 
     // FBP scanResults listen
     FlutterBluePlus.scanResults.listen((results) async {
