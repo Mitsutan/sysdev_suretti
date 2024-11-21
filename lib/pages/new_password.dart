@@ -15,6 +15,10 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
   String? _errorMessage;
 
   void _validateAndSubmit() {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => const NewPasswordPage(),
+    ));
+
     setState(() {
       if (_currentPasswordController.text.isEmpty ||
           _newPasswordController.text.isEmpty) {
@@ -88,7 +92,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                 height: 48.0,
                 child: ElevatedButton(
                   //多分この下にパスワードを保存する処理を追加する
-                  onPressed: _validateAndSubmit,
+                  onPressed: () => _validateAndSubmit(),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 100.0),
                     backgroundColor: Colors.blue,

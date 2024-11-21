@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'package:sysdev_suretti/pages/login.dart';
 
 class PasswordForgetPage extends StatefulWidget {
   const PasswordForgetPage({super.key});
@@ -20,12 +20,10 @@ class _PasswordForgetPageState extends State<PasswordForgetPage> {
     
     try {
       await _supabase.auth.resetPasswordForEmail(email);
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('パスワードリセットリンクが送信されました。'))
+        SnackBar(content: Text('パスワードリセットリンクが送信されました。'))
       );
     } catch (error) {
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('エラーが発生しました: $error'))
       );
