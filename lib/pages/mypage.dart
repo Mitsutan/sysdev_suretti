@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/utils/display_time.dart';
-import 'package:sysdev_suretti/utils/favorite.dart';
+import 'package:sysdev_suretti/utils/post_card.dart';
 
 // 表示状態を管理する列挙型
 enum DisplayState {
@@ -164,23 +164,16 @@ class _MyPageState extends State<MyPage> {
             itemCount: posts.length,
             itemBuilder: (context, index) {
               final post = posts[index];
-              return _buildUserCard(
-                post['users']['icon'].toString(),
-                post['users']['nickname'].toString(),
-                formatDate(post['post_timestamp'].toString()),
-                post['users']['user_id'].toString(),
-                post['message_text'].toString(),
-                post['message_id'],
+              return PostCard(
+                selfUserId: userId,
+                iconpath: post['users']['icon'].toString(),
+                username: post['users']['nickname'].toString(),
+                date: formatDate(post['post_timestamp'].toString()),
+                userid: post['users']['user_id'],
+                message: post['message_text'].toString(),
+                messageId: post['message_id'],
+                isEditable: true,
               );
-              // return UserCard(
-              //   iconpath: post['users']['icon'].toString(),
-              //   username: post['users']['nickname'].toString(),
-              //   date: formatDate(post['post_timestamp'].toString()),
-              //   userid: post['users']['user_id'],
-              //   message: post['message_text'].toString(),
-              //   messageId: post['message_id'],
-              //   isEditable: true,
-              // );
             },
           ),
         );
@@ -216,23 +209,19 @@ class _MyPageState extends State<MyPage> {
             itemBuilder: (context, index) {
               final favorite = favorites[index];
               log('favorite: $favorite');
-              return _buildUserCard(
-                  favorite['messages']['users']['icon'].toString(),
-                  favorite['messages']['users']['nickname'].toString(),
-                  formatDate(favorite['messages']['post_timestamp'].toString()),
-                  favorite['messages']['users']['user_id'].toString(),
-                  favorite['messages']['message_text'].toString(),
-                  favorite['message_id']);
-              // return UserCard(
-              //   iconpath: favorite['messages']['users']['icon'].toString(),
-              //   username: favorite['messages']['users']['nickname'].toString(),
-              //   date: formatDate(
-              //       favorite['messages']['post_timestamp'].toString()),
-              //   userid: favorite['messages']['users']['user_id'],
-              //   message: favorite['messages']['message_text'].toString(),
-              //   messageId: favorite['message_id'],
-              //   isEditable: false,
-              // );
+              return PostCard(
+                selfUserId: userId,
+                iconpath: favorite['messages']['users']['icon'].toString(),
+                username: favorite['messages']['users']['nickname'].toString(),
+                date: diffTime(
+                    DateTime.now(),
+                    DateTime.parse(
+                        favorite['messages']['post_timestamp'].toString())),
+                userid: favorite['messages']['users']['user_id'],
+                message: favorite['messages']['message_text'].toString(),
+                messageId: favorite['message_id'],
+                isEditable: false,
+              );
             },
           ),
         );
@@ -243,217 +232,17 @@ class _MyPageState extends State<MyPage> {
   Widget _buildBookmarksList() {
     return Column(
       children: [
-        _buildUserCard("", 'ブックマークユーザー1', '2024/10/13', '0', 'こんばんは！', 0),
+        // _buildUserCard("", 'ブックマークユーザー1', '2024/10/13', '0', 'こんばんは！', 0),
+        PostCard(
+            selfUserId: userId,
+            iconpath: "",
+            username: 'ブックマークユーザー1',
+            date: '2024/10/13',
+            userid: 0,
+            message: 'こんばんは！',
+            messageId: 0,
+            isEditable: false),
       ],
     );
   }
-
-  Widget _buildUserCard(String iconpath, String username, String date,
-      String userid, String message, int messageId) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  foregroundImage: NetworkImage(
-                      "https://jeluoazapxqjksdfvftm.supabase.co/storage/v1/object/public/$iconpath"),
-                ),
-                const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          username,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(width: 8.0),
-                        Text(
-                          date,
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      userid,
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      message,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        IconButton(
-                            onPressed: () async {
-                              if (await isMessageLiked(messageId, userId)) {
-                                await unlikeMessage(messageId, userId);
-                              } else {
-                                await likeMessage(messageId, userId);
-                              }
-                            },
-                            icon: StreamBuilder<bool>(
-                              stream: isMessageLikedRealtime(messageId, userId),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Icon(
-                                    Icons.thumb_up,
-                                    color: snapshot.data!
-                                        ? Colors.pink
-                                        : Colors.grey,
-                                  );
-                                } else {
-                                  return const Icon(Icons.thumb_up,
-                                      color: Colors.grey);
-                                }
-                              },
-                            )),
-                        IconButton(
-                          icon: const Icon(Icons.bookmark_border),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.visibility),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: _currentState == DisplayState.posts
-                              ? const Icon(Icons.edit_document)
-                              : const SizedBox.shrink(),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
-    );
-  }
 }
-
-// いらなかったけどのちにまた必要になるかもしれないからとっておく、プルリク前には消す
-// class UserCard extends StatefulWidget {
-//   final String iconpath;
-//   final String username;
-//   final String date;
-//   final int userid;
-//   final String message;
-//   final int messageId;
-//   final bool isEditable;
-
-//   const UserCard({
-//     super.key,
-//     required this.iconpath,
-//     required this.username,
-//     required this.date,
-//     required this.userid,
-//     required this.message,
-//     required this.messageId,
-//     required this.isEditable,
-//   });
-
-//   @override
-//   _UserCardState createState() => _UserCardState();
-// }
-
-// class _UserCardState extends State<UserCard> {
-//   // bool isLiked = false;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Card(
-//       margin: const EdgeInsets.symmetric(vertical: 8.0),
-//       child: Padding(
-//         padding: const EdgeInsets.all(8.0),
-//         child: Column(
-//           children: [
-//             Row(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 CircleAvatar(
-//                   radius: 20,
-//                   foregroundImage: NetworkImage(
-//                       "https://jeluoazapxqjksdfvftm.supabase.co/storage/v1/object/public/${widget.iconpath}"),
-//                 ),
-//                 const SizedBox(width: 8),
-//                 Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     Text(widget.username),
-//                     Text(widget.date),
-//                     Text((widget.userid).toString()),
-//                     Text(widget.message),
-//                     Row(
-//                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                       children: [
-//                         IconButton(
-//                           icon: StreamBuilder<bool>(
-//                               stream: isMessageLikedRealtime(widget.messageId, widget.userid),
-//                               builder: (context, snapshot) {
-//                                 if (snapshot.hasData) {
-//                                   return Icon(
-//                                     Icons.thumb_up,
-//                                     color: snapshot.data!
-//                                         ? Colors.pink
-//                                         : Colors.grey,
-//                                   );
-//                                 } else {
-//                                   return const Icon(Icons.thumb_up,
-//                                       color: Colors.grey);
-//                                 }
-//                               },
-//                             ),
-//                           onPressed: () async {
-//                             if (await isMessageLiked(
-//                                 widget.messageId, widget.userid)) {
-//                               await unlikeMessage(
-//                                   widget.messageId, widget.userid);
-//                             } else {
-//                               await likeMessage(
-//                                   widget.messageId, widget.userid);
-//                             }
-//                             // setState(() {
-//                             //   isLiked = !isLiked;
-//                             // });
-//                           },
-//                         ),
-//                         IconButton(
-//                           icon: const Icon(Icons.bookmark_border),
-//                           onPressed: () {},
-//                         ),
-//                         IconButton(
-//                           icon: const Icon(Icons.visibility),
-//                           onPressed: () {},
-//                         ),
-//                         IconButton(
-//                           icon: widget.isEditable
-//                               ? const Icon(Icons.edit_document)
-//                               : const SizedBox.shrink(),
-//                           onPressed: () {},
-//                         ),
-//                       ],
-//                     ),
-//                   ],
-//                 ),
-//               ],
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
