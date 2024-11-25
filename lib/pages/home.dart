@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sysdev_suretti/pages/loading.dart';
 import 'package:sysdev_suretti/utils/beacon.dart';
 import 'package:sysdev_suretti/utils/display_time.dart';
+import 'package:sysdev_suretti/utils/post_card.dart';
 // import 'package:sysdev_suretti/utils/lifecycle.dart';
 import 'package:sysdev_suretti/utils/provider.dart';
 // import 'package:sysdev_suretti/utils/sqlite.dart';
@@ -125,89 +126,16 @@ class HomePage extends ConsumerWidget {
           itemCount: beacon.scanResults.length, // アイテムの数を設定
           itemBuilder: (context, index) {
             final result = beacon.scanResults[index];
-            return Card(
-              margin: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 20,
-                          foregroundImage: NetworkImage(
-                              "https://jeluoazapxqjksdfvftm.supabase.co/storage/v1/object/public/${result['icon']}"),
-                        ),
-                        const SizedBox(width: 8.0),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              result['nickname'],
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              // result['messages']['post_timestamp'],
-                              diffTime(
-                                  DateTime.now(),
-                                  DateTime.parse(
-                                      result['messages']['post_timestamp'])),
-                              style: const TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.more_vert),
-                          onPressed: () {
-                            // 追加の操作を表示する処理をここに追加
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(result['messages']['message_text']),
-                    const SizedBox(height: 8.0),
-                    Image.network('https://via.placeholder.com/150'), // サンプル画像
-                    const SizedBox(height: 8.0),
-                    Row(
-                      children: [
-                        // TextButton.icon(
-                        //   onPressed: () {},
-                        //   icon: Icon(Icons.reply, color: Colors.blue),
-                        //   label: Text('返信', style: TextStyle(color: Colors.blue)),
-                        // ),
-                        // Spacer(),
-                        TextButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.thumb_up, color: Colors.grey),
-                          label: const Text('いいね',
-                              style: TextStyle(color: Colors.grey)),
-                        ),
-                        const SizedBox(width: 16.0),
-                        TextButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.bookmark_border,
-                              color: Colors.grey),
-                          label: const Text('ブックマーク',
-                              style: TextStyle(color: Colors.grey)),
-                        ),
-                        const SizedBox(width: 16.0),
-                        TextButton.icon(
-                          onPressed: () {},
-                          icon:
-                              const Icon(Icons.visibility, color: Colors.grey),
-                          label: const Text('表示',
-                              style: TextStyle(color: Colors.grey)),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return PostCard(
+                selfUserId: udp.userData['user_id'],
+                username: result['nickname'],
+                date: diffTime(DateTime.now(),
+                    DateTime.parse(result['messages']['post_timestamp'])),
+                userid: result['user_id'],
+                iconpath: result['icon'],
+                message: result['messages']['message_text'],
+                messageId: result['messages']['message_id'],
+                isEditable: false);
           },
         ),
         // bottomNavigationBar: BottomAppBar(

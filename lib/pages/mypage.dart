@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/utils/display_time.dart';
+import 'package:sysdev_suretti/utils/post_card.dart';
 
 // 表示状態を管理する列挙型
 enum DisplayState {
@@ -163,12 +164,15 @@ class _MyPageState extends State<MyPage> {
             itemCount: posts.length,
             itemBuilder: (context, index) {
               final post = posts[index];
-              return _buildUserCard(
-                post['users']['icon'].toString(),
-                post['users']['nickname'].toString(),
-                formatDate(post['post_timestamp'].toString()),
-                post['message_id'].toString(),
-                post['message_text'].toString(),
+              return PostCard(
+                selfUserId: userId,
+                iconpath: post['users']['icon'].toString(),
+                username: post['users']['nickname'].toString(),
+                date: formatDate(post['post_timestamp'].toString()),
+                userid: post['users']['user_id'],
+                message: post['message_text'].toString(),
+                messageId: post['message_id'],
+                isEditable: true,
               );
             },
           ),
@@ -178,96 +182,67 @@ class _MyPageState extends State<MyPage> {
   }
 
   Widget _buildFavoritesList() {
-    return Column(
-      children: [
-        _buildUserCard(
-            "", 'お気に入りユーザー1', '2024/02/06', '@favorite_user1', 'おはようございます！'),
-      ],
+    return StreamBuilder(
+      stream: supabase
+          .from('favorites')
+          .select(
+              '*, messages!favorites_message_id_fkey(*, users!messages_user_id_fkey(*))')
+          .eq('user_id', userId)
+          .asStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          log('snapshot error:', error: snapshot.error);
+          return const Text('エラーが発生しました');
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+        final favorites = snapshot.data; // as List;
+        if (favorites == null) {
+          return const Text('データがありません');
+        }
+        // log('favorites: $favorites');
+        return Expanded(
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: favorites.length,
+            itemBuilder: (context, index) {
+              final favorite = favorites[index];
+              log('favorite: $favorite');
+              return PostCard(
+                selfUserId: userId,
+                iconpath: favorite['messages']['users']['icon'].toString(),
+                username: favorite['messages']['users']['nickname'].toString(),
+                date: diffTime(
+                    DateTime.now(),
+                    DateTime.parse(
+                        favorite['messages']['post_timestamp'].toString())),
+                userid: favorite['messages']['users']['user_id'],
+                message: favorite['messages']['message_text'].toString(),
+                messageId: favorite['message_id'],
+                isEditable: false,
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
   Widget _buildBookmarksList() {
     return Column(
       children: [
-        _buildUserCard(
-            "", 'ブックマークユーザー1', '2024/10/13', '@bookmark_user1', 'こんばんは！'),
+        // _buildUserCard("", 'ブックマークユーザー1', '2024/10/13', '0', 'こんばんは！', 0),
+        PostCard(
+            selfUserId: userId,
+            iconpath: "",
+            username: 'ブックマークユーザー1',
+            date: '2024/10/13',
+            userid: 0,
+            message: 'こんばんは！',
+            messageId: 0,
+            isEditable: false),
       ],
-    );
-  }
-
-  Widget _buildUserCard(String iconpath, String username, String date,
-      String userid, String message) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  foregroundImage: NetworkImage(
-                      "https://jeluoazapxqjksdfvftm.supabase.co/storage/v1/object/public/$iconpath"),
-                ),
-                const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          username,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(width: 8.0),
-                        Text(
-                          date,
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      userid,
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      message,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.thumb_up_off_alt),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.bookmark_border),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.visibility),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: _currentState == DisplayState.posts
-                              ? const Icon(Icons.edit_document)
-                              : const SizedBox.shrink(),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
     );
   }
 }
