@@ -109,7 +109,7 @@ class _MessageSettings extends State<MessageSettings> {
                       // return const Center(child: Text('周辺の場所を取得できませんでした'));
                     }
                     return FutureBuilder(
-                      // フォールバック値は日本の中心点
+                        // フォールバック値は日本の中心点
                         future: placeinstance.getNearbyPlaces(
                             snapshot.data == null
                                 ? 35.6580992222
@@ -129,6 +129,7 @@ class _MessageSettings extends State<MessageSettings> {
                             return const Center(child: Text('エラーが発生しました'));
                           }
                           return DropdownButtonFormField(
+                              isExpanded: true,
                               hint: const Text('おすすめの場所を選択してください'),
                               itemHeight: 64,
                               decoration: InputDecoration(
@@ -143,7 +144,8 @@ class _MessageSettings extends State<MessageSettings> {
                               items: snapshot.data!.map((place) {
                                 return DropdownMenuItem(
                                   value: place,
-                                  child: Text(place.name),
+                                  child: Text(place.name,
+                                      overflow: TextOverflow.ellipsis),
                                 );
                               }).toList(),
                               onChanged: (value) {
