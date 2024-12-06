@@ -6,7 +6,8 @@ import 'package:sysdev_suretti/place.dart';
 
 class MapPage extends StatefulWidget {
   final Set location;
-  const MapPage({super.key, required this.location});
+  final dynamic center;
+  const MapPage({super.key, required this.location, required this.center});
 
   @override
   _MapPageState createState() => _MapPageState();
@@ -21,6 +22,16 @@ class _MapPageState extends State<MapPage> {
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    final centerPos = LatLng(widget.center[0], widget.center[1]);
+    if (centerPos == const LatLng(0, 0)) {
+      return;
+    }
+    mapController.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(
+        target: centerPos,
+        zoom: 12.0,
+      ),
+    ));
   }
 
   Future<Map<String, dynamic>?> _fetchInfo(double lat, double lng) async {

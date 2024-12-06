@@ -89,7 +89,7 @@ class _PostCardState extends State<PostCard> {
                             // 地図への遷移処理
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                  builder: (context) => MapPage(location: {widget.location})),
+                                  builder: (context) => MapPage(location: {widget.location,}, center: widget.location['coordinates'])),
                             );
                           },
                         ),
