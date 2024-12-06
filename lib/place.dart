@@ -9,15 +9,16 @@ class Place {
       apiKey: const String.fromEnvironment('GOOGLEMAP_API_KEY'));
 
   /// 与えられた緯度経度周辺の情報を取得
-  /// 
+  ///
   /// [lat] 緯度
   /// [lng] 経度
   Future<List<PlacesSearchResult>> getNearbyPlaces(
       double lat, double lng) async {
     List<PlacesSearchResult> placesList = [];
 
-    final res =
-        await _places.searchNearbyWithRadius(Location(lat: lat, lng: lng), 50, language: "ja");
+    final res = await _places.searchNearbyWithRadius(
+        Location(lat: lat, lng: lng), 50,
+        language: "ja");
 
     if (res.status == 'OK') {
       placesList = res.results;
@@ -58,7 +59,10 @@ class Place {
   //   return null;
   // }
 
-  // 使ってないメソッド
+  /// 与えられた緯度経度のplaceIdを取得
+  /// 
+  /// [lat] 緯度
+  /// [lng] 経度
   Future<String?> getPlaceId(double lat, double lng) async {
     final url = Uri.parse(
       'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$apiKey',
@@ -70,7 +74,7 @@ class Place {
       final data = json.decode(response.body);
 
       if (data['status'] == 'OK' && data['results'].isNotEmpty) {
-        log(data['results'][0]['place_id']);
+        log(data['results'][0]['place_id'], name: 'placeId');
         return data['results'][0]['place_id'];
       } else {
         log('No results found for the given coordinates.');
@@ -81,10 +85,22 @@ class Place {
     return null;
   }
 
-  // 使ってないメソッド
+  /// 与えられたplaceIdの詳細情報を取得
+  ///
+  /// [placeId] placeId
   Future<Map<String, dynamic>?> getPlaceDetails(String placeId) async {
+    // getDetailsByPlaceIdを使うとうまくいかないので仕方なくHTTPリクエストで取得
+    // final res = await _places.getDetailsByPlaceId(placeId, language: 'ja', fields: ['name', 'formatted_address']);
+    // log(res.toJson().toString());
+
+    // if (res.status == 'OK') {
+    //   return res.result;
+    // } else {
+    //   log('Failed to fetch place details: ${res.status}');
+    // }
+
     final url = Uri.parse(
-      'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=name&language=ja&key=$apiKey',
+      'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=name,formatted_address&language=ja&key=$apiKey',
     );
 
     log(url.toString());
@@ -95,6 +111,7 @@ class Place {
       final data = json.decode(response.body);
 
       if (data['status'] == 'OK') {
+        log(data['result'].toString());
         return data['result'];
       } else {
         log('Failed to fetch place details: ${data['status']}');
