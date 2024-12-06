@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sysdev_suretti/pages/message_post_confirmation.dart';
-import 'package:sysdev_suretti/place.dart';
+import 'package:sysdev_suretti/utils/place.dart';
 
 class MessageSettingsPage extends StatelessWidget {
   const MessageSettingsPage({super.key});
