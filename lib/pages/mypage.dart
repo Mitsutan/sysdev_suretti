@@ -144,6 +144,7 @@ class _MyPageState extends State<MyPage> {
           .from('messages')
           .select('*, users!messages_user_id_fkey(*)')
           .eq('user_id', userId)
+          .order('post_timestamp', ascending: false)
           .asStream(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -191,6 +192,7 @@ class _MyPageState extends State<MyPage> {
           .select(
               '*, messages!favorites_message_id_fkey(*, users!messages_user_id_fkey(*))')
           .eq('user_id', userId)
+          .order('registration_date', ascending: false)
           .asStream(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
