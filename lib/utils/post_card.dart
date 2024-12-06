@@ -105,11 +105,15 @@ class _PostCardState extends State<PostCard> {
                     ),
                   ),
                   // const Expanded(child: SizedBox()), // 右端に寄せる
-                  IconButton(
-                    icon: const Icon(Icons.more_vert),
-                    onPressed: () {
-                      // 追加の操作を表示する処理をここに追加
-                    },
+                  PopupMenuButton(
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                      PopupMenuItem(
+                        child: const Text('削除'),
+                        onTap: () {
+                          // 削除処理をここに追加
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
