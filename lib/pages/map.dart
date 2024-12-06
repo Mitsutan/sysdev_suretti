@@ -29,7 +29,7 @@ class _MapPageState extends State<MapPage> {
     mapController.animateCamera(CameraUpdate.newCameraPosition(
       CameraPosition(
         target: centerPos,
-        zoom: 12.0,
+        zoom: 15.0,
       ),
     ));
   }
@@ -62,7 +62,7 @@ class _MapPageState extends State<MapPage> {
           markerId: MarkerId(e.hashCode.toString()),
           position: LatLng(latlng[0], latlng[1]),
           infoWindow: const InfoWindow(
-            title: "-",
+            title: "Loading...",
             snippet: "-",
           ),
           onTap: () async {
