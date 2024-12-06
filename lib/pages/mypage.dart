@@ -172,6 +172,9 @@ class _MyPageState extends State<MyPage> {
                 userid: post['users']['user_id'],
                 message: post['message_text'].toString(),
                 messageId: post['message_id'],
+                recommend: post['recommended_place'].toString(),
+                address: post['address'].toString(),
+                location: post['location'],
                 isEditable: true,
               );
             },
@@ -220,6 +223,9 @@ class _MyPageState extends State<MyPage> {
                 userid: favorite['messages']['users']['user_id'],
                 message: favorite['messages']['message_text'].toString(),
                 messageId: favorite['message_id'],
+                recommend: favorite['messages']['recommended_place'].toString(),
+                address: favorite['messages']['address'].toString(),
+                location: favorite['messages']['location'],
                 isEditable: false,
               );
             },
@@ -230,18 +236,21 @@ class _MyPageState extends State<MyPage> {
   }
 
   Widget _buildBookmarksList() {
-    return Column(
+    return const Column(
       children: [
         // _buildUserCard("", 'ブックマークユーザー1', '2024/10/13', '0', 'こんばんは！', 0),
-        PostCard(
-            selfUserId: userId,
-            iconpath: "",
-            username: 'ブックマークユーザー1',
-            date: '2024/10/13',
-            userid: 0,
-            message: 'こんばんは！',
-            messageId: 0,
-            isEditable: false),
+        // PostCard(
+        //     selfUserId: userId,
+        //     iconpath: "",
+        //     username: 'ブックマークユーザー1',
+        //     date: '2024/10/13',
+        //     userid: 0,
+        //     message: 'こんばんは！',
+        //     messageId: 0,
+        //     recommend: 'おすすめの場所',
+        //     address: '住所',
+        //     location: 'POINT(0 0)',
+        //     isEditable: false),
       ],
     );
   }
