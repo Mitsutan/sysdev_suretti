@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:sysdev_suretti/place.dart';
+import 'package:sysdev_suretti/utils/place.dart';
 
 class MapPage extends StatefulWidget {
   final Set location;
