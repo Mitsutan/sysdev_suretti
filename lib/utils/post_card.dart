@@ -41,7 +41,7 @@ class _PostCardState extends State<PostCard> {
 
   List<PopupMenuEntry> _popupMenuItems() {
     final items = <PopupMenuEntry>[];
-    if (widget.isEditable && (widget.selfUserId == widget.userid)) {
+    if (widget.selfUserId == widget.userid) {
       items.add(
         PopupMenuItem(
           child: const Text('削除'),
@@ -97,11 +97,13 @@ class _PostCardState extends State<PostCard> {
                       children: [
                         Row(
                           children: [
-                            Text(
+                            Expanded(
+                                child: Text(
                               widget.username,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
-                            ),
+                              overflow: TextOverflow.ellipsis,
+                            )),
                             const SizedBox(width: 8),
                             Text(
                               widget.date,
