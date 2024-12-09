@@ -39,6 +39,40 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   // bool isLiked = false;
 
+  List<PopupMenuEntry> _popupMenuItems() {
+    final items = <PopupMenuEntry>[];
+    if (widget.selfUserId == widget.userid) {
+      items.add(
+        PopupMenuItem(
+          child: const Text('削除'),
+          onTap: () {
+            // 削除処理をここに追加
+          },
+        ),
+      );
+    }
+    if (widget.selfUserId != widget.userid) {
+      items.add(
+        PopupMenuItem(
+          child: const Text('ブロック'),
+          onTap: () {
+            // ブロック処理をここに追加
+          },
+        ),
+      );
+      items.add(
+        PopupMenuItem(
+          textStyle: const TextStyle(color: Colors.red),
+          onTap: () {
+            // 通報処理をここに追加
+          },
+          child: const Text('通報'),
+        ),
+      );
+    }
+    return items;
+  }
+
   @override
   Widget build(BuildContext context) {
     log('location: ${widget.location}');
@@ -63,11 +97,13 @@ class _PostCardState extends State<PostCard> {
                       children: [
                         Row(
                           children: [
-                            Text(
+                            Expanded(
+                                child: Text(
                               widget.username,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
-                            ),
+                              overflow: TextOverflow.ellipsis,
+                            )),
                             const SizedBox(width: 8),
                             Text(
                               widget.date,
@@ -105,11 +141,8 @@ class _PostCardState extends State<PostCard> {
                     ),
                   ),
                   // const Expanded(child: SizedBox()), // 右端に寄せる
-                  IconButton(
-                    icon: const Icon(Icons.more_vert),
-                    onPressed: () {
-                      // 追加の操作を表示する処理をここに追加
-                    },
+                  PopupMenuButton(
+                    itemBuilder: (BuildContext context) => _popupMenuItems(),
                   ),
                 ],
               ),

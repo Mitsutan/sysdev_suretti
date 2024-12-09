@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sysdev_suretti/pages/message_post_confirmation.dart';
-import 'package:sysdev_suretti/place.dart';
+import 'package:sysdev_suretti/utils/place.dart';
 
 class MessageSettingsPage extends StatelessWidget {
   const MessageSettingsPage({super.key});
@@ -41,6 +41,8 @@ class _MessageSettings extends State<MessageSettings> {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController messageController = TextEditingController();
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -126,11 +128,12 @@ class _MessageSettings extends State<MessageSettings> {
                           if (snapshot.hasError) {
                             log("future error",
                                 error: snapshot.error, name: 'places');
-                            return const Center(child: Text('エラーが発生しました'));
+                            // return const Center(child: Text('エラーが発生しました'));
                           }
                           return DropdownButtonFormField(
                               isExpanded: true,
                               hint: const Text('おすすめの場所を選択してください'),
+                              disabledHint: const Text('インターネット接続を確認してください'),
                               itemHeight: 64,
                               decoration: InputDecoration(
                                 labelText: 'おすすめの場所',
@@ -229,6 +232,7 @@ class _MessageSettings extends State<MessageSettings> {
               //   height: 24,
               // ),
               TextFormField(
+                controller: messageController,
                 keyboardType: TextInputType.multiline,
                 minLines: 2,
                 maxLines: 5,
@@ -254,7 +258,16 @@ class _MessageSettings extends State<MessageSettings> {
                     MaterialPageRoute(
                         builder: (context) => MessagePostConfirmation(
                             category, recommend, address, location, message)),
-                  );
+                  ).then((v) {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    messageController.clear();
+                    setState(() {
+                      recommend = '';
+                      address = '';
+                      location = const LatLng(0.0, 0.0);
+                      message = '';
+                    });
+                  });
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1A73E8),
