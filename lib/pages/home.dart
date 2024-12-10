@@ -135,6 +135,9 @@ class HomePage extends ConsumerWidget {
                 iconpath: result['icon'],
                 message: result['messages']['message_text'],
                 messageId: result['messages']['message_id'],
+                recommend: result['messages']['recommended_place'],
+                address: result['messages']['address'],
+                location: result['messages']['location'],
                 isEditable: false);
           },
         ),

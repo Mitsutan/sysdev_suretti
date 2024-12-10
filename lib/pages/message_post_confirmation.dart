@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/utils/csb.dart';
 import 'package:sysdev_suretti/utils/provider.dart';
@@ -10,9 +11,10 @@ class MessagePostConfirmation extends ConsumerWidget {
   final String category;
   final String recommend;
   final String address;
+  final LatLng location;
   final String message;
   const MessagePostConfirmation(
-      this.category, this.recommend, this.address, this.message,
+      this.category, this.recommend, this.address, this.location, this.message,
       {super.key});
 
   @override
@@ -27,6 +29,7 @@ class MessagePostConfirmation extends ConsumerWidget {
           'category': category,
           'recommended_place': recommend,
           'address': address,
+          'location': 'POINT(${location.latitude} ${location.longitude})',
           'message_text': message,
           'user_id': userData.userData['user_id'],
         }).select();

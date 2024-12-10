@@ -161,7 +161,7 @@ class BeaconFunc extends ChangeNotifier {
           await supabase
               .from('users')
               .select(
-                  '*, messages!users_message_id_fkey(message_id, message_text, post_timestamp)')
+                  '*, messages!users_message_id_fkey(*)')
               .eq('user_id', id)
               .then((data) {
             resultsList.add(data.first);
