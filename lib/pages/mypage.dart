@@ -97,12 +97,8 @@ class _PostsList extends StatelessWidget {
 
     return Scaffold(
         body: StreamBuilder(
-      stream: supabase
-          .from('messages')
-          .select('*, users!messages_user_id_fkey(*)')
-          .eq('user_id', userId)
-          .order('post_timestamp', ascending: false)
-          .asStream(),
+      stream: supabase.from('messages').stream(
+          primaryKey: ['message_id']).order('post_timestamp', ascending: false),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           log('snapshot error:', error: snapshot.error);
@@ -115,6 +111,9 @@ class _PostsList extends StatelessWidget {
           );
         }
         final posts = snapshot.data; // as List;
+        if (posts != null) {
+          posts.removeWhere((post) => post['user_id'] != userId);
+        }
         if (posts == null ||
             snapshot.connectionState == ConnectionState.done && posts.isEmpty) {
           return Container(
@@ -123,26 +122,41 @@ class _PostsList extends StatelessWidget {
           );
         }
         // log('posts: $posts');
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: posts.length,
-          itemBuilder: (context, index) {
-            final post = posts[index];
-            return PostCard(
-              selfUserId: userId,
-              iconpath: post['users']['icon'].toString(),
-              username: post['users']['nickname'].toString(),
-              date: formatDate(post['post_timestamp'].toString()),
-              userid: post['users']['user_id'],
-              message: post['message_text'].toString(),
-              messageId: post['message_id'],
-              recommend: post['recommended_place'].toString(),
-              address: post['address'].toString(),
-              location: post['location'],
-              isEditable: true,
-            );
-          },
-        );
+        return FutureBuilder(
+            future: supabase.from('users').select().eq('user_id', userId),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                log('snapshot error:', error: snapshot.error);
+                return const Text('エラーが発生しました');
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Container(
+                  alignment: Alignment.center,
+                  child: const CircularProgressIndicator(),
+                );
+              }
+              final user = snapshot.data!.first;
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: posts.length,
+                itemBuilder: (context, index) {
+                  final post = posts[index];
+                  return PostCard(
+                    selfUserId: userId,
+                    iconpath: user['icon'].toString(),
+                    username: user['nickname'].toString(),
+                    date: formatDate(post['post_timestamp'].toString()),
+                    userid: user['user_id'],
+                    message: post['message_text'].toString(),
+                    messageId: post['message_id'],
+                    recommend: post['recommended_place'].toString(),
+                    address: post['address'].toString(),
+                    location: post['location'],
+                    isEditable: true,
+                  );
+                },
+              );
+            });
       },
     ));
   }

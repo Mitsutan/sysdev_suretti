@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:sysdev_suretti/pages/map.dart';
 import 'package:sysdev_suretti/utils/favorite.dart';
+import 'package:sysdev_suretti/utils/messages.dart';
 
 class PostCard extends StatefulWidget {
   final int selfUserId;
@@ -47,6 +48,31 @@ class _PostCardState extends State<PostCard> {
           child: const Text('削除'),
           onTap: () {
             // 削除処理をここに追加
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('削除確認'),
+                    content: const Text('本当に削除しますか？'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('キャンセル'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          await Messages().deleteMessage(widget.messageId);
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        child: const Text('削除'),
+                      ),
+                    ],
+                  );
+                });
           },
         ),
       );
