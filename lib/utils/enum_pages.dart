@@ -17,7 +17,7 @@ enum Pages {
   search(
     title: '検索',
     icon: Icons.search,
-    page: SearchApp(),
+    page: SearchPage(),
   ),
   post(
     title: '投稿',

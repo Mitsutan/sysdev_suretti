@@ -6,29 +6,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sysdev_suretti/pages/message_post_confirmation.dart';
 import 'package:sysdev_suretti/utils/place.dart';
 
-class MessageSettingsPage extends StatelessWidget {
+class MessageSettingsPage extends StatefulWidget {
   const MessageSettingsPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Message Settings',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const MessageSettings(),
-    );
-  }
-}
-
-class MessageSettings extends StatefulWidget {
-  const MessageSettings({super.key});
 
   @override
-  State<MessageSettings> createState() => _MessageSettings();
+  State<MessageSettingsPage> createState() => _MessageSettings();
 }
 
-class _MessageSettings extends State<MessageSettings> {
+class _MessageSettings extends State<MessageSettingsPage> {
   String category = '宿泊地';
   String recommend = '';
   String address = '';
