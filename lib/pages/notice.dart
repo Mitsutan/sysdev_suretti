@@ -69,28 +69,26 @@ class _NotificationPageState extends State<NotificationPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Opacity(
-                  opacity: 0,
-                  child: IconButton(
-                    icon: const Icon(Icons.filter_list),
-                    onPressed: () {
-                      _showFilterDialog();
-                    },
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '選択されたフィルター: $_selectedFilter',
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
                   ),
                 ),
-                const Text(
-                  "通知",
-                  style: TextStyle(
-                    fontSize: 16,
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: const Icon(Icons.filter_list),
+                      onPressed: () {
+                        _showFilterDialog();
+                      },
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.filter_list),
-                  onPressed: () {
-                    _showFilterDialog();
-                  },
                 ),
               ],
             ),
@@ -98,15 +96,6 @@ class _NotificationPageState extends State<NotificationPage> {
               height: 16,
               thickness: 1,
               color: Colors.grey,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  '選択されたフィルター: $_selectedFilter',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ],
             ),
             const Card(
               color: Color(0xFFF4F6FF),
