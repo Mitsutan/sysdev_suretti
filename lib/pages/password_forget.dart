@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sysdev_suretti/pages/login.dart';
+import 'package:sysdev_suretti/pages/new_password.dart';
 
 class PasswordForgetPage extends StatefulWidget {
   const PasswordForgetPage({super.key});
@@ -27,6 +28,9 @@ class _PasswordForgetPageState extends State<PasswordForgetPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("認証メールを送信しました。")),
         );
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return const NewPasswordPage();
+        }));
       }
     });
   }
