@@ -42,5 +42,10 @@ dev_dependencies:
 flutter:
   # assets:
   #   - .env
+  fonts:
+    - family: BIZ_UDPGothic
+      fonts:
+        - asset: assets\fonts\BIZ_UDPGothic\BIZUDPGothic-Regular.ttf
+        - asset: assets\fonts\BIZ_UDPGothic\BIZUDPGothic-Bold.ttf
   uses-material-design: true
 

@@ -154,6 +154,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        fontFamily: 'BIZ_UDPGothic',
         useMaterial3: true,
       ),
       home: const Loading(),

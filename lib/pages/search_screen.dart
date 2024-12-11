@@ -2,27 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 // import 'dart:convert';
 
-//必要ない
-// void main() {
-//   runApp(SearchApp());
-// }
-
-class SearchApp extends StatelessWidget {
-  const SearchApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      title: '検索画面',
-      home: const SearchPage(),
-    );
-  }
-}
-
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
