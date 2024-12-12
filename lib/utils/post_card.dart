@@ -175,33 +175,49 @@ class _PostCardState extends State<PostCard> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  IconButton(
-                    icon: StreamBuilder<bool>(
-                      stream: isMessageLikedRealtime(
-                          widget.messageId, widget.selfUserId),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return Icon(
-                            Icons.thumb_up,
-                            color: snapshot.data! ? Colors.pink : Colors.grey,
-                          );
-                        } else {
-                          return const Icon(Icons.thumb_up, color: Colors.grey);
-                        }
-                      },
-                    ),
-                    onPressed: () async {
-                      if (await isMessageLiked(
-                          widget.messageId, widget.selfUserId)) {
-                        await unlikeMessage(
-                            widget.messageId, widget.selfUserId);
-                      } else {
-                        await likeMessage(widget.messageId, widget.selfUserId);
-                      }
-                      // setState(() {
-                      //   isLiked = !isLiked;
-                      // });
-                    },
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: StreamBuilder<bool>(
+                          stream: isMessageLikedRealtime(
+                              widget.messageId, widget.selfUserId),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Icon(
+                                Icons.thumb_up,
+                                color:
+                                    snapshot.data! ? Colors.pink : Colors.grey,
+                              );
+                            } else {
+                              return const Icon(Icons.thumb_up,
+                                  color: Colors.grey);
+                            }
+                          },
+                        ),
+                        onPressed: () async {
+                          if (await isMessageLiked(
+                              widget.messageId, widget.selfUserId)) {
+                            await unlikeMessage(
+                                widget.messageId, widget.selfUserId);
+                          } else {
+                            await likeMessage(
+                                widget.messageId, widget.selfUserId);
+                          }
+                          // setState(() {
+                          //   isLiked = !isLiked;
+                          // });
+                        },
+                      ),
+                      StreamBuilder<int>(
+                          stream: getFavCount(widget.messageId),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Text(snapshot.data.toString());
+                            } else {
+                              return const Text("...");
+                            }
+                          })
+                    ],
                   ),
                   IconButton(
                     icon: const Icon(Icons.bookmark_border),

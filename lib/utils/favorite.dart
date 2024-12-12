@@ -116,11 +116,13 @@ Stream<bool> isMessageLikedRealtime(int messageId, int userId) {
           callback: (data) {
             log('update favData: $data');
 
-            if (data.eventType == PostgresChangeEvent.insert && data.newRecord['user_id'] != userId) {
+            if (data.eventType == PostgresChangeEvent.insert &&
+                data.newRecord['user_id'] != userId) {
               return;
             }
 
-            if (data.eventType == PostgresChangeEvent.delete && data.oldRecord['user_id'] != userId) {
+            if (data.eventType == PostgresChangeEvent.delete &&
+                data.oldRecord['user_id'] != userId) {
               return;
             }
 
@@ -133,6 +135,23 @@ Stream<bool> isMessageLikedRealtime(int messageId, int userId) {
             }
           })
       .subscribe();
+
+  return controller.stream;
+}
+
+/// メッセージのいいね数取得
+/// 
+/// [messageId] いいね数を取得するメッセージID
+Stream<int> getFavCount(int messageId) {
+  final StreamController<int> controller = StreamController<int>();
+
+  supabase
+      .from("favorites")
+      .stream(primaryKey: ["message_id"])
+      .eq("message_id", messageId)
+      .listen((data) {
+        controller.add(data.length);
+      });
 
   return controller.stream;
 }
