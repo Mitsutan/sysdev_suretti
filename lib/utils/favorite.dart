@@ -92,49 +92,15 @@ Future<bool> isMessageLiked(int messageId, int userId) async {
 /// [userId] ユーザーID
 Stream<bool> isMessageLikedRealtime(int messageId, int userId) {
   final StreamController<bool> controller = StreamController<bool>();
-  bool isFetched = false;
-
-  if (!isFetched) {
-    isMessageLiked(messageId, userId).then((isLiked) {
-      controller.add(isLiked);
-      isFetched = true;
-    });
-  }
 
   supabase
-      .channel('favorites-$messageId-$userId')
-      .onPostgresChanges(
-          event: PostgresChangeEvent.all,
-          schema: 'public',
-          table: 'favorites',
-          filter: PostgresChangeFilter(
-              type: PostgresChangeFilterType.eq,
-              // column: "user_id",
-              // value: userId),
-              column: "message_id",
-              value: messageId),
-          callback: (data) {
-            log('update favData: $data');
-
-            if (data.eventType == PostgresChangeEvent.insert &&
-                data.newRecord['user_id'] != userId) {
-              return;
-            }
-
-            if (data.eventType == PostgresChangeEvent.delete &&
-                data.oldRecord['user_id'] != userId) {
-              return;
-            }
-
-            if (data.newRecord.isNotEmpty) {
-              log('いいねされました: ${data.newRecord}');
-              controller.add(true);
-            } else {
-              log('いいねが取り消されました: ${data.oldRecord}');
-              controller.add(false);
-            }
-          })
-      .subscribe();
+      .from('favorites')
+      .stream(primaryKey: ['message_id', 'user_id'])
+      .eq('message_id', messageId)
+      .listen((data) {
+        data.removeWhere((element) => element['user_id'] != userId);
+        controller.add(data.isNotEmpty);
+      });
 
   return controller.stream;
 }
