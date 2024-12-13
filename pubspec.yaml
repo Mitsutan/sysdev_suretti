@@ -32,6 +32,7 @@ dependencies:
   geocoding: ^3.0.0
   google_maps_webservice: ^0.0.20-nullsafety.5
   http: ^0.13.6
+  animated_flip_counter: ^0.3.4
 
 dev_dependencies:
   flutter_test:

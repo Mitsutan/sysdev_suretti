@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
 import 'package:sysdev_suretti/pages/map.dart';
 import 'package:sysdev_suretti/utils/favorite.dart';
@@ -175,33 +176,52 @@ class _PostCardState extends State<PostCard> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  IconButton(
-                    icon: StreamBuilder<bool>(
-                      stream: isMessageLikedRealtime(
-                          widget.messageId, widget.selfUserId),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return Icon(
-                            Icons.thumb_up,
-                            color: snapshot.data! ? Colors.pink : Colors.grey,
-                          );
-                        } else {
-                          return const Icon(Icons.thumb_up, color: Colors.grey);
-                        }
-                      },
-                    ),
-                    onPressed: () async {
-                      if (await isMessageLiked(
-                          widget.messageId, widget.selfUserId)) {
-                        await unlikeMessage(
-                            widget.messageId, widget.selfUserId);
-                      } else {
-                        await likeMessage(widget.messageId, widget.selfUserId);
-                      }
-                      // setState(() {
-                      //   isLiked = !isLiked;
-                      // });
-                    },
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: StreamBuilder<bool>(
+                          stream: isMessageLikedRealtime(
+                              widget.messageId, widget.selfUserId),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Icon(
+                                Icons.thumb_up,
+                                color:
+                                    snapshot.data! ? Colors.pink : Colors.grey,
+                              );
+                            } else {
+                              return const Icon(Icons.thumb_up,
+                                  color: Colors.grey);
+                            }
+                          },
+                        ),
+                        onPressed: () async {
+                          if (await isMessageLiked(
+                              widget.messageId, widget.selfUserId)) {
+                            await unlikeMessage(
+                                widget.messageId, widget.selfUserId);
+                          } else {
+                            await likeMessage(
+                                widget.messageId, widget.selfUserId);
+                          }
+                          // setState(() {
+                          //   isLiked = !isLiked;
+                          // });
+                        },
+                      ),
+                      (widget.selfUserId == widget.userid)
+                          ? StreamBuilder<int>(
+                              stream: getFavCount(widget.messageId),
+                              initialData: 0,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return AnimatedFlipCounter(value: snapshot.data!, duration: const Duration(milliseconds: 200), thousandSeparator: ",",);
+                                } else {
+                                  return const Text("...");
+                                }
+                              })
+                          : const SizedBox(),
+                    ],
                   ),
                   IconButton(
                     icon: const Icon(Icons.bookmark_border),
