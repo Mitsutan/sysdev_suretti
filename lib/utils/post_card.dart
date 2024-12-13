@@ -38,8 +38,11 @@ class PostCard extends StatefulWidget {
   _PostCardState createState() => _PostCardState();
 }
 
-class _PostCardState extends State<PostCard> {
+class _PostCardState extends State<PostCard> with AutomaticKeepAliveClientMixin {
   // bool isLiked = false;
+    
+  @override
+  bool get wantKeepAlive => true;
 
   List<PopupMenuEntry> _popupMenuItems() {
     final items = <PopupMenuEntry>[];
@@ -102,6 +105,7 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     log('location: ${widget.location}');
     return Card(
         margin: const EdgeInsets.all(8.0),

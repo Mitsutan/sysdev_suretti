@@ -18,16 +18,12 @@ class MyPage extends StatefulWidget {
   _MyPageState createState() => _MyPageState();
 }
 
-class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
+class _MyPageState extends State<MyPage> {
   @override
   void initState() {
     super.initState();
     _initializePreferences();
   }
-
-  // タブを切り替えるたびに再レンダリングされないようにする
-  @override
-  bool get wantKeepAlive => true;
 
   Future<void> _initializePreferences() async {
     try {
@@ -46,7 +42,6 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
