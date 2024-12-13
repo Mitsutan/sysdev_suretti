@@ -205,21 +205,21 @@ class BeaconFunc extends ChangeNotifier {
               'Inside region: ${result.region.major}, ${result.region.minor}');
         }
         
-        final supabase = Supabase.instance.client;
-        try {
-          await supabase
-              .from('users')
-              .select(
-                  '*, messages!users_message_id_fkey(*)')
-              .eq('user_id', id)
-              .then((data) {
-            resultsList.add(data.first);
-            // log('msgData: $data');
-            debugPrint('msgData: $data');
-          });
-        } catch (e) {
-          log("get message fail", error: e, name: 'msgData');
-        }
+        // final supabase = Supabase.instance.client;
+        // try {
+        //   await supabase
+        //       .from('users')
+        //       .select(
+        //           '*, messages!users_message_id_fkey(*)')
+        //       .eq('user_id', id)
+        //       .then((data) {
+        //     resultsList.add(data.first);
+        //     // log('msgData: $data');
+        //     debugPrint('msgData: $data');
+        //   });
+        // } catch (e) {
+        //   log("get message fail", error: e, name: 'msgData');
+        // }
       });
     }
   }
