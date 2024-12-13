@@ -1,3 +1,11 @@
+import 'package:intl/intl.dart';
+
+/// baseからtargetまでの時間差を曖昧に返す
+/// 例: 1時間前, 1日前, 1週間前, 1ヶ月前, 1年前
+/// 
+/// [base] 比較基準の日時
+/// 
+/// [target] 比較対象の日時
 String diffTime(DateTime base, DateTime target) {
   final diffInSeconds = base.difference(target).inSeconds;
   if (diffInSeconds < 60) {
@@ -33,4 +41,13 @@ String diffTime(DateTime base, DateTime target) {
 
   final diffInYears = (diffInDays / 365).floor();
   return '$diffInYears年前';
+}
+
+/// 日時をyyyy/MM/dd HH:mm:ssフォーマットする
+/// 
+/// [dateStr] フォーマットする日時
+String formatDate(String dateStr) {
+  DateTime dateTime = DateTime.parse(dateStr);
+  DateFormat formatter = DateFormat('yyyy/MM/dd HH:mm:ss');
+  return formatter.format(dateTime);
 }

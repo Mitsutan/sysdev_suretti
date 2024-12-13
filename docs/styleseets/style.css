@@ -1,0 +1,25 @@
+body {
+    word-break: auto-phrase;
+}
+
+section {
+    border-top: 2px solid gray;
+    margin-top: 2%;
+    padding: 1%;
+}
+
+section>div {
+    padding: 1%;
+}
+
+button.question::before {
+    content: "Ｑ";
+    color: #2b18ff;
+    font-weight: bold;
+}
+
+div.answer::before {
+    content: "Ａ";
+    color: #ff2b18;
+    font-weight: bold;
+}

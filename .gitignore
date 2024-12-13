@@ -44,3 +44,4 @@ app.*.map.json
 
 # environment file
 .env
+/assets/fonts

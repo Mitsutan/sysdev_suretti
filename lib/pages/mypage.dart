@@ -1,11 +1,15 @@
-import 'package:flutter/material.dart';
+import 'dart:developer';
 
-// 表示状態を管理する列挙型
-enum DisplayState {
-  posts, // 自分の投稿
-  favorites, // お気に入り
-  bookmarks // ブックマーク
-}
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sysdev_suretti/utils/display_time.dart';
+import 'package:sysdev_suretti/utils/post_card.dart';
+
+final supabase = Supabase.instance.client;
+
+late final SharedPreferences _prefs;
+int userId = 0;
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -15,11 +19,24 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  DisplayState _currentState = DisplayState.posts; // 初期状態は自分の投稿
+  @override
+  void initState() {
+    super.initState();
+    _initializePreferences();
+  }
 
-  void _switchDisplay(DisplayState newState) {
+  Future<void> _initializePreferences() async {
+    try {
+      _prefs = await SharedPreferences.getInstance();
+    } catch (e) {
+      log("init fail", error: e);
+    }
+
     setState(() {
-      _currentState = newState;
+      final major = _prefs.getInt('major').toString();
+      final minor = _prefs.getInt('minor').toString();
+
+      userId = int.parse(major + minor);
     });
   }
 
@@ -39,170 +56,185 @@ class _MyPageState extends State<MyPage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: DefaultTabController(
+        length: 3,
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                OutlinedButton(
-                    onPressed: () => _switchDisplay(DisplayState.posts),
-                    style: OutlinedButton.styleFrom(
-                      shape: const BeveledRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(0)),
-                      ),
-                      backgroundColor: _currentState == DisplayState.posts
-                          ? Colors.grey[200]
-                          : null,
-                    ),
-                    child: const Text('自分の投稿')),
-                OutlinedButton(
-                    onPressed: () => _switchDisplay(DisplayState.favorites),
-                    style: OutlinedButton.styleFrom(
-                      shape: const BeveledRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(0)),
-                      ),
-                      backgroundColor: _currentState == DisplayState.favorites
-                          ? Colors.grey[200]
-                          : null,
-                    ),
-                    child: const Text('お気に入り')),
-                OutlinedButton(
-                    onPressed: () => _switchDisplay(DisplayState.bookmarks),
-                    style: OutlinedButton.styleFrom(
-                      shape: const BeveledRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(0)),
-                      ),
-                      backgroundColor: _currentState == DisplayState.bookmarks
-                          ? Colors.grey[200]
-                          : null,
-                    ),
-                    child: const Text('ブックマーク')),
+            const TabBar(
+              tabs: [
+                Tab(text: '自分の投稿'),
+                Tab(text: 'お気に入り'),
+                Tab(text: 'ブックマーク'),
               ],
             ),
-            // 自分の投稿の表示
-            Visibility(
-              visible: _currentState == DisplayState.posts,
-              child: _buildPostsList(),
-            ),
-            // お気に入りの表示
-            Visibility(
-              visible: _currentState == DisplayState.favorites,
-              child: _buildFavoritesList(),
-            ),
-            // ブックマークの表示
-            Visibility(
-              visible: _currentState == DisplayState.bookmarks,
-              child: _buildBookmarksList(),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _PostsList(),
+                  _FavoritesList(),
+                  _buildBookmarksList(),
+                ],
+              ),
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildPostsList() {
-    return Column(
-      children: [
-        _buildUserCard(
-            'すれちがいおにいさん', '2024/04/26', '@suretigai_man', 'こんにちは！この観光地おすすめです！'),
-        _buildUserCard(
-            'すれちがいおにいさん', '2024/04/27', '@suretigai_man', 'こんばんは！この観光地おすすめです！'),
-      ],
-    );
-  }
+class _PostsList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    if (userId == 0) {
+      return const Text('ユーザーIDが取得できませんでした');
+    }
 
-  Widget _buildFavoritesList() {
-    return Column(
-      children: [
-        _buildUserCard(
-            'お気に入りユーザー1', '2024/02/06', '@favorite_user1', 'おはようございます！'),
-      ],
-    );
+    return Scaffold(
+        body: StreamBuilder(
+      stream: supabase.from('messages').stream(
+          primaryKey: ['message_id']).order('post_timestamp', ascending: false),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          log('snapshot error:', error: snapshot.error);
+          return const Text('エラーが発生しました');
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator(),
+          );
+        }
+        final posts = snapshot.data; // as List;
+        if (posts != null) {
+          posts.removeWhere((post) => post['user_id'] != userId);
+        }
+        if (posts == null ||
+            snapshot.connectionState == ConnectionState.done && posts.isEmpty) {
+          return Container(
+            alignment: Alignment.center,
+            child: const Text('まだ投稿がありません'),
+          );
+        }
+        // log('posts: $posts');
+        return FutureBuilder(
+            future: supabase.from('users').select().eq('user_id', userId),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                log('snapshot error:', error: snapshot.error);
+                return const Text('エラーが発生しました');
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Container(
+                  alignment: Alignment.center,
+                  child: const CircularProgressIndicator(),
+                );
+              }
+              final user = snapshot.data!.first;
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: posts.length,
+                itemBuilder: (context, index) {
+                  final post = posts[index];
+                  return PostCard(
+                    selfUserId: userId,
+                    iconpath: user['icon'].toString(),
+                    username: user['nickname'].toString(),
+                    date: formatDate(post['post_timestamp'].toString()),
+                    userid: user['user_id'],
+                    message: post['message_text'].toString(),
+                    messageId: post['message_id'],
+                    recommend: post['recommended_place'].toString(),
+                    address: post['address'].toString(),
+                    location: post['location'],
+                    isEditable: true,
+                  );
+                },
+              );
+            });
+      },
+    ));
   }
+}
 
-  Widget _buildBookmarksList() {
-    return Column(
-      children: [
-        _buildUserCard(
-            'ブックマークユーザー1', '2024/10/13', '@bookmark_user1', 'こんばんは！'),
-      ],
-    );
+class _FavoritesList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: StreamBuilder(
+      stream: supabase
+          .from('favorites')
+          .select(
+              '*, messages!favorites_message_id_fkey(*, users!messages_user_id_fkey(*))')
+          .eq('user_id', userId)
+          .order('registration_date', ascending: false)
+          .asStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          log('snapshot error:', error: snapshot.error);
+          return const Text('エラーが発生しました');
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator(),
+          );
+        }
+        final favorites = snapshot.data; // as List;
+        if (favorites == null ||
+            snapshot.connectionState == ConnectionState.done &&
+                favorites.isEmpty) {
+          return Container(
+            alignment: Alignment.center,
+            child: const Text('いいねした投稿がありません'),
+          );
+        }
+        // log('favorites: $favorites');
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: favorites.length,
+          itemBuilder: (context, index) {
+            final favorite = favorites[index];
+            log('favorite: $favorite');
+            return PostCard(
+              selfUserId: userId,
+              iconpath: favorite['messages']['users']['icon'].toString(),
+              username: favorite['messages']['users']['nickname'].toString(),
+              date: diffTime(
+                  DateTime.now(),
+                  DateTime.parse(
+                      favorite['messages']['post_timestamp'].toString())),
+              userid: favorite['messages']['users']['user_id'],
+              message: favorite['messages']['message_text'].toString(),
+              messageId: favorite['message_id'],
+              recommend: favorite['messages']['recommended_place'].toString(),
+              address: favorite['messages']['address'].toString(),
+              location: favorite['messages']['location'],
+              isEditable: false,
+            );
+          },
+        );
+      },
+    ));
   }
+}
 
-  Widget _buildUserCard(
-      String username, String date, String userid, String message) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const CircleAvatar(
-                  radius: 20,
-                  child: Icon(Icons.person),
-                ),
-                const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          username,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(width: 8.0),
-                        Text(
-                          date,
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      userid,
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      message,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.thumb_up_off_alt),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.bookmark_border),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.visibility),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: _currentState == DisplayState.posts
-                              ? const Icon(Icons.edit_document)
-                              : const SizedBox.shrink(),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
-    );
-  }
+Widget _buildBookmarksList() {
+  return const Column(
+    children: [
+      // _buildUserCard("", 'ブックマークユーザー1', '2024/10/13', '0', 'こんばんは！', 0),
+      // PostCard(
+      //     selfUserId: userId,
+      //     iconpath: "",
+      //     username: 'ブックマークユーザー1',
+      //     date: '2024/10/13',
+      //     userid: 0,
+      //     message: 'こんばんは！',
+      //     messageId: 0,
+      //     recommend: 'おすすめの場所',
+      //     address: '住所',
+      //     location: 'POINT(0 0)',
+      //     isEditable: false),
+    ],
+  );
 }
