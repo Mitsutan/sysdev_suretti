@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
 import 'package:sysdev_suretti/pages/map.dart';
 import 'package:sysdev_suretti/utils/favorite.dart';
@@ -208,15 +209,18 @@ class _PostCardState extends State<PostCard> {
                           // });
                         },
                       ),
-                      StreamBuilder<int>(
-                          stream: getFavCount(widget.messageId),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              return Text(snapshot.data.toString());
-                            } else {
-                              return const Text("...");
-                            }
-                          })
+                      (widget.selfUserId == widget.userid)
+                          ? StreamBuilder<int>(
+                              stream: getFavCount(widget.messageId),
+                              initialData: 0,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return AnimatedFlipCounter(value: snapshot.data!, duration: const Duration(milliseconds: 200), thousandSeparator: ",",);
+                                } else {
+                                  return const Text("...");
+                                }
+                              })
+                          : const SizedBox(),
                     ],
                   ),
                   IconButton(
