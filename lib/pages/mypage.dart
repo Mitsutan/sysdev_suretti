@@ -1,8 +1,10 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sysdev_suretti/utils/db_provider.dart';
 import 'package:sysdev_suretti/utils/display_time.dart';
 import 'package:sysdev_suretti/utils/post_card.dart';
 
@@ -72,7 +74,7 @@ class _MyPageState extends State<MyPage> {
                 children: [
                   _PostsList(),
                   _FavoritesList(),
-                  _buildBookmarksList(),
+                  _BookmarksList(),
                 ],
               ),
             ),
@@ -219,22 +221,82 @@ class _FavoritesList extends StatelessWidget {
   }
 }
 
-Widget _buildBookmarksList() {
-  return const Column(
-    children: [
-      // _buildUserCard("", 'ブックマークユーザー1', '2024/10/13', '0', 'こんばんは！', 0),
-      // PostCard(
-      //     selfUserId: userId,
-      //     iconpath: "",
-      //     username: 'ブックマークユーザー1',
-      //     date: '2024/10/13',
-      //     userid: 0,
-      //     message: 'こんばんは！',
-      //     messageId: 0,
-      //     recommend: 'おすすめの場所',
-      //     address: '住所',
-      //     location: 'POINT(0 0)',
-      //     isEditable: false),
-    ],
-  );
+class _BookmarksList extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final db = ref.watch(dbProvider);
+    final database = db.database;
+    return Scaffold(
+        body: StreamBuilder(
+            stream: database.watchBookmarks(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                log('snapshot error:', error: snapshot.error);
+                return const Text('エラーが発生しました');
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Container(
+                  alignment: Alignment.center,
+                  child: const CircularProgressIndicator(),
+                );
+              }
+              final bookmarks = snapshot.data; // as List;
+              if (bookmarks == null ||
+                  snapshot.connectionState == ConnectionState.done &&
+                      bookmarks.isEmpty) {
+                return Container(
+                  alignment: Alignment.center,
+                  child: const Text('ブックマークした投稿がありません'),
+                );
+              }
+              // log('bookmarks: $bookmarks');
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: bookmarks.length,
+                itemBuilder: (context, index) {
+                  final bookmark = bookmarks[index];
+                  log('bookmark: ${bookmark.messageId}');
+                  return FutureBuilder(
+                    future: supabase
+                        .from('messages')
+                        .select(
+                            '*, users!messages_user_id_fkey(*, icon, nickname)')
+                        .eq('message_id', bookmark.messageId),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        log('snapshot error:', error: snapshot.error);
+                        return const Text('エラーが発生しました');
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          alignment: Alignment.center,
+                          child: const CircularProgressIndicator(),
+                        );
+                      }
+                      final bm = snapshot.data!.firstOrNull;
+                      if (bm == null) {
+                        database.deleteBookmark(bookmark.messageId);
+                        return const Text('投稿が見つかりません');
+                      }
+                      log('bookmark: $bm');
+                      return PostCard(
+                        selfUserId: userId,
+                        iconpath: bm['users']['icon'].toString(),
+                        username: bm['users']['nickname'].toString(),
+                        date: diffTime(DateTime.now(),
+                            DateTime.parse(bm['post_timestamp'].toString())),
+                        userid: bm['users']['user_id'],
+                        message: bm['message_text'].toString(),
+                        messageId: bm['message_id'],
+                        recommend: bm['recommended_place'].toString(),
+                        address: bm['address'].toString(),
+                        location: bm['location'],
+                        isEditable: false,
+                      );
+                    },
+                  );
+                },
+              );
+            }));
+  }
 }

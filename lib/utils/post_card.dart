@@ -2,11 +2,13 @@ import 'dart:developer';
 
 import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sysdev_suretti/pages/map.dart';
+import 'package:sysdev_suretti/utils/db_provider.dart';
 import 'package:sysdev_suretti/utils/favorite.dart';
 import 'package:sysdev_suretti/utils/messages.dart';
 
-class PostCard extends StatefulWidget {
+class PostCard extends ConsumerStatefulWidget {
   final int selfUserId;
   final String iconpath;
   final String username;
@@ -35,12 +37,13 @@ class PostCard extends StatefulWidget {
   });
 
   @override
-  _PostCardState createState() => _PostCardState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _PostCardState();
 }
 
-class _PostCardState extends State<PostCard> with AutomaticKeepAliveClientMixin {
+class _PostCardState extends ConsumerState<PostCard>
+    with AutomaticKeepAliveClientMixin {
   // bool isLiked = false;
-    
+
   @override
   bool get wantKeepAlive => true;
 
@@ -105,6 +108,7 @@ class _PostCardState extends State<PostCard> with AutomaticKeepAliveClientMixin 
 
   @override
   Widget build(BuildContext context) {
+    final db = ref.watch(dbProvider);
     super.build(context);
     log('location: ${widget.location}');
     return Card(
@@ -219,7 +223,11 @@ class _PostCardState extends State<PostCard> with AutomaticKeepAliveClientMixin 
                               initialData: 0,
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
-                                  return AnimatedFlipCounter(value: snapshot.data!, duration: const Duration(milliseconds: 200), thousandSeparator: ",",);
+                                  return AnimatedFlipCounter(
+                                    value: snapshot.data!,
+                                    duration: const Duration(milliseconds: 200),
+                                    thousandSeparator: ",",
+                                  );
                                 } else {
                                   return const Text("...");
                                 }
@@ -227,10 +235,36 @@ class _PostCardState extends State<PostCard> with AutomaticKeepAliveClientMixin 
                           : const SizedBox(),
                     ],
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.bookmark_border),
-                    onPressed: () {},
-                  ),
+                  StreamBuilder(
+                      stream: db.database.isBookmarked(widget.messageId),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data!) {
+                            return IconButton(
+                              icon: const Icon(Icons.bookmark,
+                                  color: Colors.orange),
+                              onPressed: () async {
+                                await db.database
+                                    .deleteBookmark(widget.messageId);
+                              },
+                            );
+                          } else {
+                            return IconButton(
+                              icon: const Icon(Icons.bookmark_border),
+                              onPressed: () async {
+                                await db.database.addBookmark(widget.messageId);
+                              },
+                            );
+                          }
+                        } else {
+                          return IconButton(
+                            icon: const Icon(Icons.bookmark_border),
+                            onPressed: () async {
+                              await db.database.addBookmark(widget.messageId);
+                            },
+                          );
+                        }
+                      }),
                   IconButton(
                     icon: const Icon(Icons.visibility),
                     onPressed: () {},
