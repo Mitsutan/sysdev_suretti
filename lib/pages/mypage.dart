@@ -1,9 +1,10 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:sysdev_suretti/models/bookmarks.dart';
+import 'package:sysdev_suretti/utils/db_provider.dart';
 import 'package:sysdev_suretti/utils/display_time.dart';
 import 'package:sysdev_suretti/utils/post_card.dart';
 
@@ -220,11 +221,11 @@ class _FavoritesList extends StatelessWidget {
   }
 }
 
-class _BookmarksList extends StatelessWidget {
-  final database = AppDatabase();
-
+class _BookmarksList extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final db = ref.watch(dbProvider);
+    final database = db.database;
     return Scaffold(
         body: StreamBuilder(
             stream: database.watchBookmarks(),
@@ -259,7 +260,8 @@ class _BookmarksList extends StatelessWidget {
                     future: supabase
                         .from('messages')
                         .select(
-                            '*, users!messages_user_id_fkey(*, icon, nickname)').eq('message_id', bookmark.messageId),
+                            '*, users!messages_user_id_fkey(*, icon, nickname)')
+                        .eq('message_id', bookmark.messageId),
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
                         log('snapshot error:', error: snapshot.error);
@@ -281,10 +283,8 @@ class _BookmarksList extends StatelessWidget {
                         selfUserId: userId,
                         iconpath: bm['users']['icon'].toString(),
                         username: bm['users']['nickname'].toString(),
-                        date: diffTime(
-                            DateTime.now(),
-                            DateTime.parse(
-                                bm['post_timestamp'].toString())),
+                        date: diffTime(DateTime.now(),
+                            DateTime.parse(bm['post_timestamp'].toString())),
                         userid: bm['users']['user_id'],
                         message: bm['message_text'].toString(),
                         messageId: bm['message_id'],
