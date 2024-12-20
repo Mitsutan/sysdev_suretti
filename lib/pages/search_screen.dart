@@ -116,12 +116,12 @@ class _SearchPageState extends State<SearchPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('検索'),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            // 戻る処理（実際にはNavigator.pop()などを使用）
-          },
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back),
+        //   onPressed: () {
+        //     // 戻る処理（実際にはNavigator.pop()などを使用）
+        //   },
+        // ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
