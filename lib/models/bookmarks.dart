@@ -27,7 +27,7 @@ class AppDatabase extends _$AppDatabase {
         .watchSingle();
   }
 
-  Stream<bool> isBookmarked(int messageId) {
+  Stream<bool> watchIsBookmarked(int messageId) {
     final StreamController<bool> controller = StreamController<bool>();
 
     (select(bookmarks)..where((bm) => bm.messageId.equals(messageId)))
@@ -40,8 +40,17 @@ class AppDatabase extends _$AppDatabase {
     return controller.stream;
   }
 
+  Future<bool> isBookmarked(int messageId) async {
+    final bookmark = await (select(bookmarks)
+          ..where((bm) => bm.messageId.equals(messageId)))
+        .getSingleOrNull();
+
+    return bookmark != null;
+  }
+
   Stream<List<Bookmark>> watchBookmarks() {
-    return (select(bookmarks)..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).watch();
+    return (select(bookmarks)..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+        .watch();
   }
 
   Future<int> addBookmark(int messageId) {

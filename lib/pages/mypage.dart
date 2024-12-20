@@ -111,8 +111,7 @@ class _PostsList extends StatelessWidget {
         if (posts != null) {
           posts.removeWhere((post) => post['user_id'] != userId);
         }
-        if (posts == null ||
-            snapshot.connectionState == ConnectionState.done && posts.isEmpty) {
+        if (posts == null || posts.isEmpty) {
           return Container(
             alignment: Alignment.center,
             child: const Text('まだ投稿がありません'),
@@ -241,9 +240,7 @@ class _BookmarksList extends ConsumerWidget {
                 );
               }
               final bookmarks = snapshot.data; // as List;
-              if (bookmarks == null ||
-                  snapshot.connectionState == ConnectionState.done &&
-                      bookmarks.isEmpty) {
+              if (bookmarks == null || bookmarks.isEmpty) {
                 return Container(
                   alignment: Alignment.center,
                   child: const Text('ブックマークした投稿がありません'),

@@ -71,6 +71,13 @@ class _PostCardState extends ConsumerState<PostCard>
                       TextButton(
                         onPressed: () async {
                           await Messages().deleteMessage(widget.messageId);
+
+                          final db = ref.read(dbProvider).database;
+                          final isBookmarked =
+                              await db.isBookmarked(widget.messageId);
+                          if (isBookmarked) {
+                            await db.deleteBookmark(widget.messageId);
+                          }
                           if (context.mounted) {
                             Navigator.of(context).pop();
                           }
@@ -108,7 +115,7 @@ class _PostCardState extends ConsumerState<PostCard>
 
   @override
   Widget build(BuildContext context) {
-    final db = ref.watch(dbProvider);
+    final db = ref.watch(dbProvider).database;
     super.build(context);
     log('location: ${widget.location}');
     return Card(
@@ -236,7 +243,7 @@ class _PostCardState extends ConsumerState<PostCard>
                     ],
                   ),
                   StreamBuilder(
-                      stream: db.database.isBookmarked(widget.messageId),
+                      stream: db.watchIsBookmarked(widget.messageId),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           if (snapshot.data!) {
@@ -244,15 +251,14 @@ class _PostCardState extends ConsumerState<PostCard>
                               icon: const Icon(Icons.bookmark,
                                   color: Colors.orange),
                               onPressed: () async {
-                                await db.database
-                                    .deleteBookmark(widget.messageId);
+                                await db.deleteBookmark(widget.messageId);
                               },
                             );
                           } else {
                             return IconButton(
                               icon: const Icon(Icons.bookmark_border),
                               onPressed: () async {
-                                await db.database.addBookmark(widget.messageId);
+                                await db.addBookmark(widget.messageId);
                               },
                             );
                           }
@@ -260,7 +266,7 @@ class _PostCardState extends ConsumerState<PostCard>
                           return IconButton(
                             icon: const Icon(Icons.bookmark_border),
                             onPressed: () async {
-                              await db.database.addBookmark(widget.messageId);
+                              await db.addBookmark(widget.messageId);
                             },
                           );
                         }
