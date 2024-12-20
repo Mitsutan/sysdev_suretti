@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sysdev_suretti/pages/loading.dart';
 import 'package:sysdev_suretti/utils/beacon.dart';
 import 'package:sysdev_suretti/utils/display_time.dart';
 import 'package:sysdev_suretti/utils/post_card.dart';
@@ -88,19 +87,8 @@ class HomePage extends ConsumerWidget {
     //   }
     // });
 
-    // ユーザー情報未取得の場合：情報取得を試み、その間ローディングインジケーターを表示
-    // なんらかの理由で例外が発生した場合、Loadingへ遷移
-    // ユーザー情報取得済みの場合：ホーム画面構築
-    if (!udp.isGotUserData) {
-      try {
-        udp.getUserData();
-      } catch (e) {
-        log('getUserData error. try transfer loading page.', error: e);
-        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) {
-          return const Loading();
-        }), (route) => false);
-      }
+    // ユーザー情報未取得の場合ローディングインジケーターを表示
+    if (udp.userData == null) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),

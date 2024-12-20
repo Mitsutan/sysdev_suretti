@@ -196,62 +196,7 @@ class SettingsPage extends ConsumerWidget {
       );
     }
 
-    // Future<List<Map<String, dynamic>>> getUserData() async {
-    //   final userdata = await supabase
-    //       .from('users')
-    //       .select()
-    //       .eq('auth_id', supabase.auth.currentUser!.id);
-
-    //   userdata.add(metadata);
-    //   return userdata;
-    // }
-
-    // log(const String.fromEnvironment("IBEACON_UUID"));
-
-    // // usersテーブルからuser.auth_idをキーにしてユーザー情報を取得
-    // Future<void> getUserData() async {
-    //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    //   try {
-    //     await supabase
-    //         .from('users')
-    //         .select()
-    //         .eq('auth_id', supabase.auth.currentUser!.id)
-    //         .then((value) {
-    //       log(value.toString());
-    //       userData.updateUserData(value.first);
-    //       String userId =
-    //           value.first['user_id'].toRadixString(16).padLeft(8, '0');
-    //       // set to shared preference
-    //       prefs.setInt('major', int.parse(userId.substring(0, 4), radix: 16));
-    //       prefs.setInt('minor', int.parse(userId.substring(4, 8), radix: 16));
-
-    //       userData.updateIsGotUserData(true);
-    //     }, onError: (error) {
-    //       debugPrint('getUserData error: $error');
-    //       throw error;
-    //     });
-    //     // log(user.toString());
-    //     // userData.updateUserData(user.first);
-    //     // String userId = user.first['user_id'].toRadixString(16).padLeft(8, '0');
-    //     // beacon.major = int.parse(userId.substring(0, 4), radix: 16);
-    //     // beacon.minor = int.parse(userId.substring(4, 8), radix: 16);
-    //   } catch (e) {
-    //     log('getUserData error', error: e);
-    //     return;
-    //   }
-    // }
-
-    if (!udp.isGotUserData) {
-      try {
-        udp.getUserData();
-      } catch (e) {
-        log('getUserData error. try transfer loading page.', error: e);
-        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) {
-          return const Loading();
-        }), (route) => false);
-      }
+    if (udp.userData == null) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
@@ -502,7 +447,7 @@ class SettingsPage extends ConsumerWidget {
       );
     }
   }
-}
+// }
 
 // class PlaceholderPage extends StatelessWidget {
 //   final String title;
@@ -519,4 +464,4 @@ class SettingsPage extends ConsumerWidget {
 //       ),
 //     );
 //   }
-// }
+}
