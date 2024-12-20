@@ -17,7 +17,7 @@ class Place {
     List<PlacesSearchResult> placesList = [];
 
     final res = await _places.searchNearbyWithRadius(
-        Location(lat: lat, lng: lng), 50,
+        Location(lat: lat, lng: lng), 100,
         language: "ja");
 
     if (res.status == 'OK') {
@@ -60,7 +60,7 @@ class Place {
   // }
 
   /// 与えられた緯度経度のplaceIdを取得
-  /// 
+  ///
   /// [lat] 緯度
   /// [lng] 経度
   Future<String?> getPlaceId(double lat, double lng) async {
