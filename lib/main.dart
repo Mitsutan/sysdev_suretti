@@ -1,5 +1,7 @@
 import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:developer';
 import 'package:flutter/material.dart';
@@ -47,34 +49,12 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  // ログの設定
-  // void log(String level, String message) {
-  //   debugPrint('$level: ${DateTime.now()}: $message');
-  // }
-
-  // try {
-  //   // .env ファイルのロード
-  //   await dotenv.load(fileName: ".env");
-  //   log('INFO', '.env file loaded successfully');
-  // } catch (e) {
-  //   log('SEVERE', 'Failed to load .env file: $e');
-  //   return;
-  // }
-
-  // final supabaseUrl = dotenv.env['SUPABASE_URL'];
-  // final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'];
-
-  // if (supabaseUrl == null || supabaseAnonKey == null) {
-  //   log('SEVERE', 'SUPABASE_URL or SUPABASE_ANON_KEY is not set in .env file');
-  //   return;
-  // }
+  // Firebase初期化
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Supabase初期化
-  // await Supabase.initialize(
-  //   url: supabaseUrl,
-  //   anonKey: supabaseAnonKey,
-  // );
-  // mitsutan:dart標準の環境変数読込処理
   await Supabase.initialize(
     url: const String.fromEnvironment(
         "SUPABASE_URL"), // ここにSupabaseプロジェクトのURLを入力
