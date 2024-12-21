@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "282566804722",
+    "project_id": "suretti",
+    "storage_bucket": "suretti.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:282566804722:android:0e2d8855136c7c80857c6b",
+        "android_client_info": {
+          "package_name": "dev.mitsutan.sysdev_suretti"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_2hrL9Uj8TyKQgUMLPmRBKLToevgjcxQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
