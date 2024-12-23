@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:sysdev_suretti/navigator.dart';
@@ -26,16 +25,6 @@ class _LoginPageState extends State<LoginPage> {
   /// 利便性のためSupabaseのクライアントインスタンスを代入
   final supabase = Supabase.instance.client;
 
-  /// FCMトークンを保存
-  Future<void> _setFcmToken(String token) async {
-    if (supabase.auth.currentUser == null) {
-      return;
-    }
-    await supabase.from('users').update({
-      'fcm_token': token,
-    }).eq('auth_id', supabase.auth.currentUser!.id);
-  }
-
   /// ログイン処理
   Future<void> _signIn() async {
     log('ログイン処理開始', name: 'LoginPage');
@@ -58,20 +47,6 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text,
         password: _passwordController.text,
       );
-
-      // 通知の許可を求める
-      await FirebaseMessaging.instance.requestPermission();
-
-      // FCMトークンの取得と保存
-      final fcmToken = await FirebaseMessaging.instance.getToken();
-      if (fcmToken != null) {
-        await _setFcmToken(fcmToken);
-      }
-
-      // FCMトークンのリフレッシュ時の処理
-      FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
-        await _setFcmToken(token);
-      });
 
       if (!mounted) {
         return;
