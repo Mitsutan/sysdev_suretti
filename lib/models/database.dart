@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'package:path/path.dart' as p;
 
-part 'bookmarks.g.dart';
+part 'database.g.dart';
 
 class Bookmarks extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -15,7 +15,16 @@ class Bookmarks extends Table {
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
-@DriftDatabase(tables: [Bookmarks])
+class Notices extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  // IntColumn get messageId => integer().nullable()();
+  TextColumn get title => text().withDefault(const Constant(""))();
+  TextColumn get body => text().withDefault(const Constant(""))();
+  DateTimeColumn get readAt => dateTime().nullable()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
+@DriftDatabase(tables: [Bookmarks, Notices])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -61,6 +70,21 @@ class AppDatabase extends _$AppDatabase {
   Future<void> deleteBookmark(int messageId) {
     return (delete(bookmarks)..where((bm) => bm.messageId.equals(messageId)))
         .go();
+  }
+
+  // -----
+
+  Future<int> addNotice(String title, String body) {
+    return into(notices).insert(NoticesCompanion.insert(title: Value(title), body: Value(body)));
+  }
+
+  Stream<List<Notice>> watchNotices() {
+    return (select(notices)..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+        .watch();
+  }
+
+  Stream<int> watchUnreadNoticeCount() {
+    return (select(notices)..where((n) => n.readAt.isNull())).watch().map((notices) => notices.length);
   }
 }
 
