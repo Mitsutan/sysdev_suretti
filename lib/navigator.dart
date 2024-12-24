@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sysdev_suretti/utils/db_provider.dart';
 import 'package:sysdev_suretti/utils/enum_pages.dart';
 import 'package:sysdev_suretti/utils/notices_provider.dart';
 
@@ -39,6 +40,11 @@ class Navigation extends HookWidget {
       bottomNavigationBar: Consumer(
         builder: (context, ref, child) {
           final np = ref.watch(noticesProvider);
+
+          if (currentTab.value == Pages.notice) {
+            final db = ref.read(dbProvider).database;
+            db.readAllNotices();
+          }
           return BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             currentIndex: Pages.values.indexOf(currentTab.value),
