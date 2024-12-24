@@ -78,9 +78,16 @@ class AppDatabase extends _$AppDatabase {
     return into(notices).insert(NoticesCompanion.insert(title: Value(title), body: Value(body)));
   }
 
-  Stream<List<Notice>> watchNotices() {
-    return (select(notices)..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
-        .watch();
+  Future<void> readAllNotices() {
+    return (update(notices)..where((n) => n.readAt.isNull())).write(NoticesCompanion(readAt: Value(DateTime.now())));
+  }
+
+  Stream<List<Notice>> watchNotices(String filter) {
+    if (filter == "新しい順") {
+      return (select(notices)..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).watch();
+    } else {
+      return (select(notices)..orderBy([(t) => OrderingTerm.asc(t.createdAt)])).watch();
+    }
   }
 
   Stream<int> watchUnreadNoticeCount() {
