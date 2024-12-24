@@ -27,7 +27,7 @@ enum Pages {
   notice(
     title: '通知',
     icon: Icons.notifications,
-    page: NoticePage(),
+    page: NotificationPage(),
   ),
   profile(
     title: 'アカウント',
