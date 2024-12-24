@@ -1,8 +1,9 @@
 import 'package:background_fetch/background_fetch.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sysdev_suretti/models/database.dart';
 import 'firebase_options.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -42,6 +43,19 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
   BackgroundFetch.finish(taskId);
 }
 
+// アプリがバックグラウンドで実行されている場合に実行されるメッセージハンドラ
+@pragma('vm:entry-point')
+Future<void> _onBackgroundMessage(RemoteMessage message) async {
+  log('Handling a background message ${message.messageId}', name: 'BackgroundMessage');
+
+  final AppDatabase db = AppDatabase();
+
+  final title = message.notification?.title ?? "すれっちからのお知らせ";
+  final body = message.notification?.body ?? "nullの通知";
+
+  await db.addNotice(title, body);
+}
+
 /// エントリーポイント
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,6 +83,10 @@ Future<void> main() async {
 
   // バックグラウンドタスクの登録
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
+
+  // バックグラウンドメッセージのハンドリング
+  FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
+
 }
 
 class MyApp extends StatelessWidget {

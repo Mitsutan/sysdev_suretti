@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:drift/drift.dart' as drift;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,7 @@ import 'package:sysdev_suretti/models/database.dart';
 import 'package:sysdev_suretti/utils/db_provider.dart';
 import 'package:sysdev_suretti/utils/display_time.dart';
 import 'package:sysdev_suretti/utils/enum_pages.dart';
+import 'package:sysdev_suretti/utils/lifecycle.dart';
 import 'package:sysdev_suretti/utils/notices_provider.dart';
 
 class NotificationPage extends ConsumerStatefulWidget {
@@ -26,6 +28,7 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
 
   @override
   void didChangeDependencies() {
+    log("NotificationPage: didChangeDependencies");
     final db = ref.watch(dbProvider).database;
     final noticesPrv = ref.read(noticesProvider);
 
@@ -71,6 +74,16 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     final db = ref.watch(dbProvider).database;
+
+    ref.listen<AppLifecycleState>(appLifecycleProvider, (previous, next) {
+      log("previous: ${previous.toString()}, next: ${next.toString()}",
+          name: 'AppLifecycleState');
+      if (next == AppLifecycleState.resumed) {
+        db.notifyUpdates({
+          for (final table in db.allTables) drift.TableUpdate.onTable(table)
+        });
+      }
+    });
 
     return Scaffold(
         appBar: AppBar(
