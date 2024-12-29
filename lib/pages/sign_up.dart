@@ -10,13 +10,11 @@ import 'package:sysdev_suretti/pages/login.dart';
 /// サインアップ画面
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
-
   // static Route<void> route({bool isRegistering = false}) {
   //   return MaterialPageRoute(
   //     builder: (context) => const SignupPage(),
   //   );
   // }
-
   @override
   _SignupPageState createState() => _SignupPageState();
 }
@@ -25,7 +23,6 @@ class _SignupPageState extends State<SignupPage> {
   bool _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
-
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _usernameController = TextEditingController();
