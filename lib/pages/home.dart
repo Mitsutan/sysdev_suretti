@@ -3,7 +3,10 @@ import 'dart:developer';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sysdev_suretti/models/database.dart';
 import 'package:sysdev_suretti/utils/beacon.dart';
+import 'package:sysdev_suretti/utils/db_provider.dart';
 import 'package:sysdev_suretti/utils/display_time.dart';
 import 'package:sysdev_suretti/utils/post_card.dart';
 // import 'package:sysdev_suretti/utils/lifecycle.dart';
@@ -22,6 +25,7 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final beacon = ref.watch(beaconProvider);
     final udp = ref.watch(userDataProvider);
+    final db = ref.watch(dbProvider).database;
 
     // Platform messages are asynchronous, so we initialize in an async method.
     Future<void> initPlatformState() async {
@@ -46,7 +50,7 @@ class HomePage extends ConsumerWidget {
         if (!beacon.isScanning()) {
           beacon.stopBeacon();
           beacon.startBeacon(beacon.prefs.getInt('major') ?? 1,
-              beacon.prefs.getInt('minor') ?? 1);
+              beacon.prefs.getInt('minor') ?? 1, db);
         }
         // IMPORTANT:  You must signal completion of your task or the OS can punish your app
         // for taking too long in the background.
@@ -109,26 +113,59 @@ class HomePage extends ConsumerWidget {
             ),
           ],
         ),
-        body: ListView.builder(
-          padding: const EdgeInsets.all(8.0),
-          itemCount: beacon.scanResults.length, // アイテムの数を設定
-          itemBuilder: (context, index) {
-            final result = beacon.scanResults[index];
-            return PostCard(
-                selfUserId: udp.userData['user_id'],
-                username: result['nickname'],
-                date: diffTime(DateTime.now(),
-                    DateTime.parse(result['messages']['post_timestamp'])),
-                userid: result['user_id'],
-                iconpath: result['icon'],
-                message: result['messages']['message_text'],
-                messageId: result['messages']['message_id'],
-                recommend: result['messages']['recommended_place'],
-                address: result['messages']['address'],
-                location: result['messages']['location'],
-                isEditable: false);
-          },
-        ),
+        body: StreamBuilder(
+            stream: db.watchScannedUsers(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final List<ScannedUser> scannedUsers = snapshot.data!;
+                final supabase = Supabase.instance.client;
+                return ListView.builder(
+                  padding: const EdgeInsets.all(8.0),
+                  reverse: true,
+                  itemCount: scannedUsers.length,
+                  itemBuilder: (context, index) {
+                    final scannedUser = scannedUsers[index];
+                    log('scannedUser: ${scannedUser.userId}',
+                        name: 'scannedUser');
+                    return FutureBuilder(
+                        future: supabase
+                            .from('users')
+                            .select('*, messages!users_message_id_fkey(*)')
+                            .eq('user_id', scannedUser.userId),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final data = snapshot.data as List<dynamic>;
+                            final result = data.first;
+                            return PostCard(
+                                selfUserId: udp.userData['user_id'],
+                                username: result['nickname'],
+                                date: diffTime(
+                                    DateTime.now(),
+                                    DateTime.parse(
+                                        result['messages']['post_timestamp'])),
+                                userid: result['user_id'],
+                                iconpath: result['icon'],
+                                message: result['messages']['message_text'],
+                                messageId: result['messages']['message_id'],
+                                recommend: result['messages']
+                                    ['recommended_place'],
+                                address: result['messages']['address'],
+                                location: result['messages']['location'],
+                                isEditable: false);
+                          } else {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        });
+                  },
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }),
         // bottomNavigationBar: BottomAppBar(
         //   shape: const CircularNotchedRectangle(),
         //   notchMargin: 6.0,
@@ -165,8 +202,8 @@ class HomePage extends ConsumerWidget {
         // ),
         floatingActionButton: beacon.isScanning()
             ? FloatingActionButton(
-                onPressed: () {
-                  beacon.stopBeacon();
+                onPressed: () async {
+                  await beacon.stopBeacon();
                 },
                 backgroundColor: Colors.red,
                 child: const Icon(Icons.stop),
@@ -174,7 +211,7 @@ class HomePage extends ConsumerWidget {
             : FloatingActionButton(
                 onPressed: () async {
                   await beacon.startBeacon(beacon.prefs.getInt('major') ?? 1,
-                      beacon.prefs.getInt('minor') ?? 1);
+                      beacon.prefs.getInt('minor') ?? 1, db);
                 },
                 child: const Text("SCAN"),
               ),
