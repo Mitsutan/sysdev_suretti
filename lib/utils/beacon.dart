@@ -148,6 +148,7 @@ class BeaconFunc extends ChangeNotifier {
         final id = int.parse('$major1$major2$minor1$minor2', radix: 16);
 
         db.addScannedUser(id);
+        db.addNotice("誰かとすれ違いました！","ホームを見てみましょう");
       }
       db.notifyUpdates({TableUpdate.onTable(db.scannedUsers)});
       notifyListeners();
