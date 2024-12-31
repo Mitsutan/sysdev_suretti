@@ -2,6 +2,7 @@ import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:sysdev_suretti/models/database.dart';
 import 'firebase_options.dart';
 import 'dart:developer';
@@ -38,7 +39,7 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
   if (!bf.isScanning()) {
     bf.stopBeacon();
     bf.startBeacon(
-        bf.prefs.getInt('major') ?? 1, bf.prefs.getInt('minor') ?? 1);
+        bf.prefs.getInt('major') ?? 1, bf.prefs.getInt('minor') ?? 1, AppDatabase());
   }
   BackgroundFetch.finish(taskId);
 }
@@ -46,7 +47,8 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
 // アプリがバックグラウンドで実行されている場合に実行されるメッセージハンドラ
 @pragma('vm:entry-point')
 Future<void> _onBackgroundMessage(RemoteMessage message) async {
-  log('Handling a background message ${message.messageId}', name: 'BackgroundMessage');
+  log('Handling a background message ${message.messageId}',
+      name: 'BackgroundMessage');
 
   final AppDatabase db = AppDatabase();
 
@@ -76,6 +78,13 @@ Future<void> main() async {
         "SUPABASE_ANON_KEY"), // ここにSupabaseプロジェクトのanonキーを入力
   );
 
+  // ローカル通知の初期化
+  await FlutterLocalNotificationsPlugin()
+      .initialize(const InitializationSettings(
+    // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+    android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+  ));
+
   // ログレベルの設定
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
 
@@ -86,7 +95,6 @@ Future<void> main() async {
 
   // バックグラウンドメッセージのハンドリング
   FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
-
 }
 
 class MyApp extends StatelessWidget {
