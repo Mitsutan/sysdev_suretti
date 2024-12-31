@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:beacon_broadcast/beacon_broadcast.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide BluetoothState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sysdev_suretti/models/database.dart';
 
 final beaconProvider = ChangeNotifierProvider((ref) => BeaconFunc());
 
@@ -86,7 +87,7 @@ class BeaconFunc extends ChangeNotifier {
     1
   ]);
 
-  Future<void> startBeacon(int major, int minor) async {
+  Future<void> startBeacon(int major, int minor, AppDatabase db) async {
     // flutterBeacon start broadcast
     // log((await flutterBeacon.isBroadcasting()).toString(),
     //     name: 'flutterBeacon.isBroadcasting()');
@@ -126,7 +127,6 @@ class BeaconFunc extends ChangeNotifier {
 
     // FBP scanResults listen
     FlutterBluePlus.scanResults.listen((results) async {
-      final List<Map<String, dynamic>> resultsList = [];
 
       for (final result in results) {
         if (result.advertisementData.manufacturerData.isEmpty) {
@@ -147,32 +147,10 @@ class BeaconFunc extends ChangeNotifier {
 
         final id = int.parse('$major1$major2$minor1$minor2', radix: 16);
 
-        try {
-          await Supabase.initialize(
-            url: const String.fromEnvironment("SUPABASE_URL"),
-            anonKey: const String.fromEnvironment("SUPABASE_ANON_KEY"),
-          );
-        } on AssertionError catch (e) {
-          log('Supabase initialize error', name: 'Supabase', error: e);
-        }
-
-        final supabase = Supabase.instance.client;
-        try {
-          await supabase
-              .from('users')
-              .select(
-                  '*, messages!users_message_id_fkey(*)')
-              .eq('user_id', id)
-              .then((data) {
-            resultsList.add(data.first);
-            // log('msgData: $data');
-            debugPrint('msgData: $data');
-          });
-        } catch (e) {
-          log("get message fail", error: e, name: 'msgData');
-        }
+        db.addScannedUser(id);
       }
-      updateScanResults(resultsList);
+      db.notifyUpdates({TableUpdate.onTable(db.scannedUsers)});
+      notifyListeners();
     }, onError: (e) {
       log('Scan error', name: 'FlutterBluePlus', error: e);
     });
