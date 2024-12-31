@@ -4,7 +4,6 @@ import 'package:drift/drift.dart' as drift;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sysdev_suretti/models/database.dart';
 import 'package:sysdev_suretti/utils/db_provider.dart';
 import 'package:sysdev_suretti/utils/display_time.dart';
 import 'package:sysdev_suretti/utils/enum_pages.dart';
@@ -112,7 +111,15 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
                         child: CircularProgressIndicator(),
                       );
                     }
-                    final notices = snapshot.data as List<Notice>;
+                    final notices = snapshot.data;
+                    if (notices == null ||
+                        snapshot.connectionState == ConnectionState.done &&
+                            notices.isEmpty) {
+                      return Container(
+                        alignment: Alignment.center,
+                        child: const Text('通知はありません'),
+                      );
+                    }
                     return ListView.builder(
                       itemCount: notices.length,
                       itemBuilder: (context, index) {
