@@ -510,16 +510,233 @@ class NoticesCompanion extends UpdateCompanion<Notice> {
   }
 }
 
+class $ScannedUsersTable extends ScannedUsers
+    with TableInfo<$ScannedUsersTable, ScannedUser> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ScannedUsersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _scannedAtMeta =
+      const VerificationMeta('scannedAt');
+  @override
+  late final GeneratedColumn<DateTime> scannedAt = GeneratedColumn<DateTime>(
+      'scanned_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns => [id, userId, scannedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'scanned_users';
+  @override
+  VerificationContext validateIntegrity(Insertable<ScannedUser> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('scanned_at')) {
+      context.handle(_scannedAtMeta,
+          scannedAt.isAcceptableOrUnknown(data['scanned_at']!, _scannedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ScannedUser map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ScannedUser(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}user_id'])!,
+      scannedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}scanned_at'])!,
+    );
+  }
+
+  @override
+  $ScannedUsersTable createAlias(String alias) {
+    return $ScannedUsersTable(attachedDatabase, alias);
+  }
+}
+
+class ScannedUser extends DataClass implements Insertable<ScannedUser> {
+  final int id;
+  final int userId;
+  final DateTime scannedAt;
+  const ScannedUser(
+      {required this.id, required this.userId, required this.scannedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['user_id'] = Variable<int>(userId);
+    map['scanned_at'] = Variable<DateTime>(scannedAt);
+    return map;
+  }
+
+  ScannedUsersCompanion toCompanion(bool nullToAbsent) {
+    return ScannedUsersCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      scannedAt: Value(scannedAt),
+    );
+  }
+
+  factory ScannedUser.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ScannedUser(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<int>(json['userId']),
+      scannedAt: serializer.fromJson<DateTime>(json['scannedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<int>(userId),
+      'scannedAt': serializer.toJson<DateTime>(scannedAt),
+    };
+  }
+
+  ScannedUser copyWith({int? id, int? userId, DateTime? scannedAt}) =>
+      ScannedUser(
+        id: id ?? this.id,
+        userId: userId ?? this.userId,
+        scannedAt: scannedAt ?? this.scannedAt,
+      );
+  ScannedUser copyWithCompanion(ScannedUsersCompanion data) {
+    return ScannedUser(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      scannedAt: data.scannedAt.present ? data.scannedAt.value : this.scannedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScannedUser(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('scannedAt: $scannedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, userId, scannedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ScannedUser &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.scannedAt == this.scannedAt);
+}
+
+class ScannedUsersCompanion extends UpdateCompanion<ScannedUser> {
+  final Value<int> id;
+  final Value<int> userId;
+  final Value<DateTime> scannedAt;
+  const ScannedUsersCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.scannedAt = const Value.absent(),
+  });
+  ScannedUsersCompanion.insert({
+    this.id = const Value.absent(),
+    required int userId,
+    this.scannedAt = const Value.absent(),
+  }) : userId = Value(userId);
+  static Insertable<ScannedUser> custom({
+    Expression<int>? id,
+    Expression<int>? userId,
+    Expression<DateTime>? scannedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (scannedAt != null) 'scanned_at': scannedAt,
+    });
+  }
+
+  ScannedUsersCompanion copyWith(
+      {Value<int>? id, Value<int>? userId, Value<DateTime>? scannedAt}) {
+    return ScannedUsersCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      scannedAt: scannedAt ?? this.scannedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (scannedAt.present) {
+      map['scanned_at'] = Variable<DateTime>(scannedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScannedUsersCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('scannedAt: $scannedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $BookmarksTable bookmarks = $BookmarksTable(this);
   late final $NoticesTable notices = $NoticesTable(this);
+  late final $ScannedUsersTable scannedUsers = $ScannedUsersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [bookmarks, notices];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [bookmarks, notices, scannedUsers];
 }
 
 typedef $$BookmarksTableCreateCompanionBuilder = BookmarksCompanion Function({
@@ -810,6 +1027,143 @@ typedef $$NoticesTableProcessedTableManager = ProcessedTableManager<
     (Notice, BaseReferences<_$AppDatabase, $NoticesTable, Notice>),
     Notice,
     PrefetchHooks Function()>;
+typedef $$ScannedUsersTableCreateCompanionBuilder = ScannedUsersCompanion
+    Function({
+  Value<int> id,
+  required int userId,
+  Value<DateTime> scannedAt,
+});
+typedef $$ScannedUsersTableUpdateCompanionBuilder = ScannedUsersCompanion
+    Function({
+  Value<int> id,
+  Value<int> userId,
+  Value<DateTime> scannedAt,
+});
+
+class $$ScannedUsersTableFilterComposer
+    extends Composer<_$AppDatabase, $ScannedUsersTable> {
+  $$ScannedUsersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get scannedAt => $composableBuilder(
+      column: $table.scannedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$ScannedUsersTableOrderingComposer
+    extends Composer<_$AppDatabase, $ScannedUsersTable> {
+  $$ScannedUsersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get scannedAt => $composableBuilder(
+      column: $table.scannedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$ScannedUsersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ScannedUsersTable> {
+  $$ScannedUsersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get scannedAt =>
+      $composableBuilder(column: $table.scannedAt, builder: (column) => column);
+}
+
+class $$ScannedUsersTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ScannedUsersTable,
+    ScannedUser,
+    $$ScannedUsersTableFilterComposer,
+    $$ScannedUsersTableOrderingComposer,
+    $$ScannedUsersTableAnnotationComposer,
+    $$ScannedUsersTableCreateCompanionBuilder,
+    $$ScannedUsersTableUpdateCompanionBuilder,
+    (
+      ScannedUser,
+      BaseReferences<_$AppDatabase, $ScannedUsersTable, ScannedUser>
+    ),
+    ScannedUser,
+    PrefetchHooks Function()> {
+  $$ScannedUsersTableTableManager(_$AppDatabase db, $ScannedUsersTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ScannedUsersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ScannedUsersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ScannedUsersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> userId = const Value.absent(),
+            Value<DateTime> scannedAt = const Value.absent(),
+          }) =>
+              ScannedUsersCompanion(
+            id: id,
+            userId: userId,
+            scannedAt: scannedAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int userId,
+            Value<DateTime> scannedAt = const Value.absent(),
+          }) =>
+              ScannedUsersCompanion.insert(
+            id: id,
+            userId: userId,
+            scannedAt: scannedAt,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$ScannedUsersTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ScannedUsersTable,
+    ScannedUser,
+    $$ScannedUsersTableFilterComposer,
+    $$ScannedUsersTableOrderingComposer,
+    $$ScannedUsersTableAnnotationComposer,
+    $$ScannedUsersTableCreateCompanionBuilder,
+    $$ScannedUsersTableUpdateCompanionBuilder,
+    (
+      ScannedUser,
+      BaseReferences<_$AppDatabase, $ScannedUsersTable, ScannedUser>
+    ),
+    ScannedUser,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -818,4 +1172,6 @@ class $AppDatabaseManager {
       $$BookmarksTableTableManager(_db, _db.bookmarks);
   $$NoticesTableTableManager get notices =>
       $$NoticesTableTableManager(_db, _db.notices);
+  $$ScannedUsersTableTableManager get scannedUsers =>
+      $$ScannedUsersTableTableManager(_db, _db.scannedUsers);
 }
