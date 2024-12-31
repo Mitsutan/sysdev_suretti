@@ -47,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+
       if (!mounted) {
         return;
       }

@@ -1,6 +1,10 @@
 import 'package:background_fetch/background_fetch.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:sysdev_suretti/models/database.dart';
+import 'firebase_options.dart';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -35,9 +39,23 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
   if (!bf.isScanning()) {
     bf.stopBeacon();
     bf.startBeacon(
-        bf.prefs.getInt('major') ?? 1, bf.prefs.getInt('minor') ?? 1);
+        bf.prefs.getInt('major') ?? 1, bf.prefs.getInt('minor') ?? 1, AppDatabase());
   }
   BackgroundFetch.finish(taskId);
+}
+
+// アプリがバックグラウンドで実行されている場合に実行されるメッセージハンドラ
+@pragma('vm:entry-point')
+Future<void> _onBackgroundMessage(RemoteMessage message) async {
+  log('Handling a background message ${message.messageId}',
+      name: 'BackgroundMessage');
+
+  final AppDatabase db = AppDatabase();
+
+  final title = message.notification?.title ?? "すれっちからのお知らせ";
+  final body = message.notification?.body ?? "nullの通知";
+
+  await db.addNotice(title, body);
 }
 
 /// エントリーポイント
@@ -47,40 +65,25 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  // ログの設定
-  // void log(String level, String message) {
-  //   debugPrint('$level: ${DateTime.now()}: $message');
-  // }
-
-  // try {
-  //   // .env ファイルのロード
-  //   await dotenv.load(fileName: ".env");
-  //   log('INFO', '.env file loaded successfully');
-  // } catch (e) {
-  //   log('SEVERE', 'Failed to load .env file: $e');
-  //   return;
-  // }
-
-  // final supabaseUrl = dotenv.env['SUPABASE_URL'];
-  // final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'];
-
-  // if (supabaseUrl == null || supabaseAnonKey == null) {
-  //   log('SEVERE', 'SUPABASE_URL or SUPABASE_ANON_KEY is not set in .env file');
-  //   return;
-  // }
+  // Firebase初期化
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Supabase初期化
-  // await Supabase.initialize(
-  //   url: supabaseUrl,
-  //   anonKey: supabaseAnonKey,
-  // );
-  // mitsutan:dart標準の環境変数読込処理
   await Supabase.initialize(
     url: const String.fromEnvironment(
         "SUPABASE_URL"), // ここにSupabaseプロジェクトのURLを入力
     anonKey: const String.fromEnvironment(
         "SUPABASE_ANON_KEY"), // ここにSupabaseプロジェクトのanonキーを入力
   );
+
+  // ローカル通知の初期化
+  await FlutterLocalNotificationsPlugin()
+      .initialize(const InitializationSettings(
+    // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+    android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+  ));
 
   // ログレベルの設定
   FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
@@ -89,6 +92,9 @@ Future<void> main() async {
 
   // バックグラウンドタスクの登録
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
+
+  // バックグラウンドメッセージのハンドリング
+  FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
 }
 
 class MyApp extends StatelessWidget {
